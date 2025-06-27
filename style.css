@@ -1,0 +1,84 @@
+:root {
+  /* Colors */
+  --main-color: #0078D7;
+  --secondary-color: #f0f0f0;
+  --text-color: white;
+  --button-bg: white;
+  --button-hover-text: white;
+
+  /* Font Sizes */
+  --font-small: 0.9em;
+  --font-medium: 1em;
+  --font-large: 2em;
+
+  /* Sizes */
+  --button-size: 200px;
+  --border-radius: 15px;
+  --search-width: 400px;
+  --gap-size: 30px;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--secondary-color);
+}
+
+/* Top Nav Bar */
+.navbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--gap-size);
+  background-color: var(--main-color);
+  padding: 20px;
+  
+  color: var(--text-color);
+  flex-wrap: wrap;
+}
+
+.navbar h1 {
+  margin: 0;
+  font-size: var(--font-large);
+}
+
+.search-bar input {
+  padding: 12px;
+  font-size: var(--font-medium);
+  border: none;
+  border-radius: 8px;
+  width: var(--search-width);
+  max-width: 90vw;
+}
+
+/* Main Menu Grid */
+.menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--button-size), 1fr));
+  gap: var(--gap-size);
+  padding: 40px;
+  justify-items: center;
+}
+
+.menu button {
+  width: var(--button-size);
+  height: var(--button-size);
+  background-color: var(--button-bg);
+  border: 3px solid var(--main-color);
+  border-radius: var(--border-radius);
+  font-size: 1.3em;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.menu button:hover {
+  background-color: var(--main-color);
+  color: var(--button-hover-text);
+}
+
+footer {
+  text-align: center;
+  padding: 15px;
+  font-size: var(--font-small);
+  color: #555;
+}
