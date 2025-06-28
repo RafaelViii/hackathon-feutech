@@ -1,0 +1,21 @@
+.video-wrapper {
+  width: 100%;           /* Changed from 100vw to 100% */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 111px;
+  overflow: hidden;      /* This now works correctly */
+  position: relative;
+}
+
+.video-wrapper video {
+  width: 1300px;
+  height: 360px;
+  max-width: 100%;
+  max-height: 360px;
+  border-radius: 0;
+  background: #222;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}

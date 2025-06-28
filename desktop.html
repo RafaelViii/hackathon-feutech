@@ -6,8 +6,10 @@
   <title>Responsive Navbar Layout</title>
   <link rel="stylesheet" href="desktopstyle.css">
   <link rel="stylesheet" href="imagecarousel.css">
-  
+  <link rel="stylesheet" href="video.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200&display=swap" rel="stylesheet">
 </head>
+
 <body>
   <nav>
     <div class="navbar">
@@ -95,11 +97,35 @@
     </div>
 
 
-    <div>
-        <div>
-            
-        </div>
+    <!-- Video Player Section -->
+    <div class="video-wrapper">
+    <video
+        id="main-video"
+        src="https://www.w3schools.com/html/mov_bbb.mp4"
+        width="1300"
+        height="360"
+        loop
+        autoplay
+        muted
+        playsinline
+        style="pointer-events: none;"
+        tabindex="-1"
+    ></video>
     </div>
+
+    <!-- Clickable Text Section (displayed horizontally) -->
+    <div class="center-links">
+    <a class="center-link" href="">I’m a small Business Owner</a>
+    <a class="center-link" href="">I want to Invest or Donate</a>
+    <a class="center-link" href="">How it Works</a>
+    </div>
+
+     <!-- The dual kiosk text goes here -->
+  <div class="dual-kiosk-text">
+    How our dual kiosk <br>
+    system works
+  </div>
+</div>
 
 
 <script src="carousel.js"></script>
@@ -154,6 +180,27 @@
         }, 100);
         });
     }
+    });
+
+    // Prevent video player from overlapping other content
+    document.addEventListener("DOMContentLoaded", function () {
+    const video = document.getElementById('main-video');
+    const wrapper = video?.parentElement;
+    if (!video || !wrapper) return;
+
+    function adjustVideo() {
+        // Get the available width for the video section
+        const viewportWidth = window.innerWidth;
+        // If there isn't enough space for 1440px, scale down the video
+        if (viewportWidth < 1440) {
+        video.style.width = "100vw";
+        } else {
+        video.style.width = "1440px";
+        }
+    }
+
+    adjustVideo();
+    window.addEventListener('resize', adjustVideo);
     });
   </script>
 </body>
