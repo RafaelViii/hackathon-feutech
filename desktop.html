@@ -1,11 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Navbar</title>
+  <link rel="stylesheet" href="desktopstyle.css">
 </head>
 <body>
-    
+  <nav>
+    <div class="navbar">
+      <div class="logo" style="font-weight:700;letter-spacing:2px;font-size:1.3rem;">MyBrand</div>
+      <div class="hamburger" id="hamburger" aria-label="Open menu" tabindex="0">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <li class="nav-link"><a href="#">Home</a></li>
+        <li class="nav-link">
+          <button aria-haspopup="true" aria-expanded="false">About ▼</button>
+          <div class="dropdown" role="menu">
+            <a href="#">How it Works</a>
+            <a href="#">Challenges</a>
+          </div>
+        </li>
+        <li class="nav-link">
+          <button aria-haspopup="true" aria-expanded="false">Opportunities ▼</button>
+          <div class="dropdown" role="menu">
+            <a href="#">Investment Opportunities</a>
+            <a href="#">Support Local Brands</a>
+          </div>
+        </li>
+        <li class="nav-link"><a href="#">Get Started</a></li>
+      </ul>
+    </div>
+  </nav>
+  <script>
+    // Hamburger menu toggle
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+    hamburger.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+    // Close mobile menu when link is clicked
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+      });
+    });
+    // Keyboard accessibility for hamburger
+    hamburger.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        navLinks.classList.toggle('open');
+      }
+    });
+  </script>
 </body>
 </html>
