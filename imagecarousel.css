@@ -1,0 +1,35 @@
+/* Carousel section */
+.carousel-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+}
+
+.carousel-images {
+  display: flex;
+  gap: 64px;
+  transition: all 0.5s;
+}
+
+.carousel-img-box {
+  width: 251px;
+  height: 246px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 24px;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  position: relative;
+  user-select: none;
+}
+
+.carousel-img-label {
+  background: rgba(30,30,30,0.2);
+  padding: 0.5em 1em;
+  border-radius: 10px;
+}

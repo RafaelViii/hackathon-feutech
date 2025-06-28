@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Responsive Navbar Layout</title>
   <link rel="stylesheet" href="desktopstyle.css">
+  <link rel="stylesheet" href="imagecarousel.css">
+  
 </head>
 <body>
   <nav>
@@ -76,14 +78,24 @@
     </div>
     </div>
 
-    <div>
-        <div>
-            <p>Popular now</p>
-        </div>
+    <div class="popular-wrapper">
+    <div class="popular-inner">
+        <p>Popular now</p>
+    </div>
+    </div>
+
+    <!-- Carousel Section -->
+    <div class="carousel-container">
+    <div class="carousel-images" id="carousel-images">
+        <div class="carousel-img-box" style="background: #FF6B6B;"><span class="carousel-img-label">Box 1</span></div>
+        <div class="carousel-img-box" style="background: #FFD93D;"><span class="carousel-img-label">Box 2</span></div>
+        <div class="carousel-img-box" style="background: #6BCB77;"><span class="carousel-img-label">Box 3</span></div>
+        <div class="carousel-img-box" style="background: #4D96FF;"><span class="carousel-img-label">Box 4</span></div>
+    </div>
     </div>
 
 
-
+<script src="carousel.js"></script>
   <script src="navbar.js">
     // Hamburger menu toggle
     const hamburger = document.getElementById('hamburger');

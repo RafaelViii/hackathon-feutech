@@ -210,6 +210,31 @@ nav {
 }
 
 
+.popular-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 90px; /* Adjusted to 90px as you requested */
+}
+
+
+.popular-inner {
+  width: 100%;
+  max-width: 900px;
+}
+
+.popular-inner p {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 24px;
+  color: var(--font-color-primary);
+  font-weight: 700;
+  margin: 0;
+  text-align: left;
+}
+
+
+
+
 /* Hamburger (Mobile) */
 .hamburger {
   display: none;
