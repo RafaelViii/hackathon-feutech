@@ -268,17 +268,108 @@ nav {
 
 
 .dual-kiosk-text {
-  margin-top: 250px;
+  margin-top: 200px;
   font-family: 'Montserrat', Arial, sans-serif;
   font-weight: 700;
   font-size: 24px;
   color: var(--font-color-primary);
   text-align: left;
   line-height: 1.3;
-  max-width: 1200px;
+  max-width: 1050px;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 50px;
 }
+
+
+
+.seamless-image-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the stack horizontally */
+  width: 1045px;
+  margin: 0 auto; /* Center the stack in the parent/boundary */
+}
+
+.seamless-img {
+  width: 1045px;
+  height: 600px;
+  object-fit: cover;
+  display: block;
+  padding: 0;
+  margin: 0;
+  border: none;
+  /* No gap or border, seamless stacking */
+}
+
+
+
+.hackathon-footer {
+  background: #152238;
+  color: #fff;
+  padding: 40px 0 20px 0;
+  font-family: 'Montserrat', Arial, sans-serif;
+  width: 100%;
+  margin-top: 100px;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.footer-logo-section {
+  margin-bottom: 20px;
+}
+
+.footer-logo {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 18px;
+}
+
+.footer-link {
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+  transition: color 0.2s;
+}
+
+.footer-link:hover {
+  color: #3D5A80;
+}
+
+.footer-copy {
+  font-size: 14px;
+  opacity: 0.7;
+  text-align: center;
+}
+
+/* Responsive: stack links on mobile */
+@media (max-width: 600px) {
+  .footer-content {
+    padding: 0 10px;
+  }
+  .footer-links {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+  .footer-logo {
+    font-size: 24px;
+  }
+}
+
 
 /* Hamburger (Mobile) */
 .hamburger {
