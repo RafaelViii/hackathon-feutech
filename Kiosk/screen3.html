@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="theme.css">
+  <meta charset="UTF-8" />
+  <title>ScaleUp - Log In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inder&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--background);
+      font-family: 'Inder', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      position: relative;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 90%;
+      background: #fff;
+      border-radius: 15px;
+      padding: 40px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+
+    h1 {
+      font-size: 48px;
+      margin: 0;
+      letter-spacing: 0.1em;
+      text-align: center;
+      color: #000;
+    }
+
+    input {
+      width: 80%;
+      padding: 20px;
+      font-size: 24px;
+      border-radius: 15px;
+      border: 1px solid #ddd;
+    }
+
+    .forgot {
+      font-size: 18px;
+      color: #F21515;
+      cursor: pointer;
+      text-align: right;
+      width: 80%;
+    }
+
+    .login-button {
+      background: #748AE5;
+      color: #fff;
+      font-size: 24px;
+      border: none;
+      padding: 20px 60px;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .login-button:hover {
+      background: #5c6fba;
+    }
+
+    .back {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      font-size: 40px;
+      cursor: pointer;
+      color: #333;
+    }
+
+    @media(max-width: 768px) {
+      h1 { font-size: 32px; }
+      input { font-size: 18px; }
+      .login-button { font-size: 18px; padding: 15px 40px; }
+    }
+  </style>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZsj-cL_T_BuLtAz5bkqsw-edZXnumwe0",
+      authDomain: "iot-web-58054.firebaseapp.com",
+      databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "iot-web-58054",
+      storageBucket: "iot-web-58054.appspot.com",
+      messagingSenderId: "949884902967",
+      appId: "1:949884902967:web:6e7f78c7cd0fa1484629b2",
+      measurementId: "G-5C79490N66"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Log In</h1>
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <div class="forgot" id="forgotPassword">Forgot Password?</div>
+    <button class="login-button" id="loginButton">Log In</button>
+  </div>
+
+  <div class="back" id="backButton">&#x2039;</div>
+
+  <script>
+    document.getElementById("loginButton").addEventListener("click", function() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        alert("Please fill in both email and password.");
+        return;
+      }
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          alert("✅ Login successful!");
+          window.location.href = "kiosk.html";  // you can change destination if needed
+        })
+        .catch(error => {
+          alert("❌ " + ("Invalid Credentials, Please login again"));
+        });
+    });
+
+    document.getElementById("forgotPassword").addEventListener("click", function() {
+      const email = document.getElementById("email").value.trim();
+      if (!email) {
+        alert("Enter your email above first.");
+        return;
+      }
+      auth.sendPasswordResetEmail(email)
+        .then(() => {
+          alert("✅ Password reset email sent!");
+        })
+        .catch(error => {
+          alert("❌ " + e("Invalid Credentials, Please login again"));
+        });
+    });
+
+    document.getElementById("backButton").addEventListener("click", function() {
+      window.location.href = "screen2.html";
+    });
+  </script>
+</body>
+</html>
