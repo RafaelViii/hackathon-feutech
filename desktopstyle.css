@@ -1,8 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap');
+
 :root {
   /* Colors */
-  --color-primary: #152238;
+  --color-primary: #f0f0f0;
+   --color-primary-nav: #D5D5D5;
   --color-accent: #fa8231;
-  --color-text: #fff;
+  --color-text: #000000;
   --color-hover: #fff3;
   --color-bg: #f5f6fa;
   --color-dropdown-bg: #1a2942;
@@ -11,23 +15,41 @@
   --color-getstarted-bg: #e23c3c;
   --color-getstarted-hover: #a81f1f;
 
-  /* Font */
+
+
+  /* Font color */
+  --font-color-primary:#000;
+  --font-color-secondary: #333;
+
+  /* Font families */
   --font-main: 'Montserrat', Arial, sans-serif;
+
+  /* Font sizes */
+  --font-size-big: 2.5rem;
+  --font-size-medium: 1.25rem;
+  --font-size-small: 0.98rem;
   --font-size-logo: 1.5rem;
   --font-size-nav: 1rem;
-  --font-size-dropdown: 0.98rem;
+  --font-size-dropdown: var(--font-size-small);
 
-  /* Sizing */
+  /* Font weights */
+  --font-weight-big: 900;
+  --font-weight-medium: 700;
+  --font-weight-regular: 400;
+  --font-weight-logo: var(--font-weight-medium);
+  --font-weight-nav: 500;
+
+  /* Navbar sizing */
   --nav-height: 60px;
   --nav-padding-x: 2rem;
   --navbar-max-width: 1200px;
 
   /* Border radius */
-  --radius-nav: 3px;
+  --radius-nav: 5rem;
   --radius-dropdown: 6px;
   --radius-btn: 24px;
 
-  /* Hamburger */
+  /* Hamburger icon */
   --hamburger-width: 28px;
   --hamburger-bar-height: 3px;
   --hamburger-gap: 5px;
@@ -43,7 +65,7 @@ body {
 }
 
 nav {
-  background: var(--color-primary);
+  background: var(--color-primary-nav);
   color: var(--color-text);
   position: relative;
   z-index: 10;
@@ -60,7 +82,12 @@ nav {
   position: relative;
 }
 
-.nav-side {
+.nav-side,
+.nav-left,
+.nav-right {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   display: flex;
   align-items: center;
   gap: 1.2rem;
@@ -80,7 +107,7 @@ nav {
   flex: 0 0 auto;
   text-align: center;
   font-size: var(--font-size-logo);
-  font-weight: 700;
+  font-weight: var(--font-weight-logo);
   letter-spacing: 2px;
   color: var(--color-text);
   margin: 0 auto;
@@ -91,28 +118,16 @@ nav {
 .nav-side button {
   color: var(--color-text);
   font-size: var(--font-size-nav);
+  font-weight: var(--font-weight-nav);
   text-decoration: none;
   background: none;
   border: none;
   font-family: var(--font-main);
-  font-weight: 500;
   padding: 0.5em 0.8em;
   cursor: pointer;
   border-radius: var(--radius-nav);
   position: relative;
   transition: background 0.2s;
-}
-
-
-.nav-side,
-.nav-left,
-.nav-right {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
 }
 
 /* Dropdown styles */
@@ -139,6 +154,7 @@ nav {
   padding: 0.8em 1.2em;
   display: block;
   font-size: var(--font-size-dropdown);
+  font-weight: var(--font-weight-regular);
 }
 .dropdown a:hover {
   background: var(--color-dropdown-hover);
@@ -150,20 +166,49 @@ nav {
   background: var(--color-getstarted-bg);
   color: #fff;
   border-radius: var(--radius-btn);
-  padding: 0.5em 1.3em;
-  font-weight: 700;
+  /* Increased top and bottom padding */
+  padding: 100em 1.3em;
+  font-weight: var(--font-weight-big);
   font-size: var(--font-size-nav);
   border: none;
-  box-shadow: 0 2px 8px #0001;
+  box-shadow: 0 2px 8px rgb(45, 11, 11);
   transition: background 0.2s, box-shadow 0.2s;
   margin-left: auto;
   text-align: center;
   display: inline-block;
+  font-family: var(--font-main);
 }
+
 .get-started-btn:hover {
   background: var(--color-getstarted-hover);
   box-shadow: 0 2px 12px #0002;
 }
+
+
+.hero-bg {
+  background: var(--color-primary);
+  height: 371px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.hero-center {
+  width: 100%;
+  max-width: 900px;
+}
+
+.hero-center h1 {
+  color: #000;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 800;
+  font-size: 64px;
+  line-height: 1.15;
+  margin: 0;
+  text-align: left;
+}
+
 
 /* Hamburger (Mobile) */
 .hamburger {
