@@ -1,30 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kiosk Interface</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Door Status</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+    #status { font-size: 5em; color: #2196F3; margin-top: 40px; }
+    .open { color: green; }
+    .close { color: red; }
+  </style>
 </head>
 <body>
+    
+  <h1>Door Status</h1>
+  <div id="status" class="close">Close</div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+    // import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZsj-cL_T_BuLtAz5bkqsw-edZXnumwe0",
+      authDomain: "iot-web-58054.firebaseapp.com",
+      databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "iot-web-58054",
+      storageBucket: "iot-web-58054.appspot.com",
+      messagingSenderId: "949884902967",
+      appId: "1:949884902967:web:6e7f78c7cd0fa1484629b2",
+      measurementId: "G-5C79490N66"
+    };
 
-  <div class="navbar">
-    <h1>Kiosk System</h1>
-    <div class="search-bar">
-      <input type="text" placeholder="Search..." />
-    </div>
-  </div>
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    // Optional: const analytics = getAnalytics(app);
 
-  <div class="menu">
-    <button onclick="alert('Information Section')">Information</button>
-    <button onclick="alert('Services Section')">Services</button>
-    <button onclick="alert('Map Section')">Map</button>
-    <button onclick="alert('Help Section')">Help</button>
-  </div>
+    // Get a reference to the database service
+    const db = getDatabase(app);
+    const statusRef = ref(db, 'doorStatus');
+    const statusDiv = document.getElementById('status');
 
-  <footer>
-    &copy; Base Structure Kiosk System | Hackathon Feu Tech 2025
-  </footer>
+    onValue(statusRef, (snapshot) => {
+      const value = snapshot.val();
+      if (value === "open") {
+        statusDiv.textContent = "Open";
+        statusDiv.className = "open";
+      } else {
+        statusDiv.textContent = "Close";
+        statusDiv.className = "close";
+      }
+    });
+  </script>
 
+ 
 </body>
 </html>
