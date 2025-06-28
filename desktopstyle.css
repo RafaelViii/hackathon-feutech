@@ -1,5 +1,5 @@
 :root {
-  /* Color palette */
+  /* Colors */
   --color-primary: #152238;
   --color-accent: #fa8231;
   --color-text: #fff;
@@ -8,29 +8,26 @@
   --color-dropdown-bg: #1a2942;
   --color-dropdown-hover: #fa8231;
   --color-shadow: #0002;
+  --color-getstarted-bg: #e23c3c;
+  --color-getstarted-hover: #a81f1f;
 
-  /* Font families */
+  /* Font */
   --font-main: 'Montserrat', Arial, sans-serif;
-
-  /* Font sizes */
-  --font-size-logo: 1.3rem;
+  --font-size-logo: 1.5rem;
   --font-size-nav: 1rem;
   --font-size-dropdown: 0.98rem;
 
-  /* Font weights */
-  --font-weight-logo: 700;
-  --font-weight-nav: 400;
-
-  /* Navbar sizing */
+  /* Sizing */
   --nav-height: 60px;
-  --nav-padding-x: 1rem;
+  --nav-padding-x: 2rem;
   --navbar-max-width: 1200px;
 
   /* Border radius */
   --radius-nav: 3px;
   --radius-dropdown: 6px;
+  --radius-btn: 24px;
 
-  /* Hamburger icon */
+  /* Hamburger */
   --hamburger-width: 28px;
   --hamburger-bar-height: 3px;
   --hamburger-gap: 5px;
@@ -48,60 +45,80 @@ body {
 nav {
   background: var(--color-primary);
   color: var(--color-text);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0 var(--nav-padding-x);
-  height: var(--nav-height);
   position: relative;
   z-index: 10;
 }
 
 .navbar {
-  width: 100%;
+  height: var(--nav-height);
   max-width: var(--navbar-max-width);
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.logo {
-  font-weight: var(--font-weight-logo);
-  letter-spacing: 2px;
-  font-size: var(--font-size-logo);
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.nav-link {
+  padding: 0 var(--nav-padding-x);
   position: relative;
 }
 
-.nav-link > a,
-.nav-link > button {
+.nav-side {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.nav-left {
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.nav-right {
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.logo {
+  flex: 0 0 auto;
+  text-align: center;
+  font-size: var(--font-size-logo);
+  font-weight: 700;
+  letter-spacing: 2px;
   color: var(--color-text);
+  margin: 0 auto;
+}
+
+.nav-link,
+.nav-side a,
+.nav-side button {
+  color: var(--color-text);
+  font-size: var(--font-size-nav);
   text-decoration: none;
   background: none;
   border: none;
   font-family: var(--font-main);
-  font-size: var(--font-size-nav);
-  font-weight: var(--font-weight-nav);
-  cursor: pointer;
+  font-weight: 500;
   padding: 0.5em 0.8em;
+  cursor: pointer;
   border-radius: var(--radius-nav);
+  position: relative;
   transition: background 0.2s;
 }
 
-.nav-link > a:hover,
-.nav-link > button:hover {
-  background: var(--color-hover);
+
+.nav-side,
+.nav-left,
+.nav-right {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+/* Dropdown styles */
+.dropdown-parent:focus-within .dropdown,
+.dropdown-parent:hover .dropdown {
+  display: flex;
 }
 
 .dropdown {
@@ -110,13 +127,12 @@ nav {
   top: 110%;
   left: 0;
   background: var(--color-dropdown-bg);
-  box-shadow: var(--shadow-nav);
-  min-width: 200px;
+  min-width: 210px;
   border-radius: 0 0 var(--radius-dropdown) var(--radius-dropdown);
+  box-shadow: var(--shadow-nav);
   flex-direction: column;
   z-index: 100;
 }
-
 .dropdown a {
   color: var(--color-text);
   text-decoration: none;
@@ -124,26 +140,40 @@ nav {
   display: block;
   font-size: var(--font-size-dropdown);
 }
-
 .dropdown a:hover {
   background: var(--color-dropdown-hover);
   color: #fff;
 }
 
-.nav-link:focus-within .dropdown,
-.nav-link:hover .dropdown {
-  display: flex;
+/* Get Started Button */
+.get-started-btn {
+  background: var(--color-getstarted-bg);
+  color: #fff;
+  border-radius: var(--radius-btn);
+  padding: 0.5em 1.3em;
+  font-weight: 700;
+  font-size: var(--font-size-nav);
+  border: none;
+  box-shadow: 0 2px 8px #0001;
+  transition: background 0.2s, box-shadow 0.2s;
+  margin-left: auto;
+  text-align: center;
+  display: inline-block;
+}
+.get-started-btn:hover {
+  background: var(--color-getstarted-hover);
+  box-shadow: 0 2px 12px #0002;
 }
 
-/* Hamburger menu styles */
+/* Hamburger (Mobile) */
 .hamburger {
   display: none;
   flex-direction: column;
-  cursor: pointer;
   gap: var(--hamburger-gap);
-  z-index: 20;
+  cursor: pointer;
+  z-index: 200;
+  margin-left: 1.2rem;
 }
-
 .hamburger span {
   width: var(--hamburger-width);
   height: var(--hamburger-bar-height);
@@ -152,43 +182,86 @@ nav {
   transition: all 0.3s;
 }
 
+/* Mobile Nav */
+.mobile-nav {
+  display: none;
+  position: absolute;
+  top: var(--nav-height);
+  left: 0;
+  right: 0;
+  background: var(--color-primary);
+  box-shadow: var(--shadow-nav);
+  z-index: 150;
+  animation: fadeIn 0.2s;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.mobile-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0.5em 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.mobile-nav a,
+.mobile-nav button {
+  color: var(--color-text);
+  background: none;
+  border: none;
+  font-size: var(--font-size-nav);
+  font-family: var(--font-main);
+  padding: 1em 1.5em;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 0;
+  outline: none;
+}
+.mobile-nav a.get-started-btn {
+  background: var(--color-getstarted-bg);
+  border-radius: var(--radius-btn);
+  margin: 0.5em 1em;
+  text-align: center;
+  padding: 0.7em 0;
+  font-size: 1.05em;
+}
+.mobile-drop-btn {
+  width: 100%;
+  text-align: left;
+}
+.mobile-dropdown {
+  display: none;
+  flex-direction: column;
+  background: var(--color-dropdown-bg);
+}
+.mobile-dropdown a {
+  padding-left: 2.5em;
+}
+.mobile-nav .open + .mobile-dropdown {
+  display: flex;
+}
+
+/* Responsive */
+@media (max-width: 1050px) {
+  .navbar {
+    padding: 0 1rem;
+  }
+}
 @media (max-width: 900px) {
   .navbar {
-    flex-direction: column;
-    align-items: stretch;
+    padding: 0 0.5rem;
   }
-  .nav-links {
-    flex-direction: column;
-    background: var(--color-primary);
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: var(--nav-height);
+  .nav-side, .logo {
     display: none;
-    gap: 0;
-    box-shadow: var(--shadow-nav);
-  }
-  .nav-links.open {
-    display: flex;
-  }
-  .nav-link > a,
-  .nav-link > button {
-    padding: 1em;
-    width: 100%;
-    text-align: left;
-    border-radius: 0;
-  }
-  .dropdown {
-    position: static;
-    box-shadow: none;
-    background: var(--color-dropdown-bg);
-    border-radius: 0;
-    min-width: 0;
-  }
-  .dropdown a {
-    padding-left: 2.5em;
   }
   .hamburger {
     display: flex;
+    margin-left: 0;
+  }
+  .mobile-nav {
+    display: none;
+  }
+  .mobile-nav.open {
+    display: block;
   }
 }

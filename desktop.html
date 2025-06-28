@@ -3,56 +3,119 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Navbar</title>
+  <title>Responsive Navbar Layout</title>
   <link rel="stylesheet" href="desktopstyle.css">
 </head>
 <body>
   <nav>
     <div class="navbar">
-      <div class="logo" style="font-weight:700;letter-spacing:2px;font-size:1.3rem;">MyBrand</div>
-      <div class="hamburger" id="hamburger" aria-label="Open menu" tabindex="0">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-      <ul class="nav-links" id="navLinks">
+      <!-- Left -->
+      <ul class="nav-side nav-left">
         <li class="nav-link"><a href="#">Home</a></li>
-        <li class="nav-link">
+        <li class="nav-link dropdown-parent">
           <button aria-haspopup="true" aria-expanded="false">About ▼</button>
           <div class="dropdown" role="menu">
             <a href="#">How it Works</a>
             <a href="#">Challenges</a>
           </div>
         </li>
-        <li class="nav-link">
+        <li class="nav-link dropdown-parent">
           <button aria-haspopup="true" aria-expanded="false">Opportunities ▼</button>
           <div class="dropdown" role="menu">
             <a href="#">Investment Opportunities</a>
             <a href="#">Support Local Brands</a>
           </div>
         </li>
-        <li class="nav-link"><a href="#">Get Started</a></li>
+      </ul>
+
+      <!-- Center -->
+      <div class="logo">MyBrand</div>
+
+      <!-- Right -->
+      <div class="nav-side nav-right">
+        <a href="#" class="get-started-btn">Get Started</a>
+      </div>
+      
+      <!-- Hamburger for mobile -->
+      <div class="hamburger" id="hamburger" aria-label="Open menu" tabindex="0">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+    <!-- Mobile menu (shown on small screens) -->
+    <div class="mobile-nav" id="mobileNav">
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li>
+          <button class="mobile-drop-btn">About ▼</button>
+          <div class="mobile-dropdown">
+            <a href="#">How it Works</a>
+            <a href="#">Challenges</a>
+          </div>
+        </li>
+        <li>
+          <button class="mobile-drop-btn">Opportunities ▼</button>
+          <div class="mobile-dropdown">
+            <a href="#">Investment Opportunities</a>
+            <a href="#">Support Local Brands</a>
+          </div>
+        </li>
+        <li><a href="#" class="get-started-btn">Get Started</a></li>
       </ul>
     </div>
   </nav>
-  <script>
+  <script src="navbar.js">
     // Hamburger menu toggle
     const hamburger = document.getElementById('hamburger');
-    const navLinks = document.getElementById('navLinks');
+    const mobileNav = document.getElementById('mobileNav');
+
     hamburger.addEventListener('click', () => {
-      navLinks.classList.toggle('open');
+    mobileNav.classList.toggle('open');
     });
-    // Close mobile menu when link is clicked
-    document.querySelectorAll('.nav-links a').forEach(link => {
-      link.addEventListener('click', () => {
-        navLinks.classList.remove('open');
-      });
+
+    // Dropdown for mobile
+    document.querySelectorAll('.mobile-drop-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        // Close other dropdowns
+        document.querySelectorAll('.mobile-drop-btn').forEach(b => {
+        if (b !== btn) b.classList.remove('open');
+        });
+        // Toggle this one
+        btn.classList.toggle('open');
+        // Show/hide dropdown
+        const dropdown = btn.nextElementSibling;
+        if (dropdown) {
+        dropdown.style.display = btn.classList.contains('open') ? 'flex' : 'none';
+        }
     });
-    // Keyboard accessibility for hamburger
-    hamburger.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        navLinks.classList.toggle('open');
-      }
+    });
+
+    // For desktop: auto-close dropbar when mouse leaves boundary
+    document.querySelectorAll('.dropdown-parent').forEach(link => {
+    const dropdown = link.querySelector('.dropdown');
+    if (dropdown) {
+        let timeoutId;
+        link.addEventListener('mouseenter', () => {
+        clearTimeout(timeoutId);
+        dropdown.style.display = 'flex';
+        });
+        link.addEventListener('mouseleave', () => {
+        timeoutId = setTimeout(() => {
+            dropdown.style.display = 'none';
+        }, 120);
+        });
+        link.addEventListener('focusin', () => {
+        dropdown.style.display = 'flex';
+        });
+        link.addEventListener('focusout', () => {
+        setTimeout(() => {
+            if (!link.contains(document.activeElement)) {
+            dropdown.style.display = 'none';
+            }
+        }, 100);
+        });
+    }
     });
   </script>
 </body>
