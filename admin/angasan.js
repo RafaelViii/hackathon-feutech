@@ -31,7 +31,12 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
 
-const db = getFirestore(app);
+// ✅ Region-safe Firestore
+const db = initializeFirestore(app, {
+  host: "asia-east2-firestore.googleapis.com",
+  ssl: true,
+  experimentalForceLongPolling: true
+});
 const dbRef = collection(db, "database");
 const storage = getStorage(app);
 
