@@ -93,7 +93,11 @@
   <div class="chevron chevron-right" id="nextBtn">&#x2039;</div>
 
  <script>
+  // Prefill funding and purpose from localStorage
   const fundingInput = document.getElementById("goal");
+  const purposeInput = document.getElementById("purpose");
+  fundingInput.value = localStorage.getItem("funding") || "";
+  purposeInput.value = localStorage.getItem("purpose") || "";
 
   fundingInput.addEventListener("input", function (e) {
     // remove all non-digit
@@ -103,7 +107,7 @@
     if (raw.length > 6) raw = raw.slice(0, 6);
 
     // format with commas
-    e.target.value = Number(raw).toLocaleString("en-US");
+    e.target.value = raw ? Number(raw).toLocaleString("en-US") : "";
   });
 
   document.getElementById("backBtn").addEventListener("click", () => {
@@ -112,7 +116,7 @@
 
   document.getElementById("nextBtn").addEventListener("click", () => {
     const funding = fundingInput.value.trim();
-    const purpose = document.getElementById("purpose").value.trim();
+    const purpose = purposeInput.value.trim();
 
     localStorage.setItem("funding", funding);
     localStorage.setItem("purpose", purpose);
@@ -120,10 +124,6 @@
     window.location.href = "screen7.html";
   });
 </script>
-
-
-
-
 
 </body>
 </html>

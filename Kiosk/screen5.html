@@ -73,7 +73,7 @@
 
   <div class="form-container">
     <div class="header">Tell Us About Your Business</div>
-    <input type="text" placeholder="Product Name" class="input-field" id="businessName">
+    <input type="text" placeholder="Business Name" class="input-field" id="businessName">
     <input type="text" placeholder="Product" class="input-field" id="product">
     <input type="text" placeholder="Tagline" class="input-field" id="tagline">
   </div>
@@ -81,20 +81,24 @@
   <div class="forward-chevron" id="nextButton">&#x2039;</div>
 
   <script>
-  document.getElementById("nextButton").addEventListener("click", () => {
-    const businessName = document.getElementById("businessName").value.trim();
-    const product = document.getElementById("product").value.trim();
-    const tagline = document.getElementById("tagline").value.trim();
+    // Prefill fields from localStorage if present
+    document.getElementById("businessName").value = localStorage.getItem("businessName") || "";
+    document.getElementById("product").value = localStorage.getItem("product") || "";
+    document.getElementById("tagline").value = localStorage.getItem("tagline") || "";
 
-    // save to localStorage
-    localStorage.setItem("businessName", businessName);
-    localStorage.setItem("product", product);
-    localStorage.setItem("tagline", tagline);
+    document.getElementById("nextButton").addEventListener("click", () => {
+      const businessName = document.getElementById("businessName").value.trim();
+      const product = document.getElementById("product").value.trim();
+      const tagline = document.getElementById("tagline").value.trim();
 
-    window.location.href = "screen6.html";
-  });
-</script>
+      // save to localStorage
+      localStorage.setItem("businessName", businessName);
+      localStorage.setItem("product", product);
+      localStorage.setItem("tagline", tagline);
 
+      window.location.href = "screen6.html";
+    });
+  </script>
 
 </body>
 </html>
