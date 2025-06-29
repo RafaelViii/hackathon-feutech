@@ -20,26 +20,19 @@ import { initializeFirestore } from "https://www.gstatic.com/firebasejs/11.9.1/f
 
 // Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyDZsj-cL_T_BuLtAz5bkqsw-edZXnumwe0",
-  authDomain: "iot-web-58054.firebaseapp.com",
-  databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "iot-web-58054",
-  storageBucket: "iot-web-58054.firebasestorage.app",
-  messagingSenderId: "949884902967",
-  appId: "1:949884902967:web:3035acaed4bc89504629b2",
-  measurementId: "G-LES0M8CZH0"
+  apiKey: "AIzaSyBPbtdqBMd2uK4duSICkOd7vshfVKHL0sQ",
+  authDomain: "scaleup2.firebaseapp.com",
+  projectId: "scaleup2",
+  storageBucket: "scaleup2.firebasestorage.app",
+  messagingSenderId: "545731372745",
+  appId: "1:545731372745:web:4dc02ef445fa8057c9cf18",
+  measurementId: "G-MVQME30YMJ"
 }
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
-
-// ✅ Region-safe Firestore
-const db = initializeFirestore(app, {
-  host: "asia-east2-firestore.googleapis.com",
-  ssl: true,
-  experimentalForceLongPolling: true
-});
+const app = initializeApp(firebaseConfig);
 const dbRef = collection(db, "database");
 const storage = getStorage(app);
 
