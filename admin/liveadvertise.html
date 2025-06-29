@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ads Slideshow</title>
+  <style>
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      height: 100vh;
+      width: 100vw;
+      box-sizing: border-box;
+      background: #222;
+      overflow: hidden;
+    }
+    .slideshow-outer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      width: 100vw;
+      box-sizing: border-box;
+      padding: 3vw;
+    }
+    .slideshow-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 24px;
+      box-shadow: 0 8px 40px #0006;
+      background: #111;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .slide-img {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1s;
+      z-index: 1;
+      background: #222;
+      pointer-events: none;
+    }
+    .slide-img.active {
+      opacity: 1;
+      z-index: 2;
+      pointer-events: auto;
+    }
+    .replace-btn {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      z-index: 10;
+      background: #fff8;
+      color: #222;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 18px;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #0003;
+      transition: background 0.2s;
+      outline: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.85;
+    }
+    .replace-btn:hover {
+      background: #fffde9;
+    }
+    .file-input {
+      display: none;
+    }
+    .loading-msg {
+      color: #fff;
+      font-size: 1.2rem;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 100;
+      background: #111c;
+      padding: 1em 2em;
+      border-radius: 8px;
+    }
+    @media (max-width: 800px) {
+      .slideshow-outer { padding: 2vw; }
+      .replace-btn { font-size: 0.9rem; }
+    }
+    @media (max-width: 500px) {
+      .slideshow-outer { padding: 1vw; }
+      .slideshow-container { border-radius: 12px; }
+      .replace-btn { bottom: 10px; right: 10px; font-size: 0.8rem; padding: 4px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="slideshow-outer">
+    <div class="slideshow-container" id="slideshow">
+      <div class="loading-msg" id="loadingMsg">Loading images...</div>
+      <!-- Slides and Replace buttons will be injected here -->
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script>
+    // Firebase config - use your exact bucket!
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZsj-cL_T_BuLtAz5bkqsw-edZXnumwe0",
+      authDomain: "iot-web-58054.firebaseapp.com",
+      databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "iot-web-58054",
+      storageBucket: "iot-web-58054.firebasestorage.app",
+      messagingSenderId: "949884902967",
+      appId: "1:949884902967:web:6e7f78c7cd0fa1484629b2",
+      measurementId: "G-5C79490N66"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    // Config
+    const imgNames = ["1", "2", "3", "4", "5", "6", "7"];
+    const folder = "ads-image";
+    const slideshowDiv = document.getElementById('slideshow');
+    const loadingMsg = document.getElementById('loadingMsg');
+    let imgUrls = [];
+    let fileKeys = [];
+    let current = 0;
+    let timer;
+
+    function startSlideshow() {
+      loadingMsg.style.display = "block";
+      const storageRef = firebase.storage().ref(folder);
+      storageRef.listAll().then(res => {
+        window.storageFiles = res.items.map(i=>i.name);
+        const fileNames = imgNames.map(n => {
+          for (let ext of ['.jpg', '.png', '.jpeg', '.webp']) {
+            if (window.storageFiles.includes(`${n}${ext}`)) return `${n}${ext}`;
+          }
+          return null;
+        }).filter(Boolean);
+        fileKeys = fileNames;
+        return Promise.all(
+          fileNames.map(name => storageRef.child(name).getDownloadURL()
+            .catch(()=>null)
+          )
+        );
+      }).then(urls => {
+        imgUrls = urls.filter(Boolean);
+        fileKeys = fileKeys.filter((_, idx) => !!urls[idx]);
+        if(imgUrls.length === 0) {
+          loadingMsg.textContent = "No images found.";
+        } else {
+          loadingMsg.style.display = "none";
+        }
+        createSlides();
+        runSlideshow();
+      }).catch(err => {
+        loadingMsg.textContent = "Error loading images: " + err.message;
+      });
+    }
+
+    function createSlides() {
+      // Remove all but loadingMsg
+      [...slideshowDiv.children].forEach(child => {
+        if(child !== loadingMsg) slideshowDiv.removeChild(child);
+      });
+      imgUrls.forEach((url, idx) => {
+        // Create image
+        const img = document.createElement('img');
+        img.src = url;
+        img.className = "slide-img" + (idx === 0 ? " active" : "");
+        img.alt = `Slide ${idx+1}`;
+        img.setAttribute('data-idx', idx);
+
+        // Create replace button
+        const replaceBtn = document.createElement('button');
+        replaceBtn.className = "replace-btn";
+        replaceBtn.innerHTML = "&#128393; Replace";
+        replaceBtn.type = "button";
+        replaceBtn.onclick = () => triggerFileInput(idx);
+
+        // Create hidden file input
+        const fileInput = document.createElement('input');
+        fileInput.type = "file";
+        fileInput.accept = "image/*";
+        fileInput.className = "file-input";
+        fileInput.onchange = (e) => handleReplace(idx, e);
+
+        // Wrap image and controls
+        const wrapper = document.createElement('div');
+        wrapper.style.position = "absolute";
+        wrapper.style.top = "0";
+        wrapper.style.left = "0";
+        wrapper.style.width = "100%";
+        wrapper.style.height = "100%";
+        wrapper.appendChild(img);
+        wrapper.appendChild(replaceBtn);
+        wrapper.appendChild(fileInput);
+
+        // Only show controls on active slide
+        function updateBtnVisibility() {
+          if (img.classList.contains('active')) {
+            replaceBtn.style.display = 'flex';
+          } else {
+            replaceBtn.style.display = 'none';
+          }
+        }
+        updateBtnVisibility();
+
+        // Listen for slide change to update button visibility
+        img.addEventListener('transitionend', updateBtnVisibility);
+        // Also set an observer on class change
+        const obs = new MutationObserver(updateBtnVisibility);
+        obs.observe(img, { attributes: true, attributeFilter: ['class'] });
+
+        slideshowDiv.appendChild(wrapper);
+      });
+    }
+
+    function runSlideshow() {
+      const slides = slideshowDiv.querySelectorAll('.slide-img');
+      if (slides.length === 0) return;
+      current = 0;
+      slides.forEach((img, i) => img.classList.toggle('active', i===current));
+      clearInterval(timer);
+      timer = setInterval(() => {
+        slides[current].classList.remove('active');
+        current = (current + 1) % slides.length;
+        slides[current].classList.add('active');
+      }, 5000);
+    }
+
+    function triggerFileInput(idx) {
+      const wrappers = slideshowDiv.querySelectorAll('div');
+      let count = -1;
+      for (const w of wrappers) {
+        const img = w.querySelector('.slide-img');
+        if(img) count++;
+        if(count === idx) {
+          const fileInput = w.querySelector('.file-input');
+          if (fileInput) fileInput.click();
+          break;
+        }
+      }
+    }
+
+    function handleReplace(idx, event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // Get the file key (e.g., '3.jpg')
+      const fileKey = fileKeys[idx];
+      if (!fileKey) {
+        alert("Cannot determine which file to replace.");
+        return;
+      }
+      loadingMsg.textContent = "Uploading...";
+      loadingMsg.style.display = "block";
+      // Upload the file to Firebase Storage
+      const storageRef = firebase.storage().ref(`${folder}/${fileKey}`);
+      storageRef.put(file).then(snapshot => {
+        return storageRef.getDownloadURL();
+      }).then(url => {
+        // Immediately update the UI
+        const slides = slideshowDiv.querySelectorAll('.slide-img');
+        slides[idx].src = url;
+        imgUrls[idx] = url;
+        loadingMsg.style.display = "none";
+        alert("Image replaced successfully.");
+      }).catch(err => {
+        loadingMsg.style.display = "none";
+        alert("Failed to replace image: " + err.message);
+      });
+    }
+
+    // Optional: advance on click
+    slideshowDiv.addEventListener('click', function(e) {
+      if (e.target.classList.contains('replace-btn') || e.target.classList.contains('file-input')) return;
+      const slides = slideshowDiv.querySelectorAll('.slide-img');
+      if (slides.length === 0) return;
+      slides[current].classList.remove('active');
+      current = (current + 1) % slides.length;
+      slides[current].classList.add('active');
+    });
+
+    window.addEventListener('DOMContentLoaded', startSlideshow);
+  </script>
+</body>
+</html>
