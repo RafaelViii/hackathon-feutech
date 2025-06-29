@@ -16,12 +16,6 @@ import {getFirestore,
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
 import { initializeFirestore } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-const db = initializeFirestore(app, {
-  experimentalForceLongPolling: true,     // fixes local dev issues
-  useFetchStreams: false,                 // optional: fallback for older environments
-  host: "asia-east2-firestore.googleapis.com", // ✅ match your region!
-  ssl: true
-});
 
 
 // Firebase config
