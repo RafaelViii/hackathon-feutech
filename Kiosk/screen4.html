@@ -67,15 +67,36 @@
       position: fixed;
       left: 2vw;
       bottom: 2vh;
-      font-size: 4vw;
+      width: 3.2em;
+      height: 3.2em;
+      background: var(--backbuttons);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 16px #0002, 0 1.5px 5px #2196f330;
       cursor: pointer;
-      color: #333;
+      z-index: 10;
+      transition: box-shadow 0.15s, background 0.15s;
+      border: none;
+      outline: none;
+      padding: 0;
+    }
+    .back-chevron:hover {
+      background: #f0f5fa;
+      box-shadow: 0 4px 24px #2196f355;
+    }
+    .back-chevron .back-icon {
+      width: 2em;
+      height: 2em;
+      display: block;
     }
     @media (max-width: 768px) {
       .title { font-size: 8vw; }
       .input-field { font-size: 4vw; }
       .signup-button { font-size: 5vw; }
-      .back-chevron { font-size: 8vw; }
+      .back-chevron { width: 5em; height: 5em; }
+      .back-chevron .back-icon { width: 3.5em; height: 3.5em; }
     }
   </style>
   <!-- Firebase -->
@@ -116,7 +137,11 @@
     <input type="password" class="input-field" placeholder="Password" id="password" required>
     <button class="signup-button" id="signUp">Sign Up</button>
   </div>
-  <div class="back-chevron" id="backChevron">&#x2039;</div>
+  <div class="back-chevron" id="backChevron" aria-label="Go Back">
+    <svg class="back-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <polyline points="20,8 12,16 20,24" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
 
   <script>
     // only allow digits, max 11

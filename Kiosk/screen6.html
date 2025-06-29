@@ -51,27 +51,7 @@
       font-size: 2vw;
       box-sizing: border-box;
     }
-    .chevron {
-      position: fixed;
-      font-size: 4vw;
-      color: #333;
-      cursor: pointer;
-    }
-    .chevron-left {
-      left: 2vw;
-      bottom: 2vh;
-    }
-    .chevron-right {
-      right: 2vw;
-      bottom: 2vh;
-      transform: rotate(180deg);
-    }
-    @media (max-width: 768px) {
-      .title { font-size: 7vw; }
-      .input-label { font-size: 4vw; }
-      .input-field { font-size: 4vw; }
-      .chevron { font-size: 8vw; }
-    }
+    /* No need for .chevron or .chevron-left/right anymore */
   </style>
 </head>
 <body>
@@ -89,8 +69,18 @@
     </div>
   </div>
 
-  <div class="chevron chevron-left" id="backBtn">&#x2039;</div>
-  <div class="chevron chevron-right" id="nextBtn">&#x2039;</div>
+  <!-- Back Button (Bottom Left) -->
+  <div class="back-chevron" id="backBtn" aria-label="Go Back">
+    <svg class="back-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <polyline points="20,8 12,16 20,24" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <!-- Forward Button (Bottom Right) -->
+  <div class="forward-chevron" id="nextBtn" aria-label="Go Forward">
+    <svg class="forward-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <polyline points="12,8 20,16 12,24" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
 
  <script>
   // Prefill funding and purpose from localStorage

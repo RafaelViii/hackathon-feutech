@@ -69,19 +69,41 @@
       background: #5c6fba;
     }
 
-    .back {
-      position: absolute;
-      bottom: 30px;
-      left: 30px;
-      font-size: 40px;
+    .back-chevron {
+      position: fixed;
+      left: 2vw;
+      bottom: 2vh;
+      width: 3.2em;
+      height: 3.2em;
+      background: var(--backbuttons);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 16px #0002, 0 1.5px 5px #2196f330;
       cursor: pointer;
-      color: #333;
+      z-index: 10;
+      transition: box-shadow 0.15s, background 0.15s;
+      border: none;
+      outline: none;
+      padding: 0;
+    }
+    .back-chevron:hover {
+      background: #f0f5fa;
+      box-shadow: 0 4px 24px #2196f355;
+    }
+    .back-chevron .back-icon {
+      width: 2em;
+      height: 2em;
+      display: block;
     }
 
     @media(max-width: 768px) {
       h1 { font-size: 32px; }
       input { font-size: 18px; }
       .login-button { font-size: 18px; padding: 15px 40px; }
+      .back-chevron { width: 5em; height: 5em; }
+      .back-chevron .back-icon { width: 3.5em; height: 3.5em; }
     }
   </style>
   <!-- Firebase -->
@@ -111,7 +133,11 @@
     <button class="login-button" id="loginButton">Log In</button>
   </div>
 
-  <div class="back" id="backButton">&#x2039;</div>
+  <div class="back-chevron" id="backButton" aria-label="Go Back">
+    <svg class="back-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <polyline points="20,8 12,16 20,24" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
 
   <script>
     document.getElementById("loginButton").addEventListener("click", function() {
@@ -144,7 +170,7 @@
           alert("✅ Password reset email sent!");
         })
         .catch(error => {
-          alert("❌ " + e("Invalid Credentials, Please login again"));
+          alert("❌ " + ("Invalid Credentials, Please login again"));
         });
     });
 
