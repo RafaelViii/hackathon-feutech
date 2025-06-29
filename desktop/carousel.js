@@ -39,6 +39,13 @@ function renderCarousel() {
     span.className = 'carousel-img-label';
     span.textContent = item.label;
     div.appendChild(span);
+
+    // Add event listeners for hover/focus (for accessibility)
+    div.addEventListener('mouseenter', () => div.classList.add('active'));
+    div.addEventListener('mouseleave', () => div.classList.remove('active'));
+    div.addEventListener('focus', () => div.classList.add('active'));
+    div.addEventListener('blur', () => div.classList.remove('active'));
+
     carousel.appendChild(div);
   }
 }
@@ -68,4 +75,25 @@ async function loadProductsForCarousel() {
 window.addEventListener('DOMContentLoaded', async () => {
   await loadProductsForCarousel();
   setInterval(nextCarousel, 5000);
+
+  // Proximity highlight logic
+  document.addEventListener('mousemove', function(e) {
+    const cards = document.querySelectorAll('.carousel-img-box');
+    cards.forEach(card => card.classList.remove('nearby'));
+    let minDist = Infinity;
+    let nearest = null;
+    cards.forEach(card => {
+      const rect = card.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dist = Math.hypot(cx - e.clientX, cy - e.clientY);
+      if (dist < 120) { // adjust proximity as desired
+        card.classList.add('nearby');
+      }
+      if (dist < minDist) {
+        minDist = dist;
+        nearest = card;
+      }
+    });
+  });
 });

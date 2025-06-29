@@ -8,11 +8,8 @@
   <link rel="stylesheet" href="imagecarousel.css">
   <link rel="stylesheet" href="video.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200&display=swap" rel="stylesheet">
- <script type="module" src="carousel.js"></script>
-
-
+  <script type="module" src="carousel.js"></script>
 </head>
-
 <body>
   <nav>
     <div class="navbar">
@@ -34,15 +31,16 @@
           </div>
         </li>
       </ul>
-
       <!-- Center -->
       <div class="logo">Scale Up</div>
-
       <!-- Right -->
       <div class="nav-side nav-right">
         <a href="#" class="get-started-btn">Get Started</a>
+        <button class="mode-switch" id="modeSwitch" aria-label="Switch light/dark mode">
+          <span class="icon" id="modeSwitchIcon">🌙</span>
+          <span id="modeSwitchText">Dark Mode</span>
+        </button>
       </div>
-      
       <!-- Hamburger for mobile -->
       <div class="hamburger" id="hamburger" aria-label="Open menu" tabindex="0">
         <span></span>
@@ -69,165 +67,227 @@
           </div>
         </li>
         <li><a href="#" class="get-started-btn">Get Started</a></li>
+        <li>
+          <button class="mode-switch" id="modeSwitchMobile" aria-label="Switch light/dark mode">
+            <span class="icon" id="modeSwitchIconMobile">🌙</span>
+            <span id="modeSwitchTextMobile">Dark Mode</span>
+          </button>
+        </li>
       </ul>
     </div>
   </nav>
 
-    <div class="hero-bg">
-     <div class="hero-center">
-        <h1>
+  <div class="hero-bg">
+    <div class="hero-center">
+      <h1>
         Turning Filipino<br>
         Small Dreams into <br>
         Global Brands
-        </h1>
+      </h1>
     </div>
-    </div>
-
-    <div class="popular-wrapper">
-    <div class="popular-inner">
-        <p>Popular now</p>
-    </div>
-    </div>
-
-   <!-- Carousel Section -->
-<div class="carousel-container">
-  <div class="carousel-images" id="carousel-images">
-    <!-- JS will inject product boxes here -->
   </div>
-</div>
 
-
-    <!-- Video Player Section -->
-    <div class="video-wrapper">
-    <video
-        id="main-video"
-        src="https://www.w3schools.com/html/mov_bbb.mp4"
-        width="1190"
-        height="360"
-        loop
-        autoplay
-        muted
-        playsinline
-        style="pointer-events: none;"
-        tabindex="-1"
-    ></video>
+  <div class="popular-wrapper">
+    <div class="popular-inner">
+      <p>Popular now</p>
     </div>
+  </div>
 
-    <!-- Clickable Text Section (displayed horizontally) -->
-    <div class="center-links">
+  <!-- Carousel Section -->
+  <div class="carousel-container">
+    <div class="carousel-images" id="carousel-images">
+      <!-- JS will inject product boxes here -->
+    </div>
+  </div>
+
+  <!-- Video Player Section -->
+  <div class="video-wrapper">
+    <video
+      id="main-video"
+      src="https://www.w3schools.com/html/mov_bbb.mp4"
+      width="1190"
+      height="360"
+      loop
+      autoplay
+      muted
+      playsinline
+      style="pointer-events: none;"
+      tabindex="-1"
+    ></video>
+  </div>
+
+  <!-- Clickable Text Section (displayed horizontally) -->
+  <div class="center-links">
     <a class="center-link" href="">I’m a small Business Owner</a>
     <a class="center-link" href="">I want to Invest or Donate</a>
     <a class="center-link" href="">How it Works</a>
-    </div>
+  </div>
 
-     <!-- The dual kiosk text goes here -->
-    <div class="dual-kiosk-text">
-        How our dual kiosk <br>
-        system works
-    </div>
-    </div>
 
-    <!-- Place this after your .dual-kiosk-text block -->
+
+  <!-- Place this after your .dual-kiosk-text block -->
+  <div class="seamless-row">
+    <div class="seamless-text animated-text" id="kioskSteps">
+      <h2 class="kiosk-title">How Our Kiosk System Works</h2>
+      <ol class="kiosk-steps">
+        <li><span>Register</span></li>
+        <li><span>Submit your samples</span></li>
+        <li><span>Check your analytics on the QR</span></li>
+        <li><span>Wait for Investor or Donation</span></li>
+        <li><span>And Last, Enjoy all the benefits!</span></li>
+      </ol>
+    </div>
     <div class="seamless-image-stack">
-    <img src="image/1.png" alt="Kiosk Image 1" class="seamless-img">
-    <img src="image/2.png" alt="Kiosk Image 2" class="seamless-img">
-    <img src="image/3.png" alt="Kiosk Image 3" class="seamless-img">
+      <img src="image/picture.webp" alt="Kiosk Image" class="seamless-img original-img">
     </div>
+  </div>
 
-
-
-    <footer class="hackathon-footer">
+  <footer class="hackathon-footer">
     <div class="footer-content">
-        <div class="footer-logo-section">
+      <div class="footer-logo-section">
         <!-- Replace with your logo if desired -->
         <span class="footer-logo">Hackathon Feu Tech</span>
-        </div>
-        <div class="footer-links">
+      </div>
+      <div class="footer-links">
         <a href="#" class="footer-link">About</a>
         <a href="#" class="footer-link">Rules</a>
         <a href="#" class="footer-link">Schedule</a>
         <a href="#" class="footer-link">Contact</a>
-        </div>
-        <div class="footer-copy">
+      </div>
+      <div class="footer-copy">
         &copy; 2025 Hackathon.  |  Sabog ang Script.
-        </div>
+      </div>
     </div>
-    </footer>
+  </footer>
 
-
-<script src="carousel.js"></script>
-  <script src="navbar.js">
+  <script src="carousel.js"></script>
+  <script src="navbar.js"></script>
+  <script>
     // Hamburger menu toggle
     const hamburger = document.getElementById('hamburger');
     const mobileNav = document.getElementById('mobileNav');
-
     hamburger.addEventListener('click', () => {
-    mobileNav.classList.toggle('open');
+      mobileNav.classList.toggle('open');
     });
 
     // Dropdown for mobile
     document.querySelectorAll('.mobile-drop-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        // Close other dropdowns
+      btn.addEventListener('click', function() {
         document.querySelectorAll('.mobile-drop-btn').forEach(b => {
-        if (b !== btn) b.classList.remove('open');
+          if (b !== btn) b.classList.remove('open');
         });
-        // Toggle this one
         btn.classList.toggle('open');
-        // Show/hide dropdown
         const dropdown = btn.nextElementSibling;
         if (dropdown) {
-        dropdown.style.display = btn.classList.contains('open') ? 'flex' : 'none';
+          dropdown.style.display = btn.classList.contains('open') ? 'flex' : 'none';
         }
-    });
+      });
     });
 
     // For desktop: auto-close dropbar when mouse leaves boundary
     document.querySelectorAll('.dropdown-parent').forEach(link => {
-    const dropdown = link.querySelector('.dropdown');
-    if (dropdown) {
+      const dropdown = link.querySelector('.dropdown');
+      if (dropdown) {
         let timeoutId;
         link.addEventListener('mouseenter', () => {
-        clearTimeout(timeoutId);
-        dropdown.style.display = 'flex';
+          clearTimeout(timeoutId);
+          dropdown.style.display = 'flex';
         });
         link.addEventListener('mouseleave', () => {
-        timeoutId = setTimeout(() => {
+          timeoutId = setTimeout(() => {
             dropdown.style.display = 'none';
-        }, 120);
+          }, 120);
         });
         link.addEventListener('focusin', () => {
-        dropdown.style.display = 'flex';
+          dropdown.style.display = 'flex';
         });
         link.addEventListener('focusout', () => {
-        setTimeout(() => {
+          setTimeout(() => {
             if (!link.contains(document.activeElement)) {
-            dropdown.style.display = 'none';
+              dropdown.style.display = 'none';
             }
-        }, 100);
+          }, 100);
         });
-    }
+      }
     });
 
     // Prevent video player from overlapping other content
     document.addEventListener("DOMContentLoaded", function () {
-    const video = document.getElementById('main-video');
-    const wrapper = video?.parentElement;
-    if (!video || !wrapper) return;
+      const video = document.getElementById('main-video');
+      const wrapper = video?.parentElement;
+      if (!video || !wrapper) return;
 
-    function adjustVideo() {
-        // Get the available width for the video section
+      function adjustVideo() {
         const viewportWidth = window.innerWidth;
-        // If there isn't enough space for 1440px, scale down the video
         if (viewportWidth < 1440) {
-        video.style.width = "100vw";
+          video.style.width = "100vw";
         } else {
-        video.style.width = "1440px";
+          video.style.width = "1440px";
         }
-    }
+      }
 
-    adjustVideo();
-    window.addEventListener('resize', adjustVideo);
+      adjustVideo();
+      window.addEventListener('resize', adjustVideo);
+    });
+
+    // Light/Dark Mode Switch (Desktop and Mobile)
+    function setMode(light) {
+      if (light) {
+        document.body.classList.add('lightmode');
+        document.getElementById('modeSwitch').classList.add('light');
+        document.getElementById('modeSwitchIcon').textContent = '☀️';
+        document.getElementById('modeSwitchText').textContent = 'Light Mode';
+        document.getElementById('modeSwitchMobile').classList.add('light');
+        document.getElementById('modeSwitchIconMobile').textContent = '☀️';
+        document.getElementById('modeSwitchTextMobile').textContent = 'Light Mode';
+      } else {
+        document.body.classList.remove('lightmode');
+        document.getElementById('modeSwitch').classList.remove('light');
+        document.getElementById('modeSwitchIcon').textContent = '🌙';
+        document.getElementById('modeSwitchText').textContent = 'Dark Mode';
+        document.getElementById('modeSwitchMobile').classList.remove('light');
+        document.getElementById('modeSwitchIconMobile').textContent = '🌙';
+        document.getElementById('modeSwitchTextMobile').textContent = 'Dark Mode';
+      }
+    }
+    function getTheme() {
+      return localStorage.getItem('theme') || 'dark';
+    }
+    function saveTheme(theme) {
+      localStorage.setItem('theme', theme);
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set initial mode
+      setMode(getTheme() === 'light');
+      // Desktop switch
+      document.getElementById('modeSwitch').addEventListener('click', () => {
+        const isLight = document.body.classList.contains('lightmode');
+        setMode(!isLight);
+        saveTheme(!isLight ? 'light' : 'dark');
+      });
+      // Mobile switch
+      document.getElementById('modeSwitchMobile').addEventListener('click', () => {
+        const isLight = document.body.classList.contains('lightmode');
+        setMode(!isLight);
+        saveTheme(!isLight ? 'light' : 'dark');
+      });
+    });
+
+    // Kiosk steps scroll animation
+    document.addEventListener('DOMContentLoaded', function () {
+      const kioskSteps = document.getElementById('kioskSteps');
+      if (!kioskSteps) return;
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            kioskSteps.classList.add('visible');
+          } else {
+            kioskSteps.classList.remove('visible');
+          }
+        },
+        { threshold: 0.3 }
+      );
+      observer.observe(kioskSteps);
     });
   </script>
 </body>
