@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Door Notification Log</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(120deg, #e9f5db 0%, #a7c7e7 50%, #f7cac9 100%);
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .back-btn {
+      position: absolute;
+      top: 25px;
+      left: 25px;
+      background: #fff;
+      color: #483D8B;
+      border: 2px solid #483D8B;
+      border-radius: 8px;
+      padding: 0.5rem 1.1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 0.4em;
+      box-shadow: 0 2px 10px #483d8b19;
+    }
+    .back-btn:hover {
+      background: #483D8B;
+      color: #fff;
+    }
+    .back-arrow {
+      font-size: 1.15em;
+      font-weight: bold;
+      margin-right: 0.3em;
+    }
+    h1 {
+      margin-top: 2rem;
+      color: #483D8B;
+      text-align: center;
+    }
+    .count-container {
+      margin: 1.5rem 0 1rem 0;
+      font-size: 1.2rem;
+      color: #222;
+      background: #fff8;
+      padding: 1rem 2.5rem;
+      border-radius: 18px;
+      box-shadow: 0 4px 18px #483d8b22;
+      display: flex;
+      gap: 2.5rem;
+      font-weight: 700;
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      margin-top: 1rem;
+    }
+    .controls input[type="date"] {
+      padding: 0.4rem 0.9rem;
+      font-size: 1rem;
+      border-radius: 7px;
+      border: 1px solid #999;
+      background: #f4f8fb;
+      font-family: inherit;
+    }
+    .controls button {
+      background-color: #b22222;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 0.5rem 1.1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .controls button:hover {
+      background-color: #a01717;
+    }
+    table {
+      width: 100%;
+      max-width: 700px;
+      margin-top: 2rem;
+      background: #fff;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+      border-collapse: collapse;
+      font-size: 1rem;
+    }
+    th, td {
+      padding: 0.9rem 1.2rem;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+    th {
+      background: #87CEEB;
+      color: #fff;
+      font-weight: 700;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .open {
+      color: #008000;
+      font-weight: 700;
+    }
+    .close {
+      color: #B22222;
+      font-weight: 700;
+    }
+    .summary {
+      margin: 1rem 0 0.5rem 0;
+      font-size: 1.03rem;
+      color: #222;
+      background: #e5f6fd;
+      padding: 0.7rem 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px #87ceeb22;
+      display: inline-block;
+    }
+    @media (max-width: 700px) {
+      table, .count-container, .summary {
+        font-size: 0.9rem;
+        padding: 0.7rem 0.2rem;
+      }
+      table { max-width: 95vw; }
+      th, td { padding: 0.5rem 0.5rem; }
+      .count-container { gap: 1rem; }
+      .back-btn {
+        top: 10px;
+        left: 10px;
+        font-size: 0.98rem;
+        padding: 0.4rem 0.9rem;
+      }
+    }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+  <button class="back-btn" onclick="window.location.href='adminhome.html'">
+    <span class="back-arrow">&#8592;</span>
+    Back
+  </button>
+  <h1>Door Open/Close Notifications</h1>
+  <div class="count-container">
+    <span>Opened: <span id="openCount">0</span></span>
+    <span>Closed: <span id="closeCount">0</span></span>
+  </div>
+  <div class="controls">
+    <label for="datePicker"><b>Show logs for date:</b></label>
+    <input type="date" id="datePicker"/>
+    <button id="clearLogBtn" title="Delete all logs">Clear Logs</button>
+  </div>
+  <div class="summary" id="summary"></div>
+  <table>
+    <thead>
+      <tr>
+        <th>Event</th>
+        <th>Timestamp</th>
+        <th>Person</th>
+      </tr>
+    </thead>
+    <tbody id="logBody"></tbody>
+  </table>
+
+  <script>
+    // Firebase config (reuse same as your other pages)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZsj-cL_T_BuLtAz5bkqsw-edZXnumwe0",
+      authDomain: "iot-web-58054.firebaseapp.com",
+      databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "iot-web-58054",
+      storageBucket: "iot-web-58054.appspot.com",
+      messagingSenderId: "949884902967",
+      appId: "1:949884902967:web:6e7f78c7cd0fa1484629b2",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const logBody = document.getElementById("logBody");
+    const openCountSpan = document.getElementById("openCount");
+    const closeCountSpan = document.getElementById("closeCount");
+    const datePicker = document.getElementById("datePicker");
+    const summary = document.getElementById("summary");
+    const clearLogBtn = document.getElementById("clearLogBtn");
+
+    // --- Calculate offset based on your actual time and ESP time ---
+    const espDate = new Date("2025-06-28T07:31:37+08:00"); // ESP log time
+    const realDate = new Date("2025-06-29T04:00:00+08:00"); // Your actual time
+
+    const espTS = espDate.getTime();
+    const realTS = realDate.getTime();
+
+    // --- Use this offset in the display function ---
+    const TIME_OFFSET = 1747965290099;
+
+    // --- [ADDED] Calculate new offset for new reference points ---
+    const newEspDate = new Date("2025-06-29T04:11:47+08:00");
+    const newRealDate = new Date("2025-06-29T04:11:00+08:00");
+
+    const newEspTS = newEspDate.getTime();
+    const newRealTS = newRealDate.getTime();
+    const NEW_TIME_OFFSET = newRealTS - newEspTS;
+
+    const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+    function formatTime(ts) {
+      let offset = TIME_OFFSET;
+      if (Number(ts) >= newEspTS) {
+        offset = NEW_TIME_OFFSET;
+      }
+      const adjusted = new Date(Number(ts) + offset + ONE_DAY_MS);
+      return adjusted.toLocaleString("en-PH", { timeZone: "Asia/Manila" });
+    }
+
+    // Helper: Map fingerprint IDs to person names
+    function getPersonName(log) {
+      // Try both possible fields, as number or string
+      let fid = log.fpid !== undefined ? log.fpid : log.fingerprintId;
+      if (fid === undefined || fid === null || fid === "") return "";
+      if (typeof fid === "string" && fid.match(/^\d+$/)) fid = parseInt(fid, 10);
+      if (fid === 2) return "Ariel";
+      if (fid === 1) return "Rafael";
+      return fid !== undefined && fid !== "" ? "Unknown (" + fid + ")" : "";
+    }
+
+    let allLogs = [];
+
+    db.ref("doorLogs").on("value", (snapshot) => {
+      let openCount = 0;
+      let closeCount = 0;
+      let logs = [];
+      snapshot.forEach(child => {
+        const data = child.val();
+        if (!data || !data.event || !data.timestamp) return;
+        if (data.event === "open") openCount++;
+        if (data.event === "close") closeCount++;
+        logs.push(data);
+      });
+      logs.sort((a, b) => b.timestamp - a.timestamp);
+      allLogs = logs;
+
+      openCountSpan.textContent = openCount;
+      closeCountSpan.textContent = closeCount;
+
+      renderLogs();
+    });
+
+    function renderLogs() {
+      let logs = allLogs.slice();
+      let selectedDate = datePicker.value;
+      let filteredLogs = logs;
+      if (selectedDate) {
+        filteredLogs = logs.filter(log => {
+          let offset = (Number(log.timestamp) >= newEspTS) ? NEW_TIME_OFFSET : TIME_OFFSET;
+          let d = new Date(Number(log.timestamp) + offset + ONE_DAY_MS);
+          let logDate = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+          return logDate === selectedDate;
+        });
+      }
+
+      let openCount = 0, closeCount = 0;
+      filteredLogs.forEach(log => {
+        if (log.event === "open") openCount++;
+        if (log.event === "close") closeCount++;
+      });
+
+      if (selectedDate) {
+        let dt = new Date(selectedDate + "T00:00:00+08:00");
+        let dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        let day = dayNames[dt.getDay()];
+        summary.innerHTML = `On <strong>${day}, ${selectedDate}</strong>: <span style="color:#008000">Opened: ${openCount}</span>, <span style="color:#B22222">Closed: ${closeCount}</span>`;
+      } else {
+        summary.innerHTML = "";
+      }
+
+      logBody.innerHTML = filteredLogs.map(log => `
+        <tr>
+          <td class="${log.event}">${log.event.charAt(0).toUpperCase() + log.event.slice(1)}</td>
+          <td>${formatTime(log.timestamp)}</td>
+          <td>${getPersonName(log)}</td>
+        </tr>
+      `).join('');
+    }
+
+    datePicker.addEventListener('change', renderLogs);
+
+    clearLogBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to delete ALL logs?')) {
+        db.ref("doorLogs").remove();
+      }
+    });
+  </script>
+</body>
+</html>
