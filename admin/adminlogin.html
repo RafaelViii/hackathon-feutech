@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  
   <meta charset="UTF-8">
   <title>Admin Login</title>
- 
   <style>
     body {
       background-color: #87CEEB;
@@ -26,17 +24,6 @@
       margin-bottom: 1rem;
       color: #483D8B;
     }
-
-  .register-container {
-      background: white;
-      padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      text-align: center;
-      margin-left: 5rem;
-    }
-   
-
     input {
       display: block;
       width: 100%;
@@ -64,29 +51,38 @@
       display: none;
     }
   </style>
-   <script type="module" src="angasan.js"></script>
-
 </head>
 <body>
-
-  
   <div class="login-container">
     <h2>Admin Login</h2>
-    <input id="login-username" placeholder="Username" />
-    <input id="login-password" type="password" />
+    <input id="login-username" placeholder="Username" autocomplete="username" />
+    <input id="login-password" type="password" placeholder="Password" autocomplete="current-password" />
     <button onclick="loginUser()">Login</button>
     <div class="error" id="errorMsg">Invalid credentials</div>
   </div>
 
-    
-  <div class="register-container">
-<input id="reg-username" placeholder="Username" />
-<input id="reg-password" type="password" placeholder="Password" />
-<button onclick="registerUser()">Register</button>
-  </div>
+  <script>
+    function loginUser() {
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+      const errorMsg = document.getElementById('errorMsg');
 
-
-  
-
+      if (username === 'admin' && password === 'admin') {
+        errorMsg.style.display = 'none';
+        // Redirect or do something on successful login
+        alert('Login successful!');
+        // window.location.href = "admin-dashboard.html"; // Uncomment to redirect
+        window.location.href = "adminhome.html";
+      } else {
+        errorMsg.style.display = 'block';
+      }
+    }
+    // Optional: allow Enter key to submit
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        loginUser();
+      }
+    });
+  </script>
 </body>
 </html>
