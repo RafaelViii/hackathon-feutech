@@ -1,25 +1,47 @@
-// Import the SDKs
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+import {getFirestore,
+  initializeFirestore,
+  collection,
+  doc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  getDoc,
+  addDoc,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
+import { initializeFirestore } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+
 
 // Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyBPbtdqBMd2uK4duSICkOd7vshfVKHL0sQ",
-  authDomain: "scaleup2.firebaseapp.com",
-  projectId: "scaleup2",
-  storageBucket: "scaleup2.firebasestorage.app",
-  messagingSenderId: "545731372745",
-  appId: "1:545731372745:web:4dc02ef445fa8057c9cf18",
-  measurementId: "G-MVQME30YMJ"
-};
-
+  apiKey: "AIzaSyDZsj-cL_T_BuLtAz5bkqsw-edZXnumwe0",
+  authDomain: "iot-web-58054.firebaseapp.com",
+  databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "iot-web-58054",
+  storageBucket: "iot-web-58054.firebasestorage.app",
+  messagingSenderId: "949884902967",
+  appId: "1:949884902967:web:3035acaed4bc89504629b2",
+  measurementId: "G-LES0M8CZH0"
+}
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
-const db = getFirestore(app);
+
+// ✅ Region-safe Firestore
+const db = initializeFirestore(app, {
+  host: "asia-east2-firestore.googleapis.com",
+  ssl: true,
+  experimentalForceLongPolling: true
+});
+const dbRef = collection(db, "database");
+const storage = getStorage(app);
 
 // REGISTER function
 window.registerUser = async function () {
@@ -31,7 +53,6 @@ window.registerUser = async function () {
     const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
     const user = userCredential.user;
 
-    // Save username to Firestore
     await setDoc(doc(db, "users", user.uid), {
       username,
       createdAt: new Date()
@@ -39,7 +60,6 @@ window.registerUser = async function () {
 
     alert("User registered: " + username);
   } catch (error) {
-    console.error("Registration Error:", error.message);
     alert("Registration failed: " + error.message);
   }
 };
@@ -52,12 +72,45 @@ window.loginUser = async function () {
 
   try {
     const userCredential = await signInWithEmailAndPassword(auth, fakeEmail, password);
-    const user = userCredential.user;
     alert("Login successful: " + username);
     window.location.href = "adminhome.html";
-
   } catch (error) {
-    console.error("Login Error:", error.message);
     alert("Login failed: " + error.message);
+  }
+};
+
+window.createProduct = async () => {
+  const name = document.getElementById("productname").value;
+  const desc = document.getElementById("proddesc").value;
+  const price = Number(document.getElementById("prodprice").value);
+  const id = Number(document.getElementById("productid").value);
+  const user = document.getElementById("productuser").value;
+  const file = document.getElementById("prodimgfile").files[0];
+
+  if (!name || !file) return alert("⛔️ Name and Image are required!");
+
+  try {
+    const imgRef = ref(storage, `product_images/${Date.now()}_${file.name}`);
+    const snap = await uploadBytes(imgRef, file);
+    const url = await getDownloadURL(snap.ref);
+
+    // 🔍 Debug log
+    console.log("Uploading product to Firestore with image URL:", url);
+
+    await addDoc(dbRef, {
+      prodname: name,
+      proddesc: desc,
+      prodprice: price,
+      productid: id,
+      productuser: user,
+      prodimg: url
+    });
+
+    alert("✅ Product created!");
+    document.querySelectorAll("input").forEach(i => i.value = "");
+    document.getElementById("prodimgfile").value = "";
+  } catch (error) {
+    console.error("❌ Error saving to Firestore:", error);
+    alert("❌ Failed to create product: " + error.message);
   }
 };
