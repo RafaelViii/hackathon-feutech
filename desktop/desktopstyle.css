@@ -11,8 +11,8 @@
   --color-text: #000000;
   --color-hover: #fff3;
   --color-bg: #f5f6fa;
-  --color-dropdown-bg: #1a2942;
-  --color-dropdown-hover: #fa8231;
+  --color-dropdown-bg: #8a8888;
+  --color-dropdown-hover: #c1c1c1;
   --color-shadow: #0002;
   --color-getstarted-bg: #e23c3c;
   --color-getstarted-hover: #a81f1f;
@@ -49,8 +49,8 @@
   --navbar-max-width: 1200px;
 
   /* Border radius */
-  --radius-nav: 5rem;
-  --radius-dropdown: 6px;
+  --radius-nav: 2px;
+  --radius-dropdown: 2px;
   --radius-btn: 24px;
 
   /* Hamburger icon */
