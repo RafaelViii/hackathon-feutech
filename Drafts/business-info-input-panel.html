@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tell Us About Your Business</title>
+  <link rel="stylesheet" href="business-info-input-panel-style/business-info-input-panel-style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main class="business-info-center-main">
+    <div class="business-info-card wide">
+      <div class="business-info-form-header">
+        <img class="business-info-logo" src="https://via.placeholder.com/36x36?text=Logo" alt="Logo Placeholder" />
+        <span class="business-info-form-title">Tell Us About Your Business</span>
+      </div>
+      <form class="business-info-form" autocomplete="off" id="businessInfoForm">
+        <label for="businessName" class="business-info-label">Business Name</label>
+        <input type="text" id="businessName" name="businessName" class="business-info-input" placeholder="e.g. Blue Ocean Cafe" required>
+
+        <label for="product" class="business-info-label">Product</label>
+        <input type="text" id="product" name="product" class="business-info-input" placeholder="e.g. Organic Coffee" required>
+
+        <label for="tagline" class="business-info-label">Tagline</label>
+        <input type="text" id="tagline" name="tagline" class="business-info-input" placeholder="e.g. Freshness in Every Cup" required>
+
+        <button type="submit" class="business-info-btn-primary">Proceed</button>
+      </form>
+    </div>
+  </main>
+  <script>
+    // Prevent proceed unless all required are filled
+    document.getElementById('businessInfoForm').addEventListener('submit', function(e) {
+      const businessName = document.getElementById('businessName').value.trim();
+      const product = document.getElementById('product').value.trim();
+      const tagline = document.getElementById('tagline').value.trim();
+
+      if (!businessName || !product || !tagline) {
+        e.preventDefault();
+        if (!businessName) {
+          document.getElementById('businessName').focus();
+        } else if (!product) {
+          document.getElementById('product').focus();
+        } else if (!tagline) {
+          document.getElementById('tagline').focus();
+        }
+        return false;
+      }
+    });
+  </script>
+</body>
+</html>
