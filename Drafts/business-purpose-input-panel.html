@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Funding Goal & Usage</title>
+  <link rel="stylesheet" href="business-info-input-panel-style/business-info-input-panel-style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Modal styles (inlined for clarity, move to CSS file if desired) */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      z-index: 200;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(44, 56, 100, 0.28);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-backdrop.active { display: flex; }
+    .modal-popup {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 32px #22284a22;
+      max-width: 340px;
+      width: 90vw;
+      max-height: 68vh;
+      padding: 28px 18px 22px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      animation: popupIn 0.20s cubic-bezier(.6,.2,.3,1);
+      overflow: hidden;
+    }
+    @keyframes popupIn {
+      from { opacity: 0; transform: scale(0.93);}
+      to   { opacity: 1; transform: scale(1);}
+    }
+    .modal-popup-title {
+      font-weight: 800;
+      font-size: 1.13rem;
+      text-align: left;
+      margin-bottom: 16px;
+      color: #2B1F6F;
+    }
+    .modal-options-list {
+      overflow-y: auto;
+      max-height: 240px;
+      padding: 0;
+      margin: 0 0 8px 0;
+      list-style: none;
+      box-shadow: none;
+    }
+    .modal-option-item {
+      padding: 11px 10px;
+      border-radius: 8px;
+      margin-bottom: 7px;
+      background: #f6f8fa;
+      font-size: 1.07rem;
+      color: #2B1F6F;
+      cursor: pointer;
+      transition: background 0.14s;
+      border: 1.2px solid transparent;
+    }
+    .modal-option-item.selected, .modal-option-item:hover {
+      background: #e7f6f4;
+      border-color: #46bfae;
+    }
+    .modal-popup-close {
+      background: none;
+      border: none;
+      color: #2B1F6F;
+      font-size: 1.23rem;
+      font-weight: bold;
+      cursor: pointer;
+      align-self: flex-end;
+      margin-bottom: 8px;
+      margin-right: 4px;
+      transition: color 0.2s;
+    }
+    .modal-popup-close:hover {
+      color: #e76f51;
+    }
+    .form-row {
+      margin-bottom: 18px;
+      width: 100%;
+    }
+    .readonly-input {
+      background: var(--input-bg);
+      color: var(--input-text);
+      border: 1.4px solid var(--input-border);
+      border-radius: 11px;
+      padding: 15px 14px;
+      width: 100%;
+      font-size: 1.11rem;
+      font-family: inherit;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+    .readonly-input:focus, .readonly-input.active {
+      border-color: var(--input-border-focus);
+      box-shadow: 0 0 0 2px #46bfae33;
+    }
+  </style>
+</head>
+<body>
+  <main class="business-info-center-main">
+    <div class="business-info-card">
+      <div class="business-info-form-header">
+        <img class="business-info-logo" src="https://via.placeholder.com/36x36?text=Logo" alt="Logo Placeholder" />
+        <span class="business-info-form-title">Funding Details</span>
+      </div>
+      <form class="business-info-form" autocomplete="off" id="fundingInfoForm">
+        <div class="form-row">
+          <label for="fundingGoal" class="business-info-label">Funding Goal</label>
+          <input
+            type="number"
+            id="fundingGoal"
+            name="fundingGoal"
+            class="business-info-input"
+            placeholder="Amount needed (numbers only)"
+            min="1"
+            step="1"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            required
+          >
+        </div>
+        <div class="form-row">
+          <label for="fundUsageInput" class="business-info-label">How will the funds be used?</label>
+          <input
+            type="text"
+            id="fundUsageInput"
+            name="fundUsage"
+            class="readonly-input"
+            placeholder="Select how funds will be used"
+            readonly
+            required
+            tabindex="0"
+            autocomplete="off"
+          >
+        </div>
+        <button type="submit" class="business-info-btn-primary">Proceed</button>
+      </form>
+    </div>
+  </main>
+
+  <!-- Modal Popup -->
+  <div class="modal-backdrop" id="fundUsageModalBackdrop">
+    <div class="modal-popup" role="dialog" aria-modal="true" aria-labelledby="fundUsageModalTitle">
+      <button class="modal-popup-close" id="closeFundUsageModal" aria-label="Close">&times;</button>
+      <div class="modal-popup-title" id="fundUsageModalTitle">Select How Funds Will Be Used</div>
+      <ul class="modal-options-list" id="fundUsageOptions">
+        <li class="modal-option-item">Product development</li>
+        <li class="modal-option-item">Marketing & advertising</li>
+        <li class="modal-option-item">Hiring & team growth</li>
+        <li class="modal-option-item">Inventory & supplies</li>
+        <li class="modal-option-item">Equipment purchase</li>
+        <li class="modal-option-item">Operational expenses</li>
+        <li class="modal-option-item">Research & innovation</li>
+        <li class="modal-option-item">Expansion & scaling</li>
+        <li class="modal-option-item">Other</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Only allow numbers for Funding Goal input
+    const fundingGoal = document.getElementById('fundingGoal');
+    fundingGoal.addEventListener('input', function(e) {
+      // Remove non-digits
+      this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // Modal logic for fund usage selection
+    const fundUsageInput = document.getElementById('fundUsageInput');
+    const modalBackdrop = document.getElementById('fundUsageModalBackdrop');
+    const closeModal = document.getElementById('closeFundUsageModal');
+    const optionsList = document.getElementById('fundUsageOptions');
+
+    function openModal() {
+      modalBackdrop.classList.add('active');
+      // Remove previous selection highlight
+      [...optionsList.children].forEach(li => li.classList.remove('selected'));
+      // Preselect if already chosen
+      if (fundUsageInput.value) {
+        [...optionsList.children].forEach(li => {
+          if (li.textContent === fundUsageInput.value) li.classList.add('selected');
+        });
+      }
+      optionsList.scrollTop = 0;
+      setTimeout(() => optionsList.focus(), 80);
+    }
+    function closeModalFunc() {
+      modalBackdrop.classList.remove('active');
+    }
+    fundUsageInput.addEventListener('click', openModal);
+    fundUsageInput.addEventListener('focus', openModal);
+    closeModal.addEventListener('click', closeModalFunc);
+    modalBackdrop.addEventListener('click', function(e) {
+      if (e.target === modalBackdrop) closeModalFunc();
+    });
+
+    // Option select
+    optionsList.addEventListener('click', function(e) {
+      if (e.target && e.target.classList.contains('modal-option-item')) {
+        fundUsageInput.value = e.target.textContent;
+        closeModalFunc();
+        fundUsageInput.classList.add('active');
+        fundUsageInput.blur();
+      }
+    });
+
+    // Handle esc key for modal
+    document.addEventListener('keydown', function(e) {
+      if (modalBackdrop.classList.contains('active') && e.key === "Escape") {
+        closeModalFunc();
+      }
+    });
+
+    // Prevent form submit unless both fields are filled
+    document.getElementById('fundingInfoForm').addEventListener('submit', function(e) {
+      if (!fundingGoal.value.trim() || !fundUsageInput.value.trim()) {
+        e.preventDefault();
+        if (!fundingGoal.value.trim()) {
+          fundingGoal.focus();
+        } else if (!fundUsageInput.value.trim()) {
+          fundUsageInput.focus();
+        }
+        return false;
+      }
+    });
+  </script>
+</body>
+</html>

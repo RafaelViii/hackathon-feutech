@@ -107,16 +107,11 @@ body {
   text-align: center;
 }
 
-/* GRADIENT TEXT FOR THE BIG HEADER */
 .bigtext-line {
   font: var(--font-big);
-  background: linear-gradient(135deg, #2B1F6F 0%, #232526 60%, #414345 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+  color: var(--color-bigtext);
   line-height: 1.1;
-  text-shadow: none;
+  text-shadow: 0 2.5px 10px rgba(44,56,100,0.09);
   text-transform: none;
   word-break: break-word;
   margin-bottom: 1.5vh;
