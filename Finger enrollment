@@ -7,10 +7,10 @@
 
 // ==== CONFIGURATION ====
 // WiFi credentials
-const char* ssid = "TP-Link_Extender 2.4GHz"; // change as needed
+const char* ssid = "TP-Link_Extender 2.4GHz";
 const char* password = "10241966bago";
 
-// Firebase
+// Firebase (optional, can comment out if not needed)
 const char* firebase_host = "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app";
 const char* firebase_secret = "Xp9h6kSDEZ0u64EOkajsCA6EVaMLs3w7hc9r0W75";
 
@@ -22,18 +22,15 @@ HardwareSerial mySerial(2);
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 WebServer server(80);
 
-// ==== User Info ====
 String userCodes[] = {"XO09821", "BX10192", "ZL99871", "QW55660", "TR47823"};
 String userNames[] = {"Rafael", "Ariel", "Unknown3", "Unknown4", "Unknown5"};
 
-// ==== Enrollment flag ====
 volatile bool enrolling = false;
 
 // ==== Time/NTP ====
 bool isTimeValid(time_t t) {
   return t > 1672531200; // 2023-01-01 00:00:00 GMT
 }
-
 void waitForNTP() {
   Serial.print("Waiting for NTP time sync");
   time_t now = time(nullptr);
@@ -57,25 +54,17 @@ void waitForNTP() {
 void sendLogToFirebase(const String& event, int id) {
   if (WiFi.status() == WL_CONNECTED) {
     time_t now = time(nullptr);
-    if (!isTimeValid(now)) {
-      Serial.println("ERROR: NTP time not valid. Skipping log.");
-      return;
-    }
+    if (!isTimeValid(now)) return;
     HTTPClient http;
     String url = String(firebase_host) + "/doorLogs.json?auth=" + firebase_secret;
     String person = (id >= 1 && id <= (int)(sizeof(userNames)/sizeof(userNames[0]))) ? userNames[id-1] : "";
     String payload = "{\"event\":\"" + event + "\",\"timestamp\":" + String((unsigned long)now * 1000) + ",\"fpid\":" + String(id) + ",\"person\":\"" + person + "\"}";
     http.begin(url);
     http.addHeader("Content-Type", "application/json");
-    int httpResponseCode = http.POST(payload);
-    Serial.print("Firebase doorLogs POST: ");
-    Serial.println(httpResponseCode);
+    http.POST(payload);
     http.end();
-  } else {
-    Serial.println("WiFi not connected. Cannot send log to Firebase.");
   }
 }
-
 void sendStatusToFirebase(const String& status) {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
@@ -83,12 +72,8 @@ void sendStatusToFirebase(const String& status) {
     String payload = "\"" + status + "\"";
     http.begin(url);
     http.addHeader("Content-Type", "application/json");
-    int httpResponseCode = http.PUT(payload);
-    Serial.print("Firebase doorStatus response: ");
-    Serial.println(httpResponseCode);
+    http.PUT(payload);
     http.end();
-  } else {
-    Serial.println("WiFi not connected. Cannot send status to Firebase.");
   }
 }
 
@@ -96,26 +81,32 @@ void sendStatusToFirebase(const String& status) {
 String doFingerprintEnroll(int id) {
   int p = -1;
   Serial.print("Enrolling to slot "); Serial.println(id);
+
+  // First scan
   unsigned long enrollTimeout = millis() + 15000;
   while (p != FINGERPRINT_OK) {
     p = finger.getImage();
-    if (millis() > enrollTimeout) return "Timeout waiting for finger (first scan)";
+    if (millis() > enrollTimeout) return "Timeout: Place your finger on the sensor for the first scan!";
     delay(50);
   }
   if (finger.image2Tz(1) != FINGERPRINT_OK) {
     return "Failed to convert image. Try again.";
   }
+
   Serial.println("Remove finger...");
   delay(2000);
+
+  // Wait for finger to be removed
   unsigned long removeTimeout = millis() + 10000;
   while (finger.getImage() != FINGERPRINT_NOFINGER) {
-    if (millis() > removeTimeout) return "Timeout waiting to remove finger";
+    if (millis() > removeTimeout) return "Timeout: Please remove your finger!";
     delay(50);
   }
+
   Serial.println("Place same finger again...");
   enrollTimeout = millis() + 15000;
   while (finger.getImage() != FINGERPRINT_OK) {
-    if (millis() > enrollTimeout) return "Timeout waiting for finger (second scan)";
+    if (millis() > enrollTimeout) return "Timeout: Place the same finger again for confirmation!";
     delay(50);
   }
   if (finger.image2Tz(2) != FINGERPRINT_OK) {
@@ -125,17 +116,17 @@ String doFingerprintEnroll(int id) {
     if (finger.storeModel(id) == FINGERPRINT_OK) {
       Serial.print("✅ Enrolled! ID #"); Serial.println(id);
       sendLogToFirebase("enroll", id);
-      return "Enrollment successful (ID #" + String(id) + ")";
+      return "Enrollment successful! Fingerprint stored in slot #" + String(id);
     } else {
-      return "❌ Failed to store fingerprint";
+      return "❌ Failed to store fingerprint. Try again.";
     }
   } else {
-    return "❌ Fingerprints did not match";
+    return "❌ Fingerprints did not match. Try again.";
   }
 }
 
 // ==== Web Server Endpoints ====
-// CORS for OPTIONS
+// CORS helper
 void handleOptions() {
   server.sendHeader("Access-Control-Allow-Origin", "*");
   server.sendHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -188,6 +179,22 @@ void handleEnroll() {
   server.send(200, "application/json", "{\"result\":\"" + result + "\"}");
 }
 
+// /enroll_instructions (gives simple instructions)
+void handleEnrollInstructions() {
+  server.sendHeader("Access-Control-Allow-Origin", "*");
+  server.sendHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  server.sendHeader("Access-Control-Allow-Headers", "Content-Type");
+  String msg = 
+    "1. Choose a free slot ID.\n"
+    "2. Press 'Enroll' and follow these steps:\n"
+    "   a. Place your finger on the sensor when prompted.\n"
+    "   b. Wait for scan, then remove your finger when asked.\n"
+    "   c. Place the same finger again as prompted.\n"
+    "   d. Wait for enrollment result message.\n"
+    "If you see an error, try again!";
+  server.send(200, "application/json", "{\"instructions\":\"" + msg + "\"}");
+}
+
 // ==== Setup ====
 void setup() {
   Serial.begin(115200);
@@ -225,6 +232,8 @@ void setup() {
   server.on("/free_slots", HTTP_OPTIONS, handleOptions);
   server.on("/enroll", HTTP_POST, handleEnroll);
   server.on("/enroll", HTTP_OPTIONS, handleOptions);
+  server.on("/enroll_instructions", HTTP_GET, handleEnrollInstructions);
+  server.on("/enroll_instructions", HTTP_OPTIONS, handleOptions);
 
   server.begin();
   Serial.println("HTTP server started!");
