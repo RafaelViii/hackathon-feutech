@@ -5,9 +5,11 @@
     --btn-padding-v: 12px;
     --btn-padding-h: 10px;
     --content-max-width: 97vw;
-    --main-gap: 19px;
+    --main-gap: 17px;
+    --card-padding: 16px 6vw;
+    --card-radius: 11px;
   }
-  .create-account-center-content {
-    padding: 0 1vw;
+  .create-account-card {
+    padding: var(--card-padding);
   }
 }

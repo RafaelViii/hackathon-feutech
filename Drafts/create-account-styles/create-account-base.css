@@ -1,29 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap');
+
 :root {
-  --font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-  --color-bg-gradient: linear-gradient(135deg, #22284a 0%, #355c7d 50%, #46bfae 100%);
-  --color-title: #fff;
-  --color-subtitle: #e1e7ef;
+  --color-bg-gradient: linear-gradient(135deg, #22284a 0%, #355c7d 60%, #46bfae 100%);
+  --color-box-bg: #fff;
+  --color-title: #22284a;
+  --color-subtitle: #5e6b85;
   --color-btn-primary-bg: #46bfae;
   --color-btn-primary-text: #22284a;
   --color-btn-secondary-bg: #fff;
   --color-btn-secondary-text: #355c7d;
-  --color-link: #ffecb3;
-  --btn-radius: 22px;
-  --btn-padding-v: 16px;
-  --btn-padding-h: 34px;
-  --btn-font-size: 1.13rem;
-  --title-size: clamp(2.4rem, 8vw, 4.6rem);
-  --subtitle-size: 1.12rem;
-  --main-gap: 28px;
-  --content-width: 96vw;
-  --content-max-width: 420px;
+  --color-link: #355c7d;
+
+  --btn-radius: 28px;
+  --btn-padding-v: 22px;
+  --btn-font-size: 1.45rem;
+  --title-size: 3.2rem;
+  --subtitle-size: 1.35rem;
+  --main-gap: 38px;
+  --content-width: 98vw;
+  --content-max-width: 580px;
+  --card-radius: 32px;
+  --card-padding: 62px 54px;
+  --card-shadow: 0 8px 48px 0 rgba(34,40,74,0.22), 0 2.5px 20px 0 rgba(70,191,174,0.13);
 }
 
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: var(--font-family);
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
   background: var(--color-bg-gradient);
   color: var(--color-title);
 }
@@ -35,7 +40,6 @@ body {
 }
 
 .create-account-center-main {
-  flex: 1;
   min-height: 100vh;
   min-width: 100vw;
   display: flex;
@@ -43,10 +47,21 @@ body {
   justify-content: center;
 }
 
-.create-account-center-content {
+.create-account-card {
+  background: var(--color-box-bg);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
   width: var(--content-width);
   max-width: var(--content-max-width);
+  padding: var(--card-padding);
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.create-account-center-content {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -56,84 +71,106 @@ body {
 .create-account-title {
   font-size: var(--title-size);
   font-weight: 800;
-  text-align: center;
   color: var(--color-title);
-  margin: 0;
+  text-align: center;
+  margin: 0 0 12px 0;
   line-height: 1.13;
-  letter-spacing: -0.03em;
-  text-transform: capitalize;
-  text-shadow: 0 2px 24px rgba(34,40,74,0.25);
+  letter-spacing: -0.01em;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
 }
 
 .create-account-subtitle {
   font-size: var(--subtitle-size);
   color: var(--color-subtitle);
   text-align: center;
-  margin: 0;
+  margin: 0 0 10px 0;
   font-weight: 500;
-  line-height: 1.6;
-  letter-spacing: 0;
-  text-transform: none;
-  text-shadow: 0 1px 8px rgba(34,40,74,0.12);
+  line-height: 1.7;
 }
 
 .create-account-btn-primary {
   width: 100%;
+  padding: var(--btn-padding-v) 0;
   background: var(--color-btn-primary-bg);
   color: var(--color-btn-primary-text);
   border: none;
   border-radius: var(--btn-radius);
-  padding: var(--btn-padding-v) var(--btn-padding-h);
-  font-size: var(--btn-font-size);
   font-weight: 700;
+  font-size: var(--btn-font-size);
+  margin-bottom: 14px;
+  box-shadow: 0 3px 18px #355c7d24;
   cursor: pointer;
-  margin: 0;
-  transition: background 0.18s, color 0.18s;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
   text-transform: capitalize;
-  box-shadow: 0 2px 16px #355c7d33;
 }
-
-.create-account-btn-primary:hover, .create-account-btn-primary:focus {
+.create-account-btn-primary:hover,
+.create-account-btn-primary:focus {
   background: #3bc6b0;
   color: #fff;
+  box-shadow: 0 8px 32px #46bfae44;
+}
+
+.create-account-btn-secondary {
+  width: 100%;
+  padding: var(--btn-padding-v) 0;
+  background: var(--color-btn-secondary-bg);
+  color: var(--color-btn-secondary-text);
+  border: 3px solid var(--color-btn-secondary-text);
+  border-radius: var(--btn-radius);
+  font-weight: 800;
+  font-size: var(--btn-font-size);
+  margin-bottom: 14px;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+  text-transform: capitalize;
+}
+.create-account-btn-secondary:hover,
+.create-account-btn-secondary:focus {
+  background: #e1e7ef;
+  color: #22284a;
+  border-color: #22284a;
 }
 
 .create-account-link {
   background: none;
   border: none;
   color: var(--color-link);
-  font-size: 1.01rem;
   text-decoration: underline;
   cursor: pointer;
-  margin: 0 0 10px 0;
-  padding: 0;
+  font-size: 1.18rem;
   font-weight: 600;
-  letter-spacing: 0.01em;
-  text-transform: none;
-  transition: color 0.18s;
-}
-
-.create-account-link:hover, .create-account-link:focus {
-  color: #ffe16a;
-}
-
-.create-account-btn-secondary {
-  width: 100%;
-  background: var(--color-btn-secondary-bg);
-  color: var(--color-btn-secondary-text);
-  border: 2px solid var(--color-btn-secondary-text);
-  border-radius: var(--btn-radius);
-  padding: var(--btn-padding-v) var(--btn-padding-h);
-  font-size: var(--btn-font-size);
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.18s, color 0.18s;
   margin: 0;
-  text-transform: capitalize;
-  box-shadow: 0 1px 6px #355c7d10;
+  padding: 0;
+  transition: color 0.18s;
+  letter-spacing: 0.01em;
+}
+.create-account-link:hover,
+.create-account-link:focus {
+  color: #46bfae;
 }
 
-.create-account-btn-secondary:hover, .create-account-btn-secondary:focus {
-  background: #e1e7ef;
-  color: #22284a;
+/* Responsive adjustments */
+@media (max-width: 800px) {
+  :root {
+    --title-size: 2.1rem;
+    --subtitle-size: 1.05rem;
+    --btn-padding-v: 13px;
+    --btn-font-size: 1.1rem;
+    --content-max-width: 97vw;
+    --main-gap: 20px;
+    --card-padding: 28px 8vw;
+    --card-radius: 19px;
+  }
+}
+@media (max-width: 500px) {
+  :root {
+    --title-size: 1.5rem;
+    --subtitle-size: 0.97rem;
+    --btn-padding-v: 9px;
+    --btn-font-size: 0.95rem;
+    --content-max-width: 99vw;
+    --main-gap: 12px;
+    --card-padding: 13px 3vw;
+    --card-radius: 12px;
+  }
 }
