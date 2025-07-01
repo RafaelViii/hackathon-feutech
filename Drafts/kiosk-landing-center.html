@@ -31,6 +31,18 @@
         transform: scale(1.12);
       }
     }
+
+    /* Slow tilting animation for highlight-text */
+    .tilt {
+      display: inline-block;
+      animation: tilt 2.8s cubic-bezier(.62,-0.01,.34,1.01) infinite alternate;
+      transform-origin: 50% 60%;
+    }
+    @keyframes tilt {
+      0%   { transform: rotate(-6deg);}
+      50%  { transform: rotate(7deg);}
+      100% { transform: rotate(-6deg);}
+    }
   </style>
 </head>
 <body>
@@ -49,7 +61,7 @@
           <span class="bigtext-line">Product Here!</span>
         </div>
         <div class="landing-center-highlight">
-          <span class="highlight-text">Tap to begin your journey</span>
+          <span class="highlight-text tilt">Tap to begin your journey</span>
         </div>
       </div>
     </main>
