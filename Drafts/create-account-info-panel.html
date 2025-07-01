@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create Your Scale Up Account</title>
+  <link rel="stylesheet" href="create-account-input-panel-style/create-account-form.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main class="create-account-center-main">
+    <div class="create-account-card">
+      <div class="create-account-form-header">
+        <img class="create-account-logo" src="https://via.placeholder.com/36x36?text=Logo" alt="Logo Placeholder" />
+        <span class="create-account-form-title">Create Your Scale Up Account</span>
+      </div>
+      <form class="create-account-form" autocomplete="off">
+        <label for="name" class="create-account-label">Name</label>
+        <input type="text" id="name" name="name" class="create-account-input" placeholder="Enter your name" required>
+
+        <label for="email" class="create-account-label">Email</label>
+        <input type="email" id="email" name="email" class="create-account-input" placeholder="Enter your email" required>
+
+        <label for="number" class="create-account-label">Number</label>
+        <input type="tel" id="number" name="number" class="create-account-input" placeholder="Enter your phone number" required>
+
+        <label for="password" class="create-account-label">Password</label>
+        <div class="password-field-wrapper">
+          <input type="password" id="password" name="password" class="create-account-input" placeholder="Create a password" required>
+          <button type="button" class="view-password-btn" aria-label="Show password" tabindex="-1" onclick="togglePassword()">
+            <svg class="view-password-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#7b7b7b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <ellipse cx="12" cy="12" rx="8" ry="5"></ellipse>
+              <circle cx="12" cy="12" r="2.2"></circle>
+            </svg>
+          </button>
+        </div>
+        <button type="submit" class="create-account-btn-primary">Proceed</button>
+      </form>
+    </div>
+  </main>
+  <script>
+    function togglePassword() {
+      const input = document.getElementById('password');
+      const btn = document.querySelector('.view-password-btn');
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.setAttribute('aria-label', 'Hide password');
+      } else {
+        input.type = 'password';
+        btn.setAttribute('aria-label', 'Show password');
+      }
+    }
+  </script>
+</body>
+</html>
