@@ -25,20 +25,23 @@ document.querySelector('.login-form').addEventListener('submit', function(e) {
   const password = document.getElementById('password').value;
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-      // Login successful
-      // Save login state if needed
-      window.location.href = "dashboard.html"; // Redirect to your dashboard or landing page
+      Swal.fire({
+        icon: 'success',
+        title: 'Logged in!',
+        text: 'You have successfully logged in.',
+        timer: 1500,
+        showConfirmButton: false
+      }).then(() => {
+        window.location.href = "dashboard.html"; // Redirect to your dashboard or landing page
+      });
     })
     .catch((error) => {
       let msg = error.message.replace("Firebase:", "");
-      let errorBox = document.getElementById('login-error');
-      if (!errorBox) {
-        errorBox = document.createElement('div');
-        errorBox.id = 'login-error';
-        errorBox.style.color = "#E53935";
-        errorBox.style.paddingTop = "10px";
-        document.querySelector('.login-btn').after(errorBox);
-      }
-      errorBox.innerText = msg;
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: msg,
+        confirmButtonColor: '#1976d2'
+      });
     });
 });
