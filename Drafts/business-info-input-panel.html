@@ -6,7 +6,6 @@
   <title>Tell Us About Your Business</title>
   <link rel="stylesheet" href="business-info-input-panel-style/business-info-input-panel-style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <!-- SweetAlert2 CDN -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
@@ -26,12 +25,12 @@
         <label for="tagline" class="business-info-label">Tagline</label>
         <input type="text" id="tagline" name="tagline" class="business-info-input" placeholder="e.g. Freshness in Every Cup" required>
 
-        <button type="submit" class="business-info-btn-primary">Proceed</button>
+        <button type="submit" id="submit" class="business-info-btn-primary">Proceed</button>
       </form>
     </div>
   </main>
   <script>
-    // Show SweetAlert2 modal on page load
+    // Prefill fields from localStorage
     window.addEventListener('DOMContentLoaded', function() {
       Swal.fire({
         title: 'Tell us something about your business!',
@@ -45,20 +44,19 @@
           popup: 'swal2-business-modal'
         }
       });
-      // Prefill fields from localStorage if present
       document.getElementById("businessName").value = localStorage.getItem("businessName") || "";
       document.getElementById("product").value = localStorage.getItem("product") || "";
       document.getElementById("tagline").value = localStorage.getItem("tagline") || "";
     });
 
-    // Save to localStorage and proceed if all fields are filled
     document.getElementById('businessInfoForm').addEventListener('submit', function(e) {
+      e.preventDefault(); // Prevent default form submission
+
       const businessName = document.getElementById('businessName').value.trim();
       const product = document.getElementById('product').value.trim();
       const tagline = document.getElementById('tagline').value.trim();
 
       if (!businessName || !product || !tagline) {
-        e.preventDefault();
         if (!businessName) {
           document.getElementById('businessName').focus();
         } else if (!product) {
@@ -69,17 +67,14 @@
         return false;
       }
 
-      // Save to localStorage
       localStorage.setItem("businessName", businessName);
       localStorage.setItem("product", product);
       localStorage.setItem("tagline", tagline);
 
-      // Optional: redirect after submit
-      // window.location.href = "screen6.html";
+      window.location.href = "business-purpose-input-panel.html";
     });
   </script>
   <style>
-    /* Optional: SweetAlert2 custom styling for your modal */
     .swal2-business-modal {
       font-family: 'Inter', sans-serif;
       font-weight: 600;

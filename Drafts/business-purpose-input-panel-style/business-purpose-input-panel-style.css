@@ -47,6 +47,8 @@ body {
   justify-content: center;
 }
 
+
+
 .business-info-card {
   background: var(--color-box-bg);
   border-radius: var(--card-radius);
