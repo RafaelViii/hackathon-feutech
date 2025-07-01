@@ -1,0 +1,14 @@
+@media (max-width: 599px) {
+  :root {
+    --logo-size: 64px;
+    --font-logo: 700 1.3rem var(--font-family);
+    --font-big: 800 1.5rem var(--font-family);
+    --main-gap: 18px;
+    --highlight-padding-v: 6px;
+    --highlight-padding-h: 16px;
+    --logo-group-gap: 9px;
+  }
+  .landing-center-bigtext .bigtext-line {
+    font-size: 1.2rem !important;
+  }
+}

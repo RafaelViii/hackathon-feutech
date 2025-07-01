@@ -1,0 +1,110 @@
+:root {
+  /* Font families and weights */
+  --font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  --font-logo: 700 2rem var(--font-family);
+  --font-big: 800 2.5rem var(--font-family);
+  --font-big-tablet: 800 3.2rem var(--font-family);
+  --font-big-desktop: 800 4rem var(--font-family);
+  --font-highlight: 600 1.08rem var(--font-family);
+
+  /* Colors */
+  --color-bg: #f6f8fa;
+  --color-logo-text: #355c7d;
+  --color-bigtext: #22284a;
+  --color-highlight: #fff;
+  --color-highlight-bg: #46bfae;
+  --color-logo-bg: #e1e7ef;
+
+  /* Sizes */
+  --logo-size: 96px;
+  --logo-radius: 22px;
+  --logo-group-gap: 14px;
+  --highlight-radius: 20px;
+  --highlight-padding-v: 8px;
+  --highlight-padding-h: 26px;
+  --main-gap: 36px;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  background: var(--color-bg);
+  color: var(--color-bigtext);
+}
+
+body {
+  min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-center-main {
+  flex: 1;
+  min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--main-gap);
+  box-sizing: border-box;
+}
+
+.landing-center-logo-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--logo-group-gap);
+  margin-bottom: 14px;
+}
+
+.landing-center-logo-img {
+  width: var(--logo-size);
+  height: var(--logo-size);
+  border-radius: var(--logo-radius);
+  background: var(--color-logo-bg);
+  object-fit: cover;
+  box-shadow: 0 2px 12px #dde5ef33;
+}
+
+.landing-center-logo-title {
+  font: var(--font-logo);
+  color: var(--color-logo-text);
+  letter-spacing: 0.07em;
+}
+
+.landing-center-bigtext {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.bigtext-line {
+  font: var(--font-big);
+  color: var(--color-bigtext);
+  line-height: 1.18;
+  text-shadow: 0 2.5px 10px rgba(44,56,100,0.09);
+  text-transform: none;
+}
+
+.landing-center-highlight {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.highlight-text {
+  background: var(--color-highlight-bg);
+  color: var(--color-highlight);
+  font: var(--font-highlight);
+  border-radius: var(--highlight-radius);
+  padding: var(--highlight-padding-v) var(--highlight-padding-h);
+  letter-spacing: 0.02em;
+  box-shadow: 0 1px 6px #46bfae33;
+  user-select: none;
+}
