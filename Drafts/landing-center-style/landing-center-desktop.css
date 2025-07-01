@@ -1,14 +1,18 @@
 @media (min-width: 1024px) {
   :root {
-    --logo-size: 120px;
-    --font-logo: 700 2.6rem var(--font-family);
-    --font-big: 800 3.2rem var(--font-family);
-    --main-gap: 50px;
-    --highlight-padding-v: 10px;
-    --highlight-padding-h: 36px;
-    --logo-group-gap: 18px;
+    --logo-size: 20px;
+    --font-logo: 700 2.8rem var(--font-family);
+    --font-big: 800 clamp(3.4rem, 8vw, 8rem) var(--font-family);
+    --main-gap: 60px;
   }
-  .landing-center-bigtext .bigtext-line {
-    font-size: 3.5rem !important;
+  .landing-center-navbar {
+    padding-top: 2.5vh;
+    padding-bottom: 2.5vh;
+  }
+  .landing-center-bigtext {
+    width: 72vw;
+    max-width: 1100px;
+    min-width: 280px;
+    margin: 0 0 2.5vh 0;
   }
 }
