@@ -102,12 +102,25 @@
 <body>
   <div class="container">
     <h2>Enroll a Fingerprint</h2>
-    <div id="instructions">Press "Start Enrollment" to use the first available slot.</div>
+    <div id="instructions">Loading instructions...</div>
     <button id="startEnroll">Start Enrollment</button>
     <button id="backBtn">Back</button>
   </div>
   <script>
 const ESP32_IP = "192.168.100.204";
+
+// Fetch enrollment instructions from ESP32 and display at page load
+function loadInstructions() {
+  document.getElementById("instructions").innerText = "Loading instructions...";
+  fetch(`http://${ESP32_IP}/enroll_instructions`)
+    .then(res => res.json())
+    .then(obj => {
+      document.getElementById("instructions").innerText = obj.instructions || "Press Start Enrollment to use the first available slot.";
+    })
+    .catch(() => {
+      document.getElementById("instructions").innerText = "Press Start Enrollment to use the first available slot.";
+    });
+}
 
 document.getElementById("startEnroll").addEventListener("click", function() {
   document.getElementById("instructions").innerText = "Checking available slots...";
@@ -121,7 +134,7 @@ document.getElementById("startEnroll").addEventListener("click", function() {
       }
       if (body.free && body.free.length > 0) {
         const id = body.free[0];
-        document.getElementById("instructions").innerText = `Enrolling in slot ${id}... please place your thumb and wait for 5 seconds then remove it and place it again....`;
+        document.getElementById("instructions").innerText = `Enrolling in slot ${id}...\n\n1. Place your finger on the sensor when prompted.\n2. Wait for scan, then remove your finger when asked.\n3. Place the same finger again as prompted.\n4. Wait for enrollment result message.\n\nEnrolling now...`;
         fetch(`http://${ESP32_IP}/enroll?id=${id}`, { method: "POST" })
           .then(response => response.json().then(data => ({status: response.status, body: data})))
           .then(({status, body}) => {
@@ -143,7 +156,10 @@ document.getElementById("startEnroll").addEventListener("click", function() {
       document.getElementById("instructions").innerText = "Could not check slots.";
     });
 });
-    document.getElementById("backBtn").onclick = () => window.location.href = "screen2.html";
+document.getElementById("backBtn").onclick = () => window.location.href = "screen2.html";
+
+// Load instructions at page load
+loadInstructions();
   </script>
 </body>
 </html>
