@@ -109,57 +109,60 @@
   <script>
 const ESP32_IP = "192.168.100.204";
 
-// Fetch enrollment instructions from ESP32 and display at page load
-function loadInstructions() {
-  document.getElementById("instructions").innerText = "Loading instructions...";
-  fetch(`http://${ESP32_IP}/enroll_instructions`)
-    .then(res => res.json())
-    .then(obj => {
-      document.getElementById("instructions").innerText = obj.instructions || "Press Start Enrollment to use the first available slot.";
+function setInstructions(msg) {
+  document.getElementById("instructions").innerText = msg;
+}
+
+function enrollSequence(slotId) {
+  let timeouts = [];
+  setInstructions("Enrolling now...");
+  timeouts.push(setTimeout(() => setInstructions("Place your finger on the sensor"), 1000));
+  timeouts.push(setTimeout(() => setInstructions("Remove your finger"), 6000));
+  timeouts.push(setTimeout(() => setInstructions("Place the same finger again"), 8000));
+  timeouts.push(setTimeout(() => setInstructions("Waiting for result..."), 13000));
+
+  // Start the enroll request at the same time as showing prompts
+  fetch(`http://${ESP32_IP}/enroll?id=${slotId}`, { method: "POST" })
+    .then(response => response.json()
+      .then(data => ({status: response.status, body: data})))
+    .then(({status, body}) => {
+      // Clear all pending timeouts to prevent prompt override
+      timeouts.forEach(to => clearTimeout(to));
+      if (status !== 200) {
+        setInstructions(`Error (${body.error_code || status}): ${body.error || "Unknown error"}`);
+        return;
+      }
+      setInstructions(body.result || body.error || "Unknown response");
     })
     .catch(() => {
-      document.getElementById("instructions").innerText = "Press Start Enrollment to use the first available slot.";
+      timeouts.forEach(to => clearTimeout(to));
+      setInstructions("Could not contact device.");
     });
 }
 
 document.getElementById("startEnroll").addEventListener("click", function() {
-  document.getElementById("instructions").innerText = "Checking available slots...";
+  setInstructions("Checking available slots...");
   fetch(`http://${ESP32_IP}/free_slots`)
     .then(res => res.json().then(data => ({status: res.status, body: data})))
     .then(({status, body}) => {
       if (status !== 200) {
-        document.getElementById("instructions").innerText =
-          `Error (${body.error_code || status}): ${body.error || "Unknown error"}`;
+        setInstructions(`Error (${body.error_code || status}): ${body.error || "Unknown error"}`);
         return;
       }
       if (body.free && body.free.length > 0) {
-        const id = body.free[0];
-        document.getElementById("instructions").innerText = `Enrolling in slot ${id}...\n\n1. Place your finger on the sensor when prompted.\n2. Wait for scan, then remove your finger when asked.\n3. Place the same finger again as prompted.\n4. Wait for enrollment result message.\n\nEnrolling now...`;
-        fetch(`http://${ESP32_IP}/enroll?id=${id}`, { method: "POST" })
-          .then(response => response.json().then(data => ({status: response.status, body: data})))
-          .then(({status, body}) => {
-            if (status !== 200) {
-              document.getElementById("instructions").innerText =
-                `Error (${body.error_code || status}): ${body.error || "Unknown error"}`;
-              return;
-            }
-            document.getElementById("instructions").innerText = body.result || body.error || "Unknown response";
-          })
-          .catch(err => {
-            document.getElementById("instructions").innerText = "Could not contact device.";
-          });
+        enrollSequence(body.free[0]);
       } else {
-        document.getElementById("instructions").innerText = "No available slots!";
+        setInstructions("No available slots!");
       }
     })
-    .catch(err => {
-      document.getElementById("instructions").innerText = "Could not check slots.";
+    .catch(() => {
+      setInstructions("Could not check slots.");
     });
 });
 document.getElementById("backBtn").onclick = () => window.location.href = "screen2.html";
 
-// Load instructions at page load
-loadInstructions();
+// On load, show static instructions
+setInstructions(`Press "Start Enrollment" to use the first available slot.\n\nEnrollment steps:\n1. Place your finger on the sensor\n2. Remove your finger when prompted\n3. Place the same finger again\n4. Wait for result`);
   </script>
 </body>
 </html>
