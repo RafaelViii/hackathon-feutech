@@ -8,6 +8,18 @@
   <link rel="stylesheet" href="access-panel-style/access-panel-mobile.css">
   <link rel="stylesheet" href="access-panel-style/access-panel-tablet.css">
   <link rel="stylesheet" href="access-panel-style/access-panel-desktop.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .navbar-vault-info {
+      cursor: pointer;
+      transition: background 0.18s;
+      border-radius: 7px;
+      padding: 2px 5px;
+    }
+    .navbar-vault-info:hover {
+      background: #2196f320;
+    }
+  </style>
 </head>
 <body>
   <nav class="dashboard-navbar">
@@ -16,11 +28,8 @@
       <span class="navbar-title">Scale Up</span>
     </div>
     <div class="navbar-right">
-      <div class="navbar-vault-info">
-       
-      </div>
-      <div class="navbar-vault-info">
-        <span class="vault-icon" title="Vault Unoccupied">
+      <div class="navbar-vault-info" id="vault-unoccupied-info">
+        <span class="vault-icon">
           <!-- Unoccupied icon (open lock) -->
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
@@ -31,8 +40,8 @@
         </span>
         <span class="vault-number vault-unoccupied" id="vault-unoccupied">--</span>
       </div>
-      <div class="navbar-vault-info">
-        <span class="vault-icon" title="Vault Occupied">
+      <div class="navbar-vault-info" id="vault-occupied-info">
+        <span class="vault-icon">
           <!-- Occupied icon (locked lock) -->
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
@@ -64,15 +73,31 @@
     fetch(`http://${ESP32_IP}/slots`)
       .then(res => res.json())
       .then(data => {
-        
         document.getElementById("vault-occupied").textContent = data.occupied ? data.occupied.length : "--";
         document.getElementById("vault-unoccupied").textContent = data.free ? data.free.length : "--";
       })
       .catch(() => {
-       
         document.getElementById("vault-occupied").textContent = "N/A";
         document.getElementById("vault-unoccupied").textContent = "N/A";
       });
+
+    document.getElementById('vault-unoccupied-info').addEventListener('click', function() {
+      Swal.fire({
+        icon: 'error',
+        title: 'Unoccupied Vaults',
+        text: 'These are the available vaults!',
+        confirmButtonColor: '#2196f3'
+      });
+    });
+
+    document.getElementById('vault-occupied-info').addEventListener('click', function() {
+      Swal.fire({
+        icon: 'success',
+        title: 'Occupied Vaults',
+        text: 'These vaults are currently occupied (in use).',
+        confirmButtonColor: '#2196f3'
+      });
+    });
   </script>
 </body>
 </html>
