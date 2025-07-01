@@ -1,13 +1,13 @@
 :root {
   --font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-  --color-bg: #f6f8fa;
-  --color-title: #22284a;
-  --color-subtitle: #5e6b85;
-  --color-btn-primary-bg: #355c7d;
-  --color-btn-primary-text: #fff;
+  --color-bg-gradient: linear-gradient(135deg, #22284a 0%, #355c7d 50%, #46bfae 100%);
+  --color-title: #fff;
+  --color-subtitle: #e1e7ef;
+  --color-btn-primary-bg: #46bfae;
+  --color-btn-primary-text: #22284a;
   --color-btn-secondary-bg: #fff;
   --color-btn-secondary-text: #355c7d;
-  --color-link: #46bfae;
+  --color-link: #ffecb3;
   --btn-radius: 22px;
   --btn-padding-v: 16px;
   --btn-padding-h: 34px;
@@ -24,7 +24,7 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: var(--font-family);
-  background: var(--color-bg);
+  background: var(--color-bg-gradient);
   color: var(--color-title);
 }
 
@@ -62,6 +62,7 @@ body {
   line-height: 1.13;
   letter-spacing: -0.03em;
   text-transform: capitalize;
+  text-shadow: 0 2px 24px rgba(34,40,74,0.25);
 }
 
 .create-account-subtitle {
@@ -73,6 +74,7 @@ body {
   line-height: 1.6;
   letter-spacing: 0;
   text-transform: none;
+  text-shadow: 0 1px 8px rgba(34,40,74,0.12);
 }
 
 .create-account-btn-primary {
@@ -86,13 +88,14 @@ body {
   font-weight: 700;
   cursor: pointer;
   margin: 0;
-  transition: background 0.18s;
+  transition: background 0.18s, color 0.18s;
   text-transform: capitalize;
-  box-shadow: 0 1px 6px #355c7d21;
+  box-shadow: 0 2px 16px #355c7d33;
 }
 
 .create-account-btn-primary:hover, .create-account-btn-primary:focus {
-  background: #23405a;
+  background: #3bc6b0;
+  color: #fff;
 }
 
 .create-account-link {
@@ -107,6 +110,11 @@ body {
   font-weight: 600;
   letter-spacing: 0.01em;
   text-transform: none;
+  transition: color 0.18s;
+}
+
+.create-account-link:hover, .create-account-link:focus {
+  color: #ffe16a;
 }
 
 .create-account-btn-secondary {
@@ -126,6 +134,6 @@ body {
 }
 
 .create-account-btn-secondary:hover, .create-account-btn-secondary:focus {
-  background: #f3f6fa;
-  color: #123456;
+  background: #e1e7ef;
+  color: #22284a;
 }
