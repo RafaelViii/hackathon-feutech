@@ -1,0 +1,279 @@
+#include <Adafruit_Fingerprint.h>
+#include <HardwareSerial.h>
+#include <WiFi.h>
+#include <WebServer.h>
+#include <HTTPClient.h>
+#include <time.h>
+
+// ==== CONFIGURATION ====
+// WiFi credentials
+const char* ssid = "TP-Link_Extender 2.4GHz"; // change as needed
+const char* password = "10241966bago";
+
+// Firebase
+const char* firebase_host = "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app";
+const char* firebase_secret = "Xp9h6kSDEZ0u64EOkajsCA6EVaMLs3w7hc9r0W75";
+
+// Pins
+#define XY_MOS_PIN 19
+
+// ==== Hardware Setup ====
+HardwareSerial mySerial(2);
+Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
+WebServer server(80);
+
+// ==== User Info ====
+String userCodes[] = {"XO09821", "BX10192", "ZL99871", "QW55660", "TR47823"};
+String userNames[] = {"Rafael", "Ariel", "Unknown3", "Unknown4", "Unknown5"};
+
+// ==== Enrollment flag ====
+volatile bool enrolling = false;
+
+// ==== Time/NTP ====
+bool isTimeValid(time_t t) {
+  return t > 1672531200; // 2023-01-01 00:00:00 GMT
+}
+
+void waitForNTP() {
+  Serial.print("Waiting for NTP time sync");
+  time_t now = time(nullptr);
+  int retry = 0;
+  while (!isTimeValid(now) && retry < 60) {
+    delay(500);
+    Serial.print(".");
+    now = time(nullptr);
+    retry++;
+  }
+  Serial.println();
+  if (isTimeValid(now)) {
+    Serial.print("NTP time acquired: ");
+    Serial.println(now);
+  } else {
+    Serial.println("ERROR: NTP time not acquired.");
+  }
+}
+
+// ==== Firebase ====
+void sendLogToFirebase(const String& event, int id) {
+  if (WiFi.status() == WL_CONNECTED) {
+    time_t now = time(nullptr);
+    if (!isTimeValid(now)) {
+      Serial.println("ERROR: NTP time not valid. Skipping log.");
+      return;
+    }
+    HTTPClient http;
+    String url = String(firebase_host) + "/doorLogs.json?auth=" + firebase_secret;
+    String person = (id >= 1 && id <= (int)(sizeof(userNames)/sizeof(userNames[0]))) ? userNames[id-1] : "";
+    String payload = "{\"event\":\"" + event + "\",\"timestamp\":" + String((unsigned long)now * 1000) + ",\"fpid\":" + String(id) + ",\"person\":\"" + person + "\"}";
+    http.begin(url);
+    http.addHeader("Content-Type", "application/json");
+    int httpResponseCode = http.POST(payload);
+    Serial.print("Firebase doorLogs POST: ");
+    Serial.println(httpResponseCode);
+    http.end();
+  } else {
+    Serial.println("WiFi not connected. Cannot send log to Firebase.");
+  }
+}
+
+void sendStatusToFirebase(const String& status) {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    String url = String(firebase_host) + "/doorStatus.json?auth=" + firebase_secret;
+    String payload = "\"" + status + "\"";
+    http.begin(url);
+    http.addHeader("Content-Type", "application/json");
+    int httpResponseCode = http.PUT(payload);
+    Serial.print("Firebase doorStatus response: ");
+    Serial.println(httpResponseCode);
+    http.end();
+  } else {
+    Serial.println("WiFi not connected. Cannot send status to Firebase.");
+  }
+}
+
+// ==== Enrollment Logic ====
+String doFingerprintEnroll(int id) {
+  int p = -1;
+  Serial.print("Enrolling to slot "); Serial.println(id);
+  unsigned long enrollTimeout = millis() + 15000;
+  while (p != FINGERPRINT_OK) {
+    p = finger.getImage();
+    if (millis() > enrollTimeout) return "Timeout waiting for finger (first scan)";
+    delay(50);
+  }
+  if (finger.image2Tz(1) != FINGERPRINT_OK) {
+    return "Failed to convert image. Try again.";
+  }
+  Serial.println("Remove finger...");
+  delay(2000);
+  unsigned long removeTimeout = millis() + 10000;
+  while (finger.getImage() != FINGERPRINT_NOFINGER) {
+    if (millis() > removeTimeout) return "Timeout waiting to remove finger";
+    delay(50);
+  }
+  Serial.println("Place same finger again...");
+  enrollTimeout = millis() + 15000;
+  while (finger.getImage() != FINGERPRINT_OK) {
+    if (millis() > enrollTimeout) return "Timeout waiting for finger (second scan)";
+    delay(50);
+  }
+  if (finger.image2Tz(2) != FINGERPRINT_OK) {
+    return "Failed to convert image (2nd time).";
+  }
+  if (finger.createModel() == FINGERPRINT_OK) {
+    if (finger.storeModel(id) == FINGERPRINT_OK) {
+      Serial.print("✅ Enrolled! ID #"); Serial.println(id);
+      sendLogToFirebase("enroll", id);
+      return "Enrollment successful (ID #" + String(id) + ")";
+    } else {
+      return "❌ Failed to store fingerprint";
+    }
+  } else {
+    return "❌ Fingerprints did not match";
+  }
+}
+
+// ==== Web Server Endpoints ====
+// CORS for OPTIONS
+void handleOptions() {
+  server.sendHeader("Access-Control-Allow-Origin", "*");
+  server.sendHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  server.sendHeader("Access-Control-Allow-Headers", "Content-Type");
+  server.send(204);
+}
+
+// /free_slots (returns empty slots)
+void handleFreeSlots() {
+  server.sendHeader("Access-Control-Allow-Origin", "*");
+  server.sendHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  server.sendHeader("Access-Control-Allow-Headers", "Content-Type");
+  finger.getTemplateCount();
+  String free = "[";
+  bool first = true;
+  for (int id = 1; id <= 5; id++) {
+    int p = finger.loadModel(id);
+    if (p != FINGERPRINT_OK) {
+      if (!first) free += ",";
+      free += String(id);
+      first = false;
+    }
+  }
+  free += "]";
+  server.send(200, "application/json", "{\"free\":" + free + "}");
+}
+
+// /enroll?id=X (enrolls fingerprint in slot X)
+void handleEnroll() {
+  server.sendHeader("Access-Control-Allow-Origin", "*");
+  server.sendHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  server.sendHeader("Access-Control-Allow-Headers", "Content-Type");
+  if (!server.hasArg("id")) {
+    server.send(400, "application/json", "{\"error\":\"Missing id parameter\"}");
+    return;
+  }
+  int id = server.arg("id").toInt();
+  if (id < 1 || id > 5) {
+    server.send(400, "application/json", "{\"error\":\"Invalid id parameter\"}");
+    return;
+  }
+  // Check if already occupied
+  if (finger.loadModel(id) == FINGERPRINT_OK) {
+    server.send(400, "application/json", "{\"error\":\"Slot is already occupied\"}");
+    return;
+  }
+  enrolling = true; // Block door control
+  String result = doFingerprintEnroll(id);
+  enrolling = false;
+  server.send(200, "application/json", "{\"result\":\"" + result + "\"}");
+}
+
+// ==== Setup ====
+void setup() {
+  Serial.begin(115200);
+  mySerial.begin(57600, SERIAL_8N1, 17, 16); // RX=17, TX=16
+  finger.begin(57600);
+
+  pinMode(XY_MOS_PIN, OUTPUT);
+  digitalWrite(XY_MOS_PIN, LOW);
+
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nWiFi connected! IP:");
+  Serial.println(WiFi.localIP());
+
+  configTime(8 * 3600, 0, "pool.ntp.org", "time.nist.gov");
+  waitForNTP();
+
+  if (finger.verifyPassword()) {
+    Serial.println("Fingerprint sensor ready!");
+  } else {
+    Serial.println("Fingerprint sensor not found.");
+    while (1) delay(1);
+  }
+
+  finger.getTemplateCount();
+  Serial.print("Loaded templates: ");
+  Serial.println(finger.templateCount);
+
+  // Web endpoints
+  server.on("/free_slots", HTTP_GET, handleFreeSlots);
+  server.on("/free_slots", HTTP_OPTIONS, handleOptions);
+  server.on("/enroll", HTTP_POST, handleEnroll);
+  server.on("/enroll", HTTP_OPTIONS, handleOptions);
+
+  server.begin();
+  Serial.println("HTTP server started!");
+}
+
+// ==== Main Loop ====
+void loop() {
+  server.handleClient();
+
+  // Only process door control (fingerprint match & relay) if not enrolling
+  if (enrolling) return;
+
+  if (finger.getImage() != FINGERPRINT_OK) return;
+  if (finger.image2Tz() != FINGERPRINT_OK) return;
+
+  if (finger.fingerSearch() == FINGERPRINT_OK) {
+    int id = finger.fingerID;
+    Serial.print("✅ Match found! ID: ");
+    Serial.println(id);
+
+    // Print person name and code
+    String person = (id >= 1 && id <= (int)(sizeof(userNames)/sizeof(userNames[0]))) ? userNames[id-1] : "Unknown";
+    Serial.print("Person: ");
+    Serial.println(person);
+
+    if (id >= 1 && id <= (int)(sizeof(userCodes)/sizeof(userCodes[0]))) {
+      Serial.print("Code: ");
+      Serial.println(userCodes[id - 1]);
+    } else {
+      Serial.println("⚠️ No code assigned for this ID.");
+    }
+
+    digitalWrite(XY_MOS_PIN, HIGH);
+    Serial.println("🔓 XY-MOS relay ON");
+
+    sendStatusToFirebase("open");
+    sendLogToFirebase("open", id);
+
+    delay(5000);
+
+    digitalWrite(XY_MOS_PIN, LOW);
+    Serial.println("🔒 XY-MOS relay OFF");
+
+    sendStatusToFirebase("close");
+    sendLogToFirebase("close", id);
+
+    delay(1000); // avoid double triggers
+  } else {
+    Serial.println("❌ No match.");
+    delay(1000); // avoid spamming logs
+  }
+}
