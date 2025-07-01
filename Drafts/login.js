@@ -32,7 +32,7 @@ document.querySelector('.login-form').addEventListener('submit', function(e) {
         timer: 1500,
         showConfirmButton: false
       }).then(() => {
-        window.location.href = "dashboard.html"; // Redirect to your dashboard or landing page
+        window.location.href = "dashboard.html";
       });
     })
     .catch((error) => {
