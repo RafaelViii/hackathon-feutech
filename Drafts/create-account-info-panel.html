@@ -6,6 +6,27 @@
   <title>Create Your Scale Up Account</title>
   <link rel="stylesheet" href="create-account-input-panel-style/create-account-form.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZsj-cL_T_BuLtAz5bkqsw-edZXnumwe0",
+      authDomain: "iot-web-58054.firebaseapp.com",
+      databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "iot-web-58054",
+      storageBucket: "iot-web-58054.appspot.com",
+      messagingSenderId: "949884902967",
+      appId: "1:949884902967:web:6e7f78c7cd0fa1484629b2",
+      measurementId: "G-5C79490N66"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const database = firebase.database();
+  </script>
 </head>
 <body>
   <main class="create-account-center-main">
@@ -14,7 +35,7 @@
         <img class="create-account-logo" src="https://via.placeholder.com/36x36?text=Logo" alt="Logo Placeholder" />
         <span class="create-account-form-title">Create Your Scale Up Account</span>
       </div>
-      <form class="create-account-form" autocomplete="off">
+      <form class="create-account-form" autocomplete="off" id="createAccountForm">
         <label for="name" class="create-account-label">Name</label>
         <input type="text" id="name" name="name" class="create-account-input" placeholder="Enter your name" required>
 
@@ -22,7 +43,7 @@
         <input type="email" id="email" name="email" class="create-account-input" placeholder="Enter your email" required>
 
         <label for="number" class="create-account-label">Number</label>
-        <input type="tel" id="number" name="number" class="create-account-input" placeholder="Enter your phone number" required>
+        <input type="tel" id="number" name="number" class="create-account-input" placeholder="Enter your phone number" maxlength="11" pattern="09[0-9]{9}">
 
         <label for="password" class="create-account-label">Password</label>
         <div class="password-field-wrapper">
@@ -39,6 +60,7 @@
     </div>
   </main>
   <script>
+    // Show/Hide password function
     function togglePassword() {
       const input = document.getElementById('password');
       const btn = document.querySelector('.view-password-btn');
@@ -50,6 +72,67 @@
         btn.setAttribute('aria-label', 'Show password');
       }
     }
+
+    // Only allow digits and limit to 11, auto-fix on input
+    document.getElementById("number").addEventListener("input", function() {
+      this.value = this.value.replace(/\D/g, "").slice(0, 11);
+    });
+
+    // Form submit handler
+    document.getElementById("createAccountForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const number = document.getElementById("number").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!name || !email || !number || !password) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Incomplete',
+          text: 'Please fill in all fields.',
+          confirmButtonColor: '#2196f3'
+        });
+        return;
+      }
+      // Validate: 11 digits, must start with 09
+      if (!/^09\d{9}$/.test(number)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid Cellphone',
+          text: 'Not a valid cellphone number. It should start with 09 and be 11 digits.',
+          confirmButtonColor: '#2196f3'
+        });
+        return;
+      }
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          const userId = userCredential.user.uid;
+          return database.ref("users/" + userId).set({
+            name,
+            email,
+            number
+          });
+        })
+        .then(() => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Account Created!',
+            text: '✅ Account created successfully!',
+            confirmButtonColor: '#2196f3'
+          }).then(() => {
+            window.location.href = "screen5.html";
+          });
+        })
+        .catch(error => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message,
+            confirmButtonColor: '#e53935'
+          });
+        });
+    });
   </script>
 </body>
 </html>
