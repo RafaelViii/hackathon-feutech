@@ -130,7 +130,9 @@ html, body {
   align-items: center;
   justify-content: center;
   padding: var(--padding-main);
-  min-height: 0;
+  /* Add this line to ensure it takes up all available height below navbar: */
+  min-height: calc(100vh - var(--size-navbar-height));
+  box-sizing: border-box;
 }
 
 .dashboard-boxes {
@@ -139,6 +141,7 @@ html, body {
   gap: var(--gap-boxes);
   width: 100%;
   max-width: 800px;
+  transform: translateY(-50px); /* move 30px up */
   justify-content: center;
 }
 
