@@ -15,4 +15,13 @@
     min-width: 180px;
     margin: 0 0 2vh 0;
   }
+
+  .bigtext-line {
+    font-weight: 900 !important; /* Make it extra bold on tablet */
+  }
+
 }
+
+
+
+  

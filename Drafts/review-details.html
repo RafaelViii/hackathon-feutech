@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Review Your Details</title>
+  <link rel="stylesheet" href="review-details-style/review-details-style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main class="review-center-main">
+    <div class="review-card">
+      <header class="review-header">
+        <img class="review-logo" src="https://via.placeholder.com/48x48?text=Logo" alt="Company Logo">
+        <div class="review-title">Review Your Details</div>
+        <div class="review-subtitle">Please confirm your business information below before proceeding.</div>
+      </header>
+      <form class="review-form" autocomplete="off">
+        <div class="review-form-row">
+          <label class="review-label" for="businessName">Business Name:</label>
+          <input class="review-input" type="text" id="businessName" name="businessName" value="N/A" readonly>
+          <button type="button" class="review-change-btn" aria-label="Change Business Name">&#9998;</button>
+        </div>
+        <div class="review-form-row">
+          <label class="review-label" for="product">Product:</label>
+          <input class="review-input" type="text" id="product" name="product" value="N/A" readonly>
+          <button type="button" class="review-change-btn" aria-label="Change Product">&#9998;</button>
+        </div>
+        <div class="review-form-row">
+          <label class="review-label" for="tagline">Tagline:</label>
+          <input class="review-input" type="text" id="tagline" name="tagline" value="N/A" readonly>
+          <button type="button" class="review-change-btn" aria-label="Change Tagline">&#9998;</button>
+        </div>
+        <div class="review-form-row">
+          <label class="review-label" for="fundingGoal">Funding Goal:</label>
+          <input class="review-input" type="text" id="fundingGoal" name="fundingGoal" value="N/A" readonly>
+          <button type="button" class="review-change-btn" aria-label="Change Funding Goal">&#9998;</button>
+        </div>
+        <div class="review-form-row">
+          <label class="review-label" for="purpose">Purpose:</label>
+          <input class="review-input" type="text" id="purpose" name="purpose" value="N/A" readonly>
+          <button type="button" class="review-change-btn" aria-label="Change Purpose">&#9998;</button>
+        </div>
+        <button type="submit" class="review-process-btn">Process</button>
+      </form>
+    </div>
+  </main>
+</body>
+</html>
