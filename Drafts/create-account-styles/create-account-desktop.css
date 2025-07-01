@@ -1,0 +1,10 @@
+@media (min-width: 1024px) {
+  :root {
+    --title-size: clamp(2.8rem, 7vw, 4.8rem);
+    --subtitle-size: 1.18rem;
+    --btn-padding-v: 16px;
+    --btn-padding-h: 36px;
+    --content-max-width: 510px;
+    --main-gap: 32px;
+  }
+}

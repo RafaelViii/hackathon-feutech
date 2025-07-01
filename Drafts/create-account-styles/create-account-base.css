@@ -1,0 +1,131 @@
+:root {
+  --font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  --color-bg: #f6f8fa;
+  --color-title: #22284a;
+  --color-subtitle: #5e6b85;
+  --color-btn-primary-bg: #355c7d;
+  --color-btn-primary-text: #fff;
+  --color-btn-secondary-bg: #fff;
+  --color-btn-secondary-text: #355c7d;
+  --color-link: #46bfae;
+  --btn-radius: 22px;
+  --btn-padding-v: 16px;
+  --btn-padding-h: 34px;
+  --btn-font-size: 1.13rem;
+  --title-size: clamp(2.4rem, 8vw, 4.6rem);
+  --subtitle-size: 1.12rem;
+  --main-gap: 28px;
+  --content-width: 96vw;
+  --content-max-width: 420px;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  background: var(--color-bg);
+  color: var(--color-title);
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.create-account-center-main {
+  flex: 1;
+  min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.create-account-center-content {
+  width: var(--content-width);
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--main-gap);
+}
+
+.create-account-title {
+  font-size: var(--title-size);
+  font-weight: 800;
+  text-align: center;
+  color: var(--color-title);
+  margin: 0;
+  line-height: 1.13;
+  letter-spacing: -0.03em;
+  text-transform: capitalize;
+}
+
+.create-account-subtitle {
+  font-size: var(--subtitle-size);
+  color: var(--color-subtitle);
+  text-align: center;
+  margin: 0;
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.create-account-btn-primary {
+  width: 100%;
+  background: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+  border: none;
+  border-radius: var(--btn-radius);
+  padding: var(--btn-padding-v) var(--btn-padding-h);
+  font-size: var(--btn-font-size);
+  font-weight: 700;
+  cursor: pointer;
+  margin: 0;
+  transition: background 0.18s;
+  text-transform: capitalize;
+  box-shadow: 0 1px 6px #355c7d21;
+}
+
+.create-account-btn-primary:hover, .create-account-btn-primary:focus {
+  background: #23405a;
+}
+
+.create-account-link {
+  background: none;
+  border: none;
+  color: var(--color-link);
+  font-size: 1.01rem;
+  text-decoration: underline;
+  cursor: pointer;
+  margin: 0 0 10px 0;
+  padding: 0;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+.create-account-btn-secondary {
+  width: 100%;
+  background: var(--color-btn-secondary-bg);
+  color: var(--color-btn-secondary-text);
+  border: 2px solid var(--color-btn-secondary-text);
+  border-radius: var(--btn-radius);
+  padding: var(--btn-padding-v) var(--btn-padding-h);
+  font-size: var(--btn-font-size);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  margin: 0;
+  text-transform: capitalize;
+  box-shadow: 0 1px 6px #355c7d10;
+}
+
+.create-account-btn-secondary:hover, .create-account-btn-secondary:focus {
+  background: #f3f6fa;
+  color: #123456;
+}
