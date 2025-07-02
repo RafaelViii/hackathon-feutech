@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+:root {
+  --color-bg-gradient: linear-gradient(135deg, #2B1F6F 0%, #232526 60%, #414345 100%);
+  --background: var(--color-bg-gradient);
+  --color-box-bg: #fff;
+  --color-title: #2B1F6F;
+  --color-label: #353860;
+  --color-subtitle: #5e6b85;
+  --color-btn-primary-bg: #46bfae;
+  --color-btn-primary-text: #fff;
+  --color-btn-primary-bg-hover: #2B1F6F;
+  --color-btn-primary-text-hover: #fff;
+  --input-bg: #f6f8fa;
+  --input-border: #d3dbe9;
+  --input-border-focus: #46bfae;
+  --input-text: #2B1F6F;
+
+  --btn-radius: 28px;
+  --btn-padding-v: 19px;
+  --btn-font-size: 1.25rem;
+  --title-size: 2.3rem;
+  --card-radius: 26px;
+  --card-padding: 44px 36px 36px 36px;
+  --card-shadow: 0 8px 48px 0 rgba(34,40,74,0.18), 0 2.5px 20px 0 rgba(70,191,174,0.09);
+
+  --enroll-btn: linear-gradient(135deg, #21e6f3 0%, #2196f3 60%, #005fa3 100%);
+  --enroll-btn-hover: linear-gradient(135deg, #a3e7ff 0%, #2196f3 80%, #005fa3 100%);
+  --backbuttons: linear-gradient(135deg, #87ceeb 0%, #2196f3 60%, #005fa3 100%);
+  --container-bg: #f5fbffcc;
+  --instructions-bg: #fff;
+  --instructions-border: #2196f3;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  background: var(--background);
+  color: var(--color-title);
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  max-width: 480px;
+  margin: 7vh auto 0 auto;
+  background: var(--container-bg);
+  border-radius: 16px;
+  box-shadow: 0 2px 24px #2196f355;
+  padding: 2.5em 2em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Fingerprint Enroll Panel Styles */
+h2 {
+  margin-bottom: 1.2em;
+  font-size: 2.1em;
+  color: #005fa3;
+  letter-spacing: 1px;
+}
+
+#instructions {
+  background: var(--instructions-bg);
+  border: 2px solid var(--instructions-border);
+  border-radius: 10px;
+  padding: 1.2em 1em;
+  color: #005fa3;
+  font-size: 1.25em;
+  text-align: center;
+  margin-bottom: 2em;
+  min-width: 230px;
+  min-height: 3em;
+  box-sizing: border-box;
+  transition: border 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 10px #2196f322;
+}
+
+#startEnroll, #backBtn {
+  display: block;
+  width: 90%;
+  max-width: 350px;
+  margin: 0.5em auto;
+  padding: 0.9em 0;
+  font-size: 1.15em;
+  border: none;
+  border-radius: 30px;
+  background: var(--enroll-btn);
+  color: #fff;
+  font-family: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 14px #2196f333;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+#startEnroll:hover, #backBtn:hover {
+  background: var(--enroll-btn-hover);
+  box-shadow: 0 4px 22px #2196f355;
+}
+
+#backBtn {
+  background: var(--backbuttons);
+  margin-top: 0.7em;
+}
+
+@media (max-width: 600px) {
+  .container {
+    max-width: 99vw;
+    padding: 24px 8vw 18px 8vw;
+    border-radius: 14px;
+  }
+  h2 {
+    font-size: 1.25rem;
+    text-align: left;
+  }
+  #instructions {
+    font-size: 1em;
+    padding: 0.7em 0.5em;
+  }
+  #startEnroll, #backBtn {
+    font-size: 1.03rem;
+    padding: 14px 0;
+    border-radius: 19px;
+  }
+}

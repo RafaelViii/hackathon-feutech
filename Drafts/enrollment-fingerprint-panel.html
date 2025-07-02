@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Enroll a Fingerprint</title>
+  <link rel="stylesheet" href="business-info-input-panel-style/business-info-input-panel-style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="enrollment-panel-styles/enrollment-panel-styles.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Enroll a Fingerprint</h2>
+    <div id="instructions">Loading instructions...</div>
+    <button id="startEnroll">Start Enrollment</button>
+    <button id="backBtn">Back</button>
+  </div>
+  <script>
+    const ESP32_IP = "192.168.100.204";
+
+    function setInstructions(msg) {
+      document.getElementById("instructions").innerText = msg;
+    }
+
+    function enrollSequence(slotId) {
+      let timeouts = [];
+      setInstructions("Enrolling now...");
+      timeouts.push(setTimeout(() => setInstructions("Place your finger on the sensor"), 1000));
+      timeouts.push(setTimeout(() => setInstructions("Remove your finger"), 6000));
+      timeouts.push(setTimeout(() => setInstructions("Place the same finger again"), 8000));
+      timeouts.push(setTimeout(() => setInstructions("Waiting for result..."), 13000));
+
+      // Start the enroll request at the same time as showing prompts
+      fetch(`http://${ESP32_IP}/enroll?id=${slotId}`, { method: "POST" })
+        .then(response => response.json()
+          .then(data => ({status: response.status, body: data})))
+        .then(({status, body}) => {
+          // Clear all pending timeouts to prevent prompt override
+          timeouts.forEach(to => clearTimeout(to));
+          if (status !== 200) {
+            setInstructions(`Error (${body.error_code || status}): ${body.error || "Unknown error"}`);
+            return;
+          }
+          setInstructions(body.result || body.error || "Unknown response");
+        })
+        .catch(() => {
+          timeouts.forEach(to => clearTimeout(to));
+          setInstructions("Could not contact device.");
+        });
+    }
+
+    document.getElementById("startEnroll").addEventListener("click", function() {
+      setInstructions("Checking available slots...");
+      fetch(`http://${ESP32_IP}/free_slots`)
+        .then(res => res.json().then(data => ({status: res.status, body: data})))
+        .then(({status, body}) => {
+          if (status !== 200) {
+            setInstructions(`Error (${body.error_code || status}): ${body.error || "Unknown error"}`);
+            return;
+          }
+          if (body.free && body.free.length > 0) {
+            enrollSequence(body.free[0]);
+          } else {
+            setInstructions("No available slots!");
+          }
+        })
+        .catch(() => {
+          setInstructions("Could not check slots.");
+        });
+    });
+    document.getElementById("backBtn").onclick = () => window.location.href = "screen2.html";
+
+    // On load, show static instructions
+    setInstructions(`Press "Start Enrollment" to use the first available slot.\n\nEnrollment steps:\n1. Place your finger on the sensor\n2. Remove your finger when prompted\n3. Place the same finger again\n4. Wait for result`);
+  </script>
+</body>
+</html>
