@@ -2,12 +2,13 @@
   :root {
     --logo-size: 20px;
     --font-logo: 700 2.8rem var(--font-family);
-    --font-big: 800 clamp(3.4rem, 8vw, 8rem) var(--font-family);
+    --font-big: 900 clamp(3.4rem, 8vw, 8rem) var(--font-family);
     --main-gap: 60px;
   }
   .landing-center-navbar {
-    padding-top: 2.5vh;
-    padding-bottom: 2.5vh;
+    padding-top: -40vh;
+    margin-top: -50px;
+    padding-bottom: 0vh;
   }
   .landing-center-bigtext {
     width: 72vw;

@@ -6,7 +6,8 @@
 
   --color-bg: #f6f8fa;
   --color-logo-text: #355c7d;
-  --color-bigtext: #22284a;
+  --color-bigtext: #990f4b; 
+  /* 22284a */
   --color-highlight: #fff;
   --color-highlight-bg: #46bfae;
   --color-logo-bg: #e1e7ef;
@@ -19,7 +20,7 @@
   --highlight-padding-v: 8px;
   --highlight-padding-h: 26px;
   --main-gap: 40px;
-  --navbar-padding-top: 0;
+  --navbar-padding-top: 0.5vh;
   --navbar-padding-bottom: 2.5vh;
 }
 
