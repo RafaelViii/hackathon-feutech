@@ -19,7 +19,7 @@
   --highlight-padding-v: 8px;
   --highlight-padding-h: 26px;
   --main-gap: 40px;
-  --navbar-padding-top: 0;
+  --navbar-padding-top: 0.5vh;
   --navbar-padding-bottom: 2.5vh;
 }
 
