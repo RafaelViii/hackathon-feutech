@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Enroll a Fingerprint</title>
+  <link rel="stylesheet" href="enrollment-panel-styles/enrollment-panel-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Firebase dependencies -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  <div class="fingerprint-center-main">
+    <div class="fingerprint-card">
+      <h2>Enroll a Fingerprint</h2>
+      <div class="fingerprint-username">User: <span id="fingerprintUser">Loading...</span></div>
+      <div id="instructions">Loading instructions...</div>
+      <button id="startEnroll" class="fingerprint-btn-primary">Start Enrollment</button>
+      <button id="finalStepBtn" class="fingerprint-btn-primary" style="display:none; margin-top:18px;">Proceed to Final Step</button>
+    </div>
+  </div>
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZsj-cL_T_BuLtAz5bkqsw-edZXnumwe0",
+      authDomain: "iot-web-58054.firebaseapp.com",
+      databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "iot-web-58054",
+      storageBucket: "iot-web-58054.appspot.com",
+      messagingSenderId: "949884902967",
+      appId: "1:949884902967:web:6e7f78c7cd0fa1484629b2",
+      measurementId: "G-5C79490N66"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const database = firebase.database();
+
+    // Set user name after authentication
+    auth.onAuthStateChanged(function(user) {
+      if (user) {
+        const userId = user.uid;
+        database.ref("users/" + userId + "/name").once("value").then(snapshot => {
+          const name = snapshot.val() || "Unknown";
+          document.getElementById("fingerprintUser").textContent = name;
+        });
+      } else {
+        document.getElementById("fingerprintUser").textContent = "Not signed in";
+      }
+    });
+
+    // Fingerprint panel logic
+    const ESP32_IP = "192.168.100.204";
+
+    function setInstructions(msg) {
+      document.getElementById("instructions").innerText = msg;
+    }
+
+    function enrollSequence(slotId) {
+      let timeouts = [];
+      setInstructions("Enrolling now...");
+      timeouts.push(setTimeout(() => setInstructions("Place your finger on the sensor"), 1000));
+      timeouts.push(setTimeout(() => setInstructions("Remove your finger"), 6000));
+      timeouts.push(setTimeout(() => setInstructions("Place the same finger again"), 8000));
+      timeouts.push(setTimeout(() => setInstructions("Waiting for result..."), 13000));
+
+      fetch(`http://${ESP32_IP}/enroll?id=${slotId}`, { method: "POST" })
+        .then(response => response.json()
+          .then(data => ({status: response.status, body: data})))
+        .then(({status, body}) => {
+          timeouts.forEach(to => clearTimeout(to));
+          
+          if (status === 200 && body.result && body.result.toLowerCase().includes("success")) {
+            setInstructions(body.result);
+            document.getElementById("startEnroll").style.display = "none";
+            document.getElementById("finalStepBtn").style.display = "";
+
+            // [SAVE MAPPING HERE]
+            const user = firebase.auth().currentUser;
+            if (user) {
+              // Extract slotId from result string e.g. "Enrollment successful (ID #2)"
+              const match = body.result.match(/ID #(\d+)/);
+              if (match) {
+                const slotId = match[1];
+                firebase.database().ref("fingerSlots/" + slotId).set({
+                  uid: user.uid,
+                  name: document.getElementById("fingerprintUser").textContent || "Unknown"
+                });
+              }
+            }
+
+            Swal.fire({
+              icon: 'success',
+              title: 'Enrollment Complete!',
+              text: 'You\'re almost done. This is the final step. Click below to proceed!',
+              confirmButtonText: 'OK',
+              confirmButtonColor: '#46bfae'
+            });
+          } else {
+            setInstructions(body.result || body.error || "Unknown response");
+            document.getElementById("startEnroll").style.display = "";
+            document.getElementById("finalStepBtn").style.display = "none";
+          }
+        })
+        .catch(() => {
+          timeouts.forEach(to => clearTimeout(to));
+          setInstructions("Could not contact device.");
+          document.getElementById("startEnroll").style.display = "";
+          document.getElementById("finalStepBtn").style.display = "none";
+        });
+    }
+
+    document.getElementById("startEnroll").addEventListener("click", function() {
+      setInstructions("Checking available slots...");
+      fetch(`http://${ESP32_IP}/free_slots`)
+        .then(res => res.json().then(data => ({status: res.status, body: data})))
+        .then(({status, body}) => {
+          if (status !== 200) {
+            setInstructions(`Error (${body.error_code || status}): ${body.error || "Unknown error"}`);
+            return;
+          }
+          if (body.free && body.free.length > 0) {
+            enrollSequence(body.free[0]);
+          } else {
+            setInstructions("No available slots!");
+          }
+        })
+        .catch(() => {
+          setInstructions("Could not check slots.");
+        });
+    });
+
+    document.getElementById("finalStepBtn").addEventListener("click", function() {
+      window.location.href = "submit-sample-panel.html";
+    });
+
+    setInstructions(`Press "Start Enrollment" to use the first available slot.\n\nEnrollment steps:\n1. Place your finger on the sensor\n2. Remove your finger when prompted\n3. Place the same finger again\n4. Wait for result`);
+  </script>
+  <script>
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyDZsj-cL_T_BuLtAz5bkqsw-edZXnumwe0",
+    authDomain: "iot-web-58054.firebaseapp.com",
+    databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "iot-web-58054",
+    storageBucket: "iot-web-58054.appspot.com",
+    messagingSenderId: "949884902967",
+    appId: "1:949884902967:web:6e7f78c7cd0fa1484629b2",
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const logBody = document.getElementById("logBody");
+  const openCountSpan = document.getElementById("openCount");
+  const closeCountSpan = document.getElementById("closeCount");
+  const datePicker = document.getElementById("datePicker");
+  const summary = document.getElementById("summary");
+  const clearLogBtn = document.getElementById("clearLogBtn");
+
+  // --- Calculate offset based on your actual time and ESP time ---
+  const espDate = new Date("2025-06-28T07:31:37+08:00"); // ESP log time
+  const realDate = new Date("2025-06-29T04:00:00+08:00"); // Your actual time
+
+  const espTS = espDate.getTime();
+  const realTS = realDate.getTime();
+
+  const TIME_OFFSET = 1747965290099;
+
+  const newEspDate = new Date("2025-06-29T04:11:47+08:00");
+  const newRealDate = new Date("2025-06-29T04:11:00+08:00");
+
+  const newEspTS = newEspDate.getTime();
+  const newRealTS = newRealDate.getTime();
+  const NEW_TIME_OFFSET = newRealTS - newEspTS;
+
+  const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+  function formatTime(ts) {
+    let offset = TIME_OFFSET;
+    if (Number(ts) >= newEspTS) {
+      offset = NEW_TIME_OFFSET;
+    }
+    const adjusted = new Date(Number(ts) + offset + ONE_DAY_MS);
+    return adjusted.toLocaleString("en-PH", { timeZone: "Asia/Manila" });
+  }
+
+  // Load finger slot name mapping from Firebase
+  let slotNameMap = {};
+  firebase.database().ref("fingerSlots").on("value", snap => {
+    slotNameMap = snap.val() || {};
+    renderLogs(); // re-render logs when mapping changes
+  });
+
+  // Helper: Map fingerprint IDs to person names
+  function getPersonName(log) {
+    let fid = log.fpid !== undefined ? log.fpid : log.fingerprintId;
+    if (fid === undefined || fid === null || fid === "") return "";
+    // Try to get name from mapping
+    let name = slotNameMap[String(fid)]?.name;
+    if (name) return name;
+    // fallback as before
+    if (typeof fid === "string" && fid.match(/^\d+$/)) fid = parseInt(fid, 10);
+    if (fid === 2) return "Ariel";
+    if (fid === 1) return "Rafael";
+    return fid !== undefined && fid !== "" ? "Unknown (" + fid + ")" : "";
+  }
+
+  let allLogs = [];
+
+  db.ref("doorLogs").on("value", (snapshot) => {
+    let openCount = 0;
+    let closeCount = 0;
+    let logs = [];
+    snapshot.forEach(child => {
+      const data = child.val();
+      if (!data || !data.event || !data.timestamp) return;
+      if (data.event === "open") openCount++;
+      if (data.event === "close") closeCount++;
+      logs.push(data);
+    });
+    logs.sort((a, b) => b.timestamp - a.timestamp);
+    allLogs = logs;
+
+    openCountSpan.textContent = openCount;
+    closeCountSpan.textContent = closeCount;
+
+    renderLogs();
+  });
+
+  function renderLogs() {
+    let logs = allLogs.slice();
+    let selectedDate = datePicker.value;
+    let filteredLogs = logs;
+    if (selectedDate) {
+      filteredLogs = logs.filter(log => {
+        let offset = (Number(log.timestamp) >= newEspTS) ? NEW_TIME_OFFSET : TIME_OFFSET;
+        let d = new Date(Number(log.timestamp) + offset + ONE_DAY_MS);
+        let logDate = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+        return logDate === selectedDate;
+      });
+    }
+
+    let openCount = 0, closeCount = 0;
+    filteredLogs.forEach(log => {
+      if (log.event === "open") openCount++;
+      if (log.event === "close") closeCount++;
+    });
+
+    if (selectedDate) {
+      let dt = new Date(selectedDate + "T00:00:00+08:00");
+      let dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      let day = dayNames[dt.getDay()];
+      summary.innerHTML = `On <strong>${day}, ${selectedDate}</strong>: <span style="color:#008000">Opened: ${openCount}</span>, <span style="color:#B22222">Closed: ${closeCount}</span>`;
+    } else {
+      summary.innerHTML = "";
+    }
+
+    logBody.innerHTML = filteredLogs.map(log => `
+      <tr>
+        <td class="${log.event}">${log.event.charAt(0).toUpperCase() + log.event.slice(1)}</td>
+        <td>${formatTime(log.timestamp)}</td>
+        <td>${getPersonName(log)}</td>
+      </tr>
+    `).join('');
+  }
+
+  datePicker.addEventListener('change', renderLogs);
+
+  clearLogBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to delete ALL logs?')) {
+      db.ref("doorLogs").remove();
+    }
+  });
+</script>
+</body>
+</html>

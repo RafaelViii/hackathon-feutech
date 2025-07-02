@@ -1,0 +1,7 @@
+@media (min-width: 600px) and (max-width: 1023px) {
+  .main-navbar { height: 60px; }
+  .navbar-logo { --nav-logo-size: 32px; }
+  .navbar-title { font-size: 1.15rem; }
+  .main-footer { font-size: 0.875rem; padding: var(--space-s) 0; }
+  .login-logo { --logo-width: 100px; --logo-height: 100px; --logo-margin-bottom: 18px; --logo-margin-top: 18px;}
+}

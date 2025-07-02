@@ -1,0 +1,7 @@
+@media (min-width: 1024px) {
+  .main-navbar { height: 64px; }
+  .navbar-logo { --nav-logo-size: 36px; }
+  .navbar-title { font-size: var(--nav-title-font);}
+  .main-footer { font-size: var(--font-s); padding: var(--space-s) 0; }
+  .login-logo { --logo-width: 120px; --logo-height: 120px; --logo-margin-bottom: 28px; --logo-margin-top: 24px;}
+}
