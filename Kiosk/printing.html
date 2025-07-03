@@ -32,6 +32,7 @@
       height: 64px;
       animation: spin 1s linear infinite;
       margin-bottom: 24px;
+      display: none;
     }
     @keyframes spin {
       0% { transform: rotate(0deg);}
@@ -42,6 +43,7 @@
       letter-spacing: 1px;
       color: #ffbe3b;
       margin-bottom: 32px;
+      display: none;
     }
     .receipt-preview {
       background: #fff;
@@ -52,6 +54,7 @@
       font-family: 'IM FELL GreatPrimer', serif;
       width: 320px;
       margin-bottom: 40px;
+      display: none;
     }
     .receipt-preview h2 {
       text-align: center;
@@ -83,6 +86,31 @@
       color: #666;
       letter-spacing: 1px;
     }
+    #userSelectContainer {
+      margin-bottom: 32px;
+    }
+    #userSelect {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      margin-right: 10px;
+    }
+    #printBtn {
+      padding: 10px 24px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: none;
+      background: #ffbe3b;
+      color: #222b3a;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #printBtn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
     @media (max-width: 400px) {
       .receipt-preview {
         width: 90vw;
@@ -93,8 +121,14 @@
 </head>
 <body>
   <div class="loading-container">
-    <div class="loader"></div>
-    <div class="printing-text">Printing...</div>
+    <div id="userSelectContainer">
+      <select id="userSelect">
+        <option value="">Loading users...</option>
+      </select>
+      <button id="printBtn" disabled>Print</button>
+    </div>
+    <div class="loader" id="loader"></div>
+    <div class="printing-text" id="printingText">Printing...</div>
     <div class="receipt-preview" id="receiptPreview">
       <!-- Receipt preview will be inserted here by JS -->
     </div>
@@ -116,231 +150,99 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Get review details from localStorage
-    const businessName = localStorage.getItem("businessName") || "N/A";
-    const product = localStorage.getItem("product") || "N/A";
-    const tagline = localStorage.getItem("tagline") || "N/A";
-    const funding = localStorage.getItem("funding") || "N/A";
-    const purpose = localStorage.getItem("purpose") || "N/A";
-    const deviceName = "POS58DE487"; // Your printer name
+    // Thermal printer name
+    const deviceName = "POS58DE487";
 
-    // Render receipt preview
-    document.getElementById("receiptPreview").innerHTML = `
-      <h2>ScaleUp Kiosk Receipt</h2>
-      <div class="receipt-line"><span class="receipt-label">Business Name:</span> <span class="receipt-value">${businessName}</span></div>
-      <div class="receipt-line"><span class="receipt-label">Product:</span> <span class="receipt-value">${product}</span></div>
-      <div class="receipt-line"><span class="receipt-label">Tagline:</span> <span class="receipt-value">${tagline}</span></div>
-      <div class="receipt-line"><span class="receipt-label">Funding Goal:</span> <span class="receipt-value">₱${funding}</span></div>
-      <div class="receipt-line"><span class="receipt-label">Purpose:</span> <span class="receipt-value">${purpose}</span></div>
-      <div class="receipt-thankyou">Thank you for using ScaleUp!</div>
-    `;
+    // UI elements
+    const userSelect = document.getElementById('userSelect');
+    const printBtn = document.getElementById('printBtn');
+    const receiptPreview = document.getElementById('receiptPreview');
+    const loader = document.getElementById('loader');
+    const printingText = document.getElementById('printingText');
+    const userSelectContainer = document.getElementById('userSelectContainer');
 
-    // ESC/POS friendly format for the thermal printer
-    function formatForPrinter() {
-      let lines = [
-        "==============================",
-        "        ScaleUp Kiosk         ",
-        "==============================",
-        `Business Name: ${businessName}`,
-        `Product:      ${product}`,
-        `Tagline:      ${tagline}`,
-        `Funding Goal: ₱${funding}`,
-        `Purpose:      ${purpose}`,
-        "",
-        "   Thank You for Using ScaleUp!",
-        "=============================="
-      ];
-      return lines.join('\n');
-    }
+    let usersData = {};
+    let selectedUser = null;
 
-    // Send print request to Firebase
-    function sendPrintRequest() {
-      const requestRef = db.ref('print_requests').push();
-      return requestRef.set({
-        deviceName: deviceName,
-        text: formatForPrinter(),
-        timestamp: Date.now()
-      });
-    }
-
-    // Immediately send print request, then redirect after 8 seconds
-    sendPrintRequest().finally(() => {
-      setTimeout(function() {
-        window.location.href = "screen8.html";
-      }, 8000);
+    // Load users from Firebase /users
+    db.ref("users").on("value", snapshot => {
+      const users = snapshot.val();
+      usersData = users || {};
+      userSelect.innerHTML = ""; // clear
+      if (users && Object.keys(users).length > 0) {
+        userSelect.innerHTML = '<option value="">Select a user...</option>';
+        Object.entries(users).forEach(([userId, user]) => {
+          let name = user.name || user.fullName || user.username || userId;
+          userSelect.innerHTML += `<option value="${userId}">${name}</option>`;
+        });
+        userSelect.disabled = false;
+        printBtn.disabled = true;
+      } else {
+        userSelect.innerHTML = '<option value="">No users found</option>';
+        userSelect.disabled = true;
+        printBtn.disabled = true;
+      }
     });
-  </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Printing...</title>
-  <link rel="stylesheet" href="theme.css">
-  <link rel="stylesheet" href="Kiosk Css/printing.css">
-  <style>
-    body {
-      background: #161d27;
-      color: #fff;
-      font-family: 'Lilita One', 'Arial', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .loading-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin-top: 40px;
-    }
-    .loader {
-      border: 8px solid #222b3a;
-      border-top: 8px solid #ffbe3b;
-      border-radius: 50%;
-      width: 64px;
-      height: 64px;
-      animation: spin 1s linear infinite;
-      margin-bottom: 24px;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg);}
-      100% { transform: rotate(360deg);}
-    }
-    .printing-text {
-      font-size: 2rem;
-      letter-spacing: 1px;
-      color: #ffbe3b;
-      margin-bottom: 32px;
-    }
-    .receipt-preview {
-      background: #fff;
-      color: #222b3a;
-      padding: 24px 32px;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-      font-family: 'IM FELL GreatPrimer', serif;
-      width: 320px;
-      margin-bottom: 40px;
-    }
-    .receipt-preview h2 {
-      text-align: center;
-      font-size: 1.5rem;
-      margin-bottom: 8px;
-      font-family: 'Lilita One', sans-serif;
-      color: #161d27;
-      letter-spacing: 1px;
-    }
-    .receipt-line {
-      font-size: 1.1rem;
-      margin: 8px 0;
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px dashed #ddd;
-      padding-bottom: 3px;
-    }
-    .receipt-label {
-      font-weight: bold;
-      color: #3a465e;
-    }
-    .receipt-value {
-      text-align: right;
-    }
-    .receipt-thankyou {
-      text-align: center;
-      margin-top: 18px;
-      font-size: 1rem;
-      color: #666;
-      letter-spacing: 1px;
-    }
-    @media (max-width: 400px) {
-      .receipt-preview {
-        width: 90vw;
-        padding: 12px 6vw;
+
+    userSelect.addEventListener("change", function() {
+      const uid = userSelect.value;
+      if (!uid || !usersData[uid]) {
+        receiptPreview.style.display = "none";
+        printBtn.disabled = true;
+        selectedUser = null;
+        return;
       }
-    }
-  </style>
-</head>
-<body>
-  <div class="loading-container">
-    <div class="loader"></div>
-    <div class="printing-text">Printing...</div>
-    <div class="receipt-preview" id="receiptPreview">
-      <!-- Receipt preview will be inserted here by JS -->
-    </div>
-  </div>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <script>
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyDZsj-cL_T_BuLtAz5bkqsw-edZXnumwe0",
-      authDomain: "iot-web-58054.firebaseapp.com",
-      databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "iot-web-58054",
-      storageBucket: "iot-web-58054.appspot.com",
-      messagingSenderId: "949884902967",
-      appId: "1:949884902967:web:6e7f78c7cd0fa1484629b2",
-      measurementId: "G-5C79490N66"
-    };
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+      selectedUser = usersData[uid];
+      // Render receipt preview for this user (customize fields as needed)
+      receiptPreview.innerHTML = `
+        <h2>ScaleUp Kiosk Receipt</h2>
+        <div class="receipt-line"><span class="receipt-label">Name:</span> <span class="receipt-value">${selectedUser.name || selectedUser.fullName || selectedUser.username || uid}</span></div>
+        ${selectedUser.businessName ? `<div class="receipt-line"><span class="receipt-label">Business Name:</span> <span class="receipt-value">${selectedUser.businessName}</span></div>` : ""}
+        ${selectedUser.product ? `<div class="receipt-line"><span class="receipt-label">Product:</span> <span class="receipt-value">${selectedUser.product}</span></div>` : ""}
+        ${selectedUser.tagline ? `<div class="receipt-line"><span class="receipt-label">Tagline:</span> <span class="receipt-value">${selectedUser.tagline}</span></div>` : ""}
+        ${selectedUser.funding ? `<div class="receipt-line"><span class="receipt-label">Funding Goal:</span> <span class="receipt-value">₱${selectedUser.funding}</span></div>` : ""}
+        ${selectedUser.purpose ? `<div class="receipt-line"><span class="receipt-label">Purpose:</span> <span class="receipt-value">${selectedUser.purpose}</span></div>` : ""}
+        <div class="receipt-thankyou">Thank you for using ScaleUp!</div>
+      `;
+      receiptPreview.style.display = "";
+      printBtn.disabled = false;
+    });
 
-    // Get review details from localStorage
-    const businessName = localStorage.getItem("businessName") || "N/A";
-    const product = localStorage.getItem("product") || "N/A";
-    const tagline = localStorage.getItem("tagline") || "N/A";
-    const funding = localStorage.getItem("funding") || "N/A";
-    const purpose = localStorage.getItem("purpose") || "N/A";
-    const deviceName = "POS58DE487"; // Your printer name
-
-    // Render receipt preview
-    document.getElementById("receiptPreview").innerHTML = `
-      <h2>ScaleUp Kiosk Receipt</h2>
-      <div class="receipt-line"><span class="receipt-label">Business Name:</span> <span class="receipt-value">${businessName}</span></div>
-      <div class="receipt-line"><span class="receipt-label">Product:</span> <span class="receipt-value">${product}</span></div>
-      <div class="receipt-line"><span class="receipt-label">Tagline:</span> <span class="receipt-value">${tagline}</span></div>
-      <div class="receipt-line"><span class="receipt-label">Funding Goal:</span> <span class="receipt-value">₱${funding}</span></div>
-      <div class="receipt-line"><span class="receipt-label">Purpose:</span> <span class="receipt-value">${purpose}</span></div>
-      <div class="receipt-thankyou">Thank you for using ScaleUp!</div>
-    `;
-
-    // ESC/POS friendly format for the thermal printer
-    function formatForPrinter() {
+    function formatForPrinter(user, uid) {
       let lines = [
         "==============================",
         "        ScaleUp Kiosk         ",
         "==============================",
-        `Business Name: ${businessName}`,
-        `Product:      ${product}`,
-        `Tagline:      ${tagline}`,
-        `Funding Goal: ₱${funding}`,
-        `Purpose:      ${purpose}`,
-        "",
-        "   Thank You for Using ScaleUp!",
-        "=============================="
+        `Name:         ${user.name || user.fullName || user.username || uid}`,
       ];
+      if (user.businessName) lines.push(`Business Name: ${user.businessName}`);
+      if (user.product) lines.push(`Product:      ${user.product}`);
+      if (user.tagline) lines.push(`Tagline:      ${user.tagline}`);
+      if (user.funding) lines.push(`Funding Goal: ₱${user.funding}`);
+      if (user.purpose) lines.push(`Purpose:      ${user.purpose}`);
+      lines.push("", "   Thank You for Using ScaleUp!", "==============================");
       return lines.join('\n');
     }
 
-    // Send print request to Firebase
-    function sendPrintRequest() {
-      const requestRef = db.ref('print_requests').push();
-      return requestRef.set({
-        deviceName: deviceName,
-        text: formatForPrinter(),
-        timestamp: Date.now()
-      });
-    }
+    printBtn.addEventListener("click", function() {
+      if (!selectedUser) return;
+      loader.style.display = "block";
+      printingText.style.display = "block";
+      userSelectContainer.style.display = "none";
+      receiptPreview.style.display = "block";
+      printBtn.disabled = true;
 
-    // Immediately send print request, then redirect after 8 seconds
-    sendPrintRequest().finally(() => {
-      setTimeout(function() {
-        window.location.href = "screen8.html";
-      }, 8000);
+      // Send print request to Firebase
+      const requestRef = db.ref('print_requests').push();
+      requestRef.set({
+        deviceName: deviceName,
+        text: formatForPrinter(selectedUser, userSelect.value),
+        timestamp: Date.now()
+      }).finally(() => {
+        setTimeout(function() {
+          window.location.href = "screen8.html";
+        }, 8000);
+      });
     });
   </script>
 </body>
