@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>InvestiKids – Fun Product Investment Marketplace</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #5ecfff;
+      --secondary: #ffe66d;
+      --accent: #ff94c2;
+      --background: #f8fbff;
+      --text: #232946;
+      --card: #fff;
+      --muted: #878787;
+      --success: #3ac569;
+      --shadow: 0 4px 16px rgba(94,207,255,0.13);
+    }
+    body {
+      margin: 0;
+      font-family: 'Fredoka', Arial, sans-serif;
+      background: var(--background);
+      color: var(--text);
+    }
+    header {
+      background: var(--primary);
+      padding: 1.2rem 0 1rem 0;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1.5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: var(--shadow);
+      border-bottom-left-radius: 35px;
+      border-bottom-right-radius: 35px;
+      gap: 1rem;
+    }
+    .hero {
+      max-width: 900px;
+      margin: 2rem auto 0 auto;
+      padding: 2rem;
+      background: var(--card);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      border: 3px solid var(--primary);
+    }
+    .hero h1 {
+      margin: 0 0 .5em 0;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .hero p {
+      font-size: 1.17rem;
+      margin: 0 0 1.1em 0;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .hero .cta {
+      background: var(--secondary);
+      color: #232946;
+      padding: .8em 2em;
+      font-size: 1.1em;
+      border-radius: 18px;
+      border: none;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(255,230,109,0.12);
+      cursor: pointer;
+      transition: background .2s;
+      margin-top: .4em;
+      letter-spacing: .5px;
+    }
+    .hero .cta:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1rem 3rem 1rem;
+    }
+    h2 {
+      margin-top: 2.3rem;
+      font-size: 1.35rem;
+      color: var(--primary);
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    /* Trending carousel */
+    .carousel-outer {
+      overflow: hidden;
+      width: 100%;
+      border-radius: 18px;
+      margin-bottom: 1.2rem;
+      border: 2px solid var(--primary);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+    .carousel {
+      display: flex;
+      gap: 1.2rem;
+      padding: 1.2rem 0 1.2rem 1.2rem;
+      transition: transform 0.5s cubic-bezier(.68,-0.55,.27,1.55);
+      will-change: transform;
+    }
+    .trending-card {
+      min-width: 240px;
+      background: var(--secondary);
+      border-radius: 18px;
+      box-shadow: 0 2px 14px rgba(255,230,109,0.15);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      scroll-snap-align: start;
+      border: 2px solid var(--primary);
+      position: relative;
+    }
+    .trending-card img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 15px;
+      margin-bottom: 1rem;
+      background: #eee;
+      border: 2px solid var(--accent);
+    }
+    .trending-card .trend-star {
+      position: absolute; right: 12px; top: 12px;
+      font-size: 1.3em; color: var(--accent);
+      filter: drop-shadow(0 1px 5px #fff6);
+    }
+    /* Market grid */
+    .market-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.6rem 1.1rem;
+      margin-top: 1.1rem;
+    }
+    .market-card {
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      border: 2px solid var(--primary);
+      padding: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow .15s, border-color .16s;
+    }
+    .market-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 18px rgba(255,148,194,0.11);
+    }
+    .market-card img {
+      width: 98px;
+      height: 98px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: #eee;
+      border: 1.5px solid var(--primary);
+    }
+    .invest-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 13px;
+      font-weight: 700;
+      margin-top: 1em;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.15s;
+      box-shadow: 0 2px 8px rgba(94,207,255,0.09);
+    }
+    .invest-btn:hover {
+      background: var(--accent);
+      color: #232946;
+    }
+    /* Product upload form */
+    .upload-form {
+      background: var(--card);
+      border-radius: 16px;
+      border: 2px solid var(--primary);
+      box-shadow: var(--shadow);
+      padding: 1.2rem;
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: .85rem;
+      max-width: 420px;
+    }
+    .upload-form input, .upload-form textarea {
+      padding: .65rem;
+      border: 2px solid var(--secondary);
+      border-radius: 8px;
+      font-size: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+      background: #f8fafc;
+      color: var(--text);
+    }
+    .upload-form textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+    .upload-form button {
+      background: var(--accent);
+      color: #232946;
+      border: none;
+      padding: 0.55rem 1.1rem;
+      border-radius: 11px;
+      font-weight: bold;
+      font-size: 1.07em;
+      cursor: pointer;
+      margin-top: .3em;
+      transition: background 0.15s;
+    }
+    .upload-form button:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+    .success-msg {
+      margin-top: .6em;
+      color: var(--success);
+      font-weight: 600;
+      font-size: .97em;
+    }
+    @media (max-width: 600px) {
+      .hero, main {
+        padding: 1rem;
+      }
+      header {
+        font-size: 1.2rem;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+      }
+      .hero h1 {
+        font-size: 1.1rem;
+      }
+      .carousel-outer { border-radius: 10px; }
+      .trending-card { min-width: 160px; border-radius: 10px; }
+      .market-card { border-radius: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <span role="img" aria-label="Shop" style="font-size:2rem;">🧸</span> InvestiKids
+  </header>
+  <div class="hero">
+    <h1>Make, Share, and Shine!</h1>
+    <p>
+      Got a cool project or craft? Want to help others grow? InvestiKids lets you show your awesome products,
+      get support, or invest in other young creators—easy, safe, and fun!
+    </p>
+    <button class="cta" onclick="document.getElementById('upload-section').scrollIntoView({behavior:'smooth'})">
+      Upload Your Creation
+    </button>
+  </div>
+  <main>
+    <h2>🔥 Latest Trending Products</h2>
+    <div class="carousel-outer">
+      <div class="carousel" id="trending-carousel"></div>
+    </div>
+    <h2>🌟 All Products</h2>
+    <div class="market-grid" id="market-grid"></div>
+    <h2 id="upload-section" style="scroll-margin-top:80px;">🎨 Upload Your Product</h2>
+    <form class="upload-form" id="upload-form" autocomplete="off">
+      <input name="name" placeholder="Product Name" required>
+      <input name="image" placeholder="Image URL" required>
+      <textarea name="description" placeholder="What makes it cool?" required></textarea>
+      <input name="creator" placeholder="Your Name" required>
+      <button type="submit">Upload</button>
+      <div class="success-msg" id="upload-success" style="display:none;"></div>
+    </form>
+  </main>
+  <script>
+    // -- Demo data --
+    let products = [
+      {
+        id: 1,
+        name: "Rainbow Slime Kit",
+        image: "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&w=400&q=80",
+        description: "Make your own super-stretchy, sparkly slime in every color!",
+        creator: "Jamie",
+        investments: 4,
+        trending: true,
+        date: "2025-07-01"
+      },
+      {
+        id: 2,
+        name: "Mini Skateboard Deck",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-painted mini deck for tricks and display.",
+        creator: "Max",
+        investments: 8,
+        trending: true,
+        date: "2025-07-02"
+      },
+      {
+        id: 3,
+        name: "Friendship Bracelet Pack",
+        image: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80",
+        description: "Colorful bands, beads, and charms—share with friends!",
+        creator: "Riley",
+        investments: 6,
+        trending: true,
+        date: "2025-07-02"
+      },
+      {
+        id: 4,
+        name: "Glow-in-the-dark Planter",
+        image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+        description: "A cute pot for your desk plants, glows softly at night.",
+        creator: "Sam",
+        investments: 2,
+        trending: false,
+        date: "2025-06-30"
+      }
+    ];
+
+    // -- Carousel (auto-scrolling) --
+    let scrollIndex = 0;
+    let carouselPaused = false;
+    let trendingList = [];
+
+    function renderTrending() {
+      trendingList = products.filter(p => p.trending);
+      const container = document.getElementById('trending-carousel');
+      container.innerHTML = '';
+      trendingList.forEach((p, i) => {
+        const card = document.createElement('div');
+        card.className = "trending-card";
+        card.innerHTML = `
+          <span class="trend-star" title="Trending!">★</span>
+          <img src="${p.image}" alt="${p.name}"/>
+          <div style="font-weight: 700;font-size:1.12em;margin-bottom:3px;">${p.name}</div>
+          <div style="color: #232946; font-size: 1em; margin:.3em 0;font-weight:500;">${p.description}</div>
+          <div style="font-size: .96em; color: var(--accent);margin-bottom:.4em;">by ${p.creator}</div>
+        `;
+        container.appendChild(card);
+      });
+      // Add clones for seamless looping
+      if(trendingList.length > 1) {
+        trendingList.forEach((p, i) => {
+          const card = document.createElement('div');
+          card.className = "trending-card";
+          card.style.opacity = "0.5";
+          card.innerHTML = `
+            <span class="trend-star" title="Trending!">★</span>
+            <img src="${p.image}" alt="${p.name}"/>
+            <div style="font-weight: 700;font-size:1.12em;margin-bottom:3px;">${p.name}</div>
+            <div style="color: #232946; font-size: 1em; margin:.3em 0;font-weight:500;">${p.description}</div>
+            <div style="font-size: .96em; color: var(--accent);margin-bottom:.4em;">by ${p.creator}</div>
+          `;
+          container.appendChild(card);
+        });
+      }
+    }
+
+    function scrollCarousel() {
+      if (carouselPaused || trendingList.length < 2) return;
+      const container = document.getElementById('trending-carousel');
+      scrollIndex = (scrollIndex + 1) % trendingList.length;
+      container.style.transform = `translateX(-${scrollIndex * 260}px)`;
+    }
+
+    // Pause on hover/touch
+    function setupCarouselPause() {
+      const outer = document.querySelector(".carousel-outer");
+      outer.addEventListener('mouseenter', () => carouselPaused = true);
+      outer.addEventListener('mouseleave', () => carouselPaused = false);
+      outer.addEventListener('touchstart', () => carouselPaused = true);
+      outer.addEventListener('touchend', () => carouselPaused = false);
+    }
+
+    // -- Market grid --
+    function renderMarket() {
+      const grid = document.getElementById('market-grid');
+      grid.innerHTML = '';
+      products.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(p => {
+        const card = document.createElement('div');
+        card.className = "market-card";
+        card.innerHTML = `
+          <img src="${p.image}" alt="${p.name}"/>
+          <div style="font-weight: 700; margin-top: .8em; font-size:1.1em;">${p.name}</div>
+          <div style="color: var(--muted); font-size: 1em; margin: .4em 0 .4em 0;">${p.description}</div>
+          <div style="font-size: .99em; color: var(--accent);font-weight:600;">by ${p.creator}</div>
+          <div style="margin-top: .2em; font-size: .97em; color: var(--primary);">
+            Investments: <span id="inv${p.id}">${p.investments}</span>
+          </div>
+          <button class="invest-btn" onclick="invest(${p.id})">Invest</button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function invest(id) {
+      const idx = products.findIndex(p => p.id === id);
+      products[idx].investments += 1;
+      document.getElementById('inv'+id).innerText = products[idx].investments;
+    }
+
+    document.getElementById('upload-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const fd = new FormData(this);
+      const product = {
+        id: products.length + 1,
+        name: fd.get('name'),
+        image: fd.get('image'),
+        description: fd.get('description'),
+        creator: fd.get('creator'),
+        investments: 0,
+        trending: true,
+        date: new Date().toISOString().slice(0,10)
+      };
+      products.unshift(product);
+      renderTrending();
+      renderMarket();
+      this.reset();
+      document.getElementById('upload-success').style.display = 'block';
+      document.getElementById('upload-success').innerText = "Awesome! Your product is visible above 🎉";
+      setTimeout(() => {
+        document.getElementById('upload-success').style.display = 'none';
+      }, 3500);
+    });
+
+    // -- Init --
+    renderTrending();
+    renderMarket();
+    setupCarouselPause();
+    setInterval(scrollCarousel, 2300);
+
+    // Reset carousel on new product
+    function resetCarouselTransform() {
+      const container = document.getElementById('trending-carousel');
+      container.style.transform = `translateX(0)`;
+      scrollIndex = 0;
+    }
+    document.getElementById('upload-form').addEventListener('submit', resetCarouselTransform);
+
+    // Also reset carousel on page load
+    resetCarouselTransform();
+  </script>
+</body>
+</html>

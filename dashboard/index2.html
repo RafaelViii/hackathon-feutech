@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>CraftInvest – Professional Marketplace</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand: #1d3557;
+      --accent: #457b9d;
+      --background: #f4f6fa;
+      --border: #e0e4ea;
+      --text: #212529;
+      --muted: #6c757d;
+      --card: #fff;
+      --success: #2c9c6a;
+    }
+    body {
+      margin: 0;
+      font-family: 'Roboto', Arial, sans-serif;
+      background: var(--background);
+      color: var(--text);
+    }
+    header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem 1rem 2rem;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--brand);
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .hero {
+      max-width: 900px;
+      margin: 2rem auto 0 auto;
+      padding: 2rem 2rem 1.5rem 2rem;
+      background: var(--card);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      color: var(--brand);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .hero h1 {
+      margin: 0 0 .5em 0;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--brand);
+    }
+    .hero p {
+      font-size: 1.15rem;
+      margin: 0 0 1.2em 0;
+      color: var(--muted);
+    }
+    .hero .cta {
+      background: var(--brand);
+      color: #fff;
+      padding: .8em 2em;
+      font-size: 1.05em;
+      border-radius: 6px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .18s;
+      letter-spacing: .5px;
+    }
+    .hero .cta:hover {
+      background: var(--accent);
+    }
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1rem 3rem 1rem;
+    }
+    h2 {
+      margin-top: 2.2rem;
+      font-size: 1.2rem;
+      color: var(--brand);
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    /* Trending carousel */
+    .carousel {
+      display: flex;
+      overflow-x: auto;
+      gap: 1rem;
+      padding: 1rem 0;
+      scroll-snap-type: x mandatory;
+    }
+    .trending-card {
+      min-width: 220px;
+      background: var(--card);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      scroll-snap-align: start;
+    }
+    .trending-card img {
+      width: 110px;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 7px;
+      margin-bottom: 1rem;
+      background: #eee;
+      border: 1px solid var(--border);
+    }
+    /* Market grid */
+    .market-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.6rem 1.2rem;
+      margin-top: 1.1rem;
+    }
+    .market-card {
+      background: var(--card);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow .15s, border-color .18s;
+    }
+    .market-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 18px rgba(69,123,157,0.09);
+    }
+    .market-card img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 6px;
+      background: #eee;
+      border: 1px solid var(--border);
+    }
+    .invest-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      margin-top: 1em;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.15s;
+    }
+    .invest-btn:hover {
+      background: var(--brand);
+    }
+    /* Product upload form */
+    .upload-form {
+      background: var(--card);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      padding: 1.3rem;
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: .9rem;
+      max-width: 420px;
+    }
+    .upload-form input, .upload-form textarea {
+      padding: .55rem;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      font-size: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+      background: #f8fafc;
+      color: var(--text);
+    }
+    .upload-form textarea {
+      min-height: 60px;
+    }
+    .upload-form button {
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.1rem;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 1.05em;
+      cursor: pointer;
+      margin-top: .3em;
+      transition: background 0.15s;
+    }
+    .upload-form button:hover {
+      background: var(--accent);
+    }
+    .success-msg {
+      margin-top: .6em;
+      color: var(--success);
+      font-weight: 600;
+      font-size: .97em;
+    }
+    @media (max-width: 600px) {
+      .hero, main {
+        padding: 1rem;
+      }
+      header {
+        padding: 1.2rem 1rem 1rem 1rem;
+        font-size: 1.2rem;
+      }
+      .hero h1 {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <span role="img" aria-label="Shop" style="font-size:1.6rem;">💼</span> CraftInvest
+  </header>
+  <div class="hero">
+    <h1>Connect Investors & Creators Worldwide</h1>
+    <p>
+      Present your handmade products to a global audience, attract investment, or discover unique opportunities to invest in artisan ventures.
+      <br>Professional. Transparent. Empowering innovation together.
+    </p>
+    <button class="cta" onclick="document.getElementById('upload-section').scrollIntoView({behavior:'smooth'})">
+      Submit Your Product
+    </button>
+  </div>
+  <main>
+    <h2>Trending Products</h2>
+    <div class="carousel" id="trending-carousel"></div>
+    <h2>Marketplace</h2>
+    <div class="market-grid" id="market-grid"></div>
+    <h2 id="upload-section" style="scroll-margin-top:80px;">Submit a New Product</h2>
+    <form class="upload-form" id="upload-form" autocomplete="off">
+      <input name="name" placeholder="Product Name" required>
+      <input name="image" placeholder="Image URL" required>
+      <textarea name="description" placeholder="Product Description" required></textarea>
+      <input name="creator" placeholder="Your Name" required>
+      <button type="submit">Submit</button>
+      <div class="success-msg" id="upload-success" style="display:none;"></div>
+    </form>
+  </main>
+  <script>
+    // Demo data
+    let products = [
+      {
+        id: 1,
+        name: "Handmade Wooden Bowl",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Carefully crafted bowl made from sustainable oak wood.",
+        creator: "Alice",
+        investments: 3,
+        trending: true,
+        date: "2025-07-01"
+      },
+      {
+        id: 2,
+        name: "Recycled Denim Bag",
+        image: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80",
+        description: "Eco-friendly bag constructed from upcycled denim.",
+        creator: "Bob",
+        investments: 5,
+        trending: true,
+        date: "2025-06-29"
+      },
+      {
+        id: 3,
+        name: "Ceramic Coffee Mug",
+        image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-thrown mug with a unique glazing process.",
+        creator: "Clara",
+        investments: 1,
+        trending: false,
+        date: "2025-07-02"
+      },
+      {
+        id: 4,
+        name: "Handwoven Wall Hanging",
+        image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
+        description: "Wall decor made from organic, fair-trade cotton.",
+        creator: "Dani",
+        investments: 2,
+        trending: false,
+        date: "2025-06-28"
+      }
+    ];
+
+    function renderTrending() {
+      const container = document.getElementById('trending-carousel');
+      container.innerHTML = '';
+      products.filter(p => p.trending).forEach(p => {
+        const card = document.createElement('div');
+        card.className = "trending-card";
+        card.innerHTML = `
+          <img src="${p.image}" alt="${p.name}"/>
+          <div style="font-weight: 700;font-size:1.05em;">${p.name}</div>
+          <div style="color: var(--muted); font-size: .98em; margin:.3em 0;">${p.description}</div>
+          <div style="font-size: .93em; color: var(--accent);">by ${p.creator}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderMarket() {
+      const grid = document.getElementById('market-grid');
+      grid.innerHTML = '';
+      products.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(p => {
+        const card = document.createElement('div');
+        card.className = "market-card";
+        card.innerHTML = `
+          <img src="${p.image}" alt="${p.name}"/>
+          <div style="font-weight: 600; margin-top: .9em;">${p.name}</div>
+          <div style="color: var(--muted); font-size: .97em; margin: .4em 0 .4em 0;">${p.description}</div>
+          <div style="font-size: .92em; color: var(--accent);">by ${p.creator}</div>
+          <div style="margin-top: .3em; font-size: .92em; color: var(--brand);">
+            Investments: <span id="inv${p.id}">${p.investments}</span>
+          </div>
+          <button class="invest-btn" onclick="invest(${p.id})">Invest</button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function invest(id) {
+      const idx = products.findIndex(p => p.id === id);
+      products[idx].investments += 1;
+      document.getElementById('inv'+id).innerText = products[idx].investments;
+    }
+
+    document.getElementById('upload-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const fd = new FormData(this);
+      const product = {
+        id: products.length + 1,
+        name: fd.get('name'),
+        image: fd.get('image'),
+        description: fd.get('description'),
+        creator: fd.get('creator'),
+        investments: 0,
+        trending: false,
+        date: new Date().toISOString().slice(0,10)
+      };
+      products.push(product);
+      renderMarket();
+      this.reset();
+      document.getElementById('upload-success').style.display = 'block';
+      document.getElementById('upload-success').innerText = "Product submitted! Refresh to see it in trending.";
+      setTimeout(() => {
+        document.getElementById('upload-success').style.display = 'none';
+      }, 3200);
+    });
+
+    renderTrending();
+    renderMarket();
+  </script>
+</body>
+</html>

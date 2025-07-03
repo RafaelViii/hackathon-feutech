@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>InvestMarket – Minimal Marketplace</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand: #23395d;
+      --accent: #6387a6;
+      --background: #f6f8fa;
+      --card: #fff;
+      --border: #e8e9ea;
+      --muted: #798598;
+      --success: #257944;
+    }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Inter', Arial, sans-serif;
+      background: var(--background);
+      color: var(--brand);
+      min-height: 100vh;
+    }
+    header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 0 1rem 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--brand);
+      text-align: center;
+      letter-spacing: 0.5px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .nav-filter-toggle {
+      display: flex;
+      align-items: center;
+      background: none;
+      border: none;
+      color: var(--brand);
+      font-size: 1rem;
+      font-family: inherit;
+      cursor: pointer;
+      font-weight: 600;
+      margin-left: 1rem;
+      position: relative;
+      padding: 0.2em 0.7em 0.2em 0.7em;
+      border-radius: 5px;
+      transition: background 0.13s;
+    }
+    .nav-filter-toggle:hover, .nav-filter-toggle.active {
+      background: var(--background);
+    }
+    .nav-arrow {
+      display: inline-block;
+      margin-left: 0.5em;
+      transition: transform 0.25s;
+      font-size: 1.2em;
+    }
+    .nav-filter-toggle.active .nav-arrow {
+      transform: rotate(180deg);
+    }
+    .filter-bar {
+      display: none;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding: 1.2rem 0 .6rem 0;
+      justify-content: flex-start;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--background);
+      animation: fadeIn 0.22s;
+    }
+    .filter-bar.visible {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-12px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .search-group {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+    }
+    .filter-bar label {
+      color: var(--muted);
+      font-size: .98em;
+      margin-right: 0.4em;
+    }
+    .filter-bar input[type="text"], .filter-bar select {
+      border: 1px solid var(--border);
+      padding: .42em .8em;
+      border-radius: 5px;
+      background: #fff;
+      font-size: 1em;
+      color: var(--brand);
+      min-width: 110px;
+      outline: none;
+      transition: border-color .15s;
+    }
+    .filter-bar input[type="text"]:focus, .filter-bar select:focus {
+      border-color: var(--accent);
+    }
+    .filter-bar .close-filter {
+      margin-left: 2rem;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.1em;
+      cursor: pointer;
+      font-weight: 600;
+      padding: .3em 1em;
+      border-radius: 5px;
+      transition: color 0.14s, background 0.14s;
+    }
+    .filter-bar .close-filter:hover {
+      color: var(--brand);
+      background: var(--border);
+    }
+    .hero {
+      max-width: 720px;
+      margin: 2rem auto 0 auto;
+      padding: 0 1.5rem 1.5rem 1.5rem;
+      color: var(--brand);
+    }
+    .hero h1 {
+      font-size: 1.7rem;
+      font-weight: 600;
+      margin: 0 0 .7em 0;
+    }
+    .hero p {
+      font-size: 1.07rem;
+      color: var(--muted);
+      margin: 0 0 0.5em 0;
+      line-height: 1.5;
+    }
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1rem 3rem 1rem;
+    }
+    .market-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.2rem 1.1rem;
+      margin-top: 1.2rem;
+    }
+    .market-card {
+      background: var(--card);
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(35,57,93,0.03);
+      padding: 1rem 1rem 1.2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-height: 180px;
+      transition: border-color .13s, box-shadow .13s;
+    }
+    .market-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 2px 10px rgba(99,135,166,0.07);
+    }
+    .market-card img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 4px;
+      background: #eee;
+      margin-bottom: .8em;
+      border: 1px solid var(--border);
+    }
+    .market-card .prod-title {
+      font-weight: 600;
+      font-size: 1.07em;
+      margin-bottom: .2em;
+      color: var(--brand);
+    }
+    .market-card .prod-desc {
+      color: var(--muted);
+      font-size: .98em;
+      margin-bottom: .5em;
+      flex: 1;
+      line-height: 1.5;
+    }
+    .market-card .prod-meta {
+      font-size: .95em;
+      color: var(--accent);
+      margin-bottom: .2em;
+    }
+    .market-card .prod-invest {
+      color: var(--brand);
+      font-size: .97em;
+      margin-bottom: .2em;
+    }
+    .market-card .invest-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.44rem 1rem;
+      border-radius: 5px;
+      font-weight: 600;
+      font-size: 1em;
+      cursor: pointer;
+      margin-top: .4em;
+      transition: background .13s;
+    }
+    .market-card .invest-btn:hover {
+      background: var(--brand);
+    }
+    .upload-form {
+      background: var(--card);
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(35,57,93,0.03);
+      padding: 1.1rem 1.1rem 1.2rem 1.1rem;
+      margin-top: 1.7rem;
+      display: flex;
+      flex-direction: column;
+      gap: .8rem;
+      max-width: 400px;
+    }
+    .upload-form input, .upload-form textarea, .upload-form select {
+      padding: .55rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+      background: #f8fafc;
+      color: var(--brand);
+    }
+    .upload-form textarea { min-height: 54px; font-size: .98em; }
+    .upload-form button {
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.1rem;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 1.03em;
+      cursor: pointer;
+      margin-top: .2em;
+      transition: background 0.15s;
+    }
+    .upload-form button:hover {
+      background: var(--accent);
+    }
+    .success-msg {
+      margin-top: .5em;
+      color: var(--success);
+      font-weight: 600;
+      font-size: .97em;
+    }
+    @media (max-width: 600px) {
+      .hero, main { padding: 1rem; }
+      header { padding: 1rem 0 .7rem 0; font-size: 1.1rem; flex-direction: column; gap: 0.5rem;}
+      .nav-filter-toggle { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    InvestMarket
+    <button class="nav-filter-toggle" id="nav-filter-toggle" aria-expanded="false" aria-controls="filter-bar">
+      Filter
+      <span class="nav-arrow" id="nav-arrow">&#9660;</span>
+    </button>
+  </header>
+  <!-- Filter Bar -->
+  <form class="filter-bar" id="filter-bar" autocomplete="off" onsubmit="return false;" aria-hidden="true">
+    <div class="search-group">
+      <label for="search">Search:</label>
+      <input type="text" id="search" placeholder="Product name...">
+    </div>
+    <div class="search-group">
+      <label for="type">Type:</label>
+      <select id="type">
+        <option value="">All</option>
+        <option value="craft">Craft</option>
+        <option value="tech">Tech</option>
+        <option value="fashion">Fashion</option>
+        <option value="art">Art</option>
+      </select>
+    </div>
+    <div class="search-group">
+      <label for="range">Investment:</label>
+      <select id="range">
+        <option value="">Any</option>
+        <option value="1">Under $100</option>
+        <option value="2">$100-$500</option>
+        <option value="3">Above $500</option>
+      </select>
+    </div>
+    <div class="search-group">
+      <label for="rating">Rating:</label>
+      <select id="rating">
+        <option value="">Any</option>
+        <option value="4">4★+</option>
+        <option value="3">3★+</option>
+        <option value="2">2★+</option>
+      </select>
+    </div>
+    <button class="close-filter" id="close-filter" type="button">
+      &#8592; Hide Filter
+    </button>
+  </form>
+  <div class="hero">
+    <h1>Discover & Fund Unique Projects</h1>
+    <p>
+      Browse a curated collection of innovative, handmade, or small-batch products seeking investment. 
+      Filter by type, range, or rating. Upload your own creation and connect with supporters.
+    </p>
+  </div>
+  <main>
+    <div class="market-grid" id="market-grid"></div>
+    <form class="upload-form" id="upload-form" autocomplete="off">
+      <input name="name" placeholder="Product Name" required>
+      <input name="image" placeholder="Image URL" required>
+      <textarea name="description" placeholder="Describe your product" required></textarea>
+      <input name="creator" placeholder="Your Name" required>
+      <select name="type" required>
+        <option value="">Select Type</option>
+        <option value="craft">Craft</option>
+        <option value="tech">Tech</option>
+        <option value="fashion">Fashion</option>
+        <option value="art">Art</option>
+      </select>
+      <select name="range" required>
+        <option value="">Investment Range</option>
+        <option value="1">Under $100</option>
+        <option value="2">$100-$500</option>
+        <option value="3">Above $500</option>
+      </select>
+      <select name="rating" required>
+        <option value="">Rating</option>
+        <option value="5">5★</option>
+        <option value="4">4★</option>
+        <option value="3">3★</option>
+        <option value="2">2★</option>
+        <option value="1">1★</option>
+      </select>
+      <button type="submit">Upload</button>
+      <div class="success-msg" id="upload-success" style="display:none;"></div>
+    </form>
+  </main>
+  <script>
+    // Demo data
+    let products = [
+      {
+        id: 1,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      },
+      {
+        id: 2,
+        name: "Eco Earbuds",
+        image: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80",
+        description: "Biodegradable, hi-fi earbuds for music lovers.",
+        creator: "Bob",
+        investments: 5,
+        type: "tech",
+        range: "3",
+        rating: 5,
+        date: "2025-06-29"
+      },
+      {
+        id: 3,
+        name: "Painted Ceramic Mug",
+        image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-thrown mug with custom artistic painting.",
+        creator: "Clara",
+        investments: 1,
+        type: "craft",
+        range: "1",
+        rating: 4,
+        date: "2025-07-02"
+      },
+      {
+        id: 4,
+        name: "Abstract Canvas Art",
+        image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
+        description: "Original acrylic artwork for modern spaces.",
+        creator: "Dani",
+        investments: 2,
+        type: "art",
+        range: "2",
+        rating: 5,
+        date: "2025-06-28"
+      },
+      {
+        id: 5,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      },
+      {
+        id: 6,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      },
+      {
+        id: 7,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      }
+      ,
+      {
+        id: 8,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      }
+      ,
+      {
+        id: 9,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      }
+      ,
+      {
+        id: 10,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      }
+      ,
+      {
+        id: 11,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      }
+      ,
+      {
+        id: 12,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      }
+      ,
+      {
+        id: 13,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      }
+      ,
+      {
+        id: 14,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      }
+      ,
+      {
+        id: 15,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      }
+      ,
+      {
+        id: 16,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      }
+      ,
+      {
+        id: 17,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      }
+      ,
+      {
+        id: 18,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      }
+      ,
+      {
+        id: 19,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      }
+      ,
+      {
+        id: 20,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      }
+      ,
+      {
+        id: 21,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      }
+      ,
+      {
+        id: 22,
+        name: "Minimalist Leather Wallet",
+        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+        description: "Hand-stitched, durable, and ultra-slim wallet.",
+        creator: "Alice",
+        investments: 3,
+        type: "fashion",
+        range: "2",
+        rating: 4,
+        date: "2025-07-01"
+      }
+      
+    ];
+
+    function renderMarket(list = products) {
+      const grid = document.getElementById('market-grid');
+      grid.innerHTML = '';
+      list.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(p => {
+        const card = document.createElement('div');
+        card.className = "market-card";
+        card.innerHTML = `
+          <img src="${p.image}" alt="${p.name}"/>
+          <div class="prod-title">${p.name}</div>
+          <div class="prod-desc">${p.description}</div>
+          <div class="prod-meta">by ${p.creator} · ${capitalize(p.type)}</div>
+          <div class="prod-invest">
+            Investments: <span id="inv${p.id}">${p.investments}</span>
+            &nbsp;|&nbsp; Rating: ${"★".repeat(p.rating)}${"☆".repeat(5-p.rating)}
+          </div>
+          <button class="invest-btn" onclick="invest(${p.id})">Invest</button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function capitalize(str) {
+      return str ? str[0].toUpperCase() + str.slice(1) : '';
+    }
+
+    function invest(id) {
+      const idx = products.findIndex(p => p.id === id);
+      products[idx].investments += 1;
+      document.getElementById('inv'+id).innerText = products[idx].investments;
+    }
+
+    // NAV FILTER TOGGLE
+    const filterToggleBtn = document.getElementById("nav-filter-toggle");
+    const filterBar = document.getElementById("filter-bar");
+    const navArrow = document.getElementById("nav-arrow");
+    const closeFilterBtn = document.getElementById("close-filter");
+    function showFilterBar() {
+      filterBar.classList.add("visible");
+      filterToggleBtn.classList.add("active");
+      filterBar.setAttribute("aria-hidden", "false");
+      filterToggleBtn.setAttribute("aria-expanded", "true");
+    }
+    function hideFilterBar() {
+      filterBar.classList.remove("visible");
+      filterToggleBtn.classList.remove("active");
+      filterBar.setAttribute("aria-hidden", "true");
+      filterToggleBtn.setAttribute("aria-expanded", "false");
+    }
+    filterToggleBtn.addEventListener("click", function() {
+      if (filterBar.classList.contains("visible")) {
+        hideFilterBar();
+      } else {
+        showFilterBar();
+      }
+    });
+    closeFilterBtn.addEventListener("click", hideFilterBar);
+
+    // Filter logic (to be implemented, but UI is ready)
+    document.getElementById('filter-bar').addEventListener('input', function() {
+      // Placeholder for future filter logic
+      renderMarket();
+    });
+
+    document.getElementById('upload-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const fd = new FormData(this);
+      const product = {
+        id: products.length + 1,
+        name: fd.get('name'),
+        image: fd.get('image'),
+        description: fd.get('description'),
+        creator: fd.get('creator'),
+        investments: 0,
+        type: fd.get('type'),
+        range: fd.get('range'),
+        rating: parseInt(fd.get('rating'), 10),
+        date: new Date().toISOString().slice(0,10)
+      };
+      products.unshift(product);
+      renderMarket();
+      this.reset();
+      document.getElementById('upload-success').style.display = 'block';
+      document.getElementById('upload-success').innerText = "Product uploaded! (Filters coming soon)";
+      setTimeout(() => {
+        document.getElementById('upload-success').style.display = 'none';
+      }, 3200);
+    });
+
+    // Initial render
+    renderMarket();
+    // Hide filter bar on page load
+    hideFilterBar();
+  </script>
+</body>
+</html>
