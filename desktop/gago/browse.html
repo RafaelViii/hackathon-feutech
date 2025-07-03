@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Browse - Scale Up</title>
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../imagecarousel.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: #f5f6fa;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    .browse-header {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      background: #fff;
+      padding: 20px 32px 10px 32px;
+      border-bottom: 1px solid #e8eaf0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f0f1f7;
+      border-radius: 10px;
+      padding: 8px 14px;
+      flex: 1;
+      max-width: 420px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-right: 24px;
+    }
+    .search-bar input[type="text"] {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 1rem;
+      flex: 1;
+      padding: 6px 0;
+    }
+    .search-icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+    }
+    .search-icon-btn svg {
+      width: 22px;
+      height: 22px;
+    }
+    h2 {
+      text-align:center;
+      margin:24px 0 0 0;
+    }
+    .products-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      margin: 32px auto 0 auto;
+      max-width: 1200px;
+      justify-content: center;
+    }
+    .product-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(30,32,42,0.08);
+      padding: 18px 22px;
+      min-width: 220px;
+      max-width: 260px;
+      flex: 1 0 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 180px;
+    }
+    .product-card img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      background: #f5f6fa;
+    }
+    .product-card .product-title {
+      font-size: 1.13rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+      text-align: center;
+    }
+    .product-card .product-desc {
+      font-size: 0.97rem;
+      color: #555;
+      text-align: center;
+    }
+    @media (max-width: 700px) {
+      .browse-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+        padding: 16px 10px 6px 10px;
+      }
+      .products-list {
+        max-width: 98vw;
+      }
+      .product-card {
+        min-width: 120px;
+        max-width: 98vw;
+        padding: 13px 7vw;
+      }
+    }
+  </style>
+</head>
+<body>
+<header class="browse-header" style="position:relative;">
+  <form class="search-bar" id="browseSearchForm" autocomplete="off" onsubmit="return false;">
+    <input type="text" id="searchInput" placeholder="Search businesses, products, or keywords..." />
+    <button class="search-icon-btn" id="searchBtn" aria-label="Search">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" 
+        xmlns="http://www.w3.org/2000/svg">
+        <circle cx="10" cy="10" r="7" stroke="#5b6cff" stroke-width="2"/>
+        <line x1="15.293" y1="15.707" x2="20" y2="20" stroke="#5b6cff" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </form>
+</header>
+<h2>Browse Results</h2>
+<div class="products-list" id="products-list"></div>
+
+<script>
+  // Your Firebase config from your index.html
+  const firebaseConfig = {
+    apiKey: "AIzaSyA2kNUF7lU2pJvAhyX6WkH5vTQqk3H1z2o",
+    authDomain: "scaleup-1269e.firebaseapp.com",
+    projectId: "scaleup-1269e",
+    storageBucket: "scaleup-1269e.appspot.com",
+    messagingSenderId: "814069465313",
+    appId: "1:814069465313:web:2bf8f2e0f5d4bce2b49e7b"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  function getQueryParam(param) {
+    const url = new URL(window.location.href);
+    return url.searchParams.get(param) || "";
+  }
+
+  async function loadProducts(searchTerm) {
+    const productsList = document.getElementById('products-list');
+    productsList.innerHTML = "Loading...";
+    const search = searchTerm.trim().toLowerCase();
+    if (!search) {
+      productsList.innerHTML = "<em>Please provide a search term.</em>";
+      return;
+    }
+    try {
+      // For best results, ensure your "products" documents contain a "name_lowercase" field.
+      const querySnapshot = await db.collection("products")
+        .where("name_lowercase", ">=", search)
+        .where("name_lowercase", "<=", search + "\uf8ff")
+        .get();
+
+      if (querySnapshot.empty) {
+        productsList.innerHTML = "<em>No products found for '<b>" + searchTerm + "</b>'</em>";
+      } else {
+        let html = "";
+        querySnapshot.forEach(doc => {
+          const data = doc.data();
+          html += `
+            <div class="product-card">
+              <img src="${data.imageUrl || 'https://via.placeholder.com/80'}" alt="${data.name}">
+              <div class="product-title">${data.name}</div>
+              <div class="product-desc">${data.description || ""}</div>
+            </div>
+          `;
+        });
+        productsList.innerHTML = html;
+      }
+    } catch (e) {
+      productsList.innerHTML = "<em>Error fetching products.</em>";
+      console.error(e);
+    }
+  }
+
+  // On load, get search param and show products
+  const searchTerm = getQueryParam("search");
+  document.getElementById('searchInput').value = searchTerm;
+  loadProducts(searchTerm);
+
+  // Search bar in browse.html triggers new search and reloads results (stays on page)
+  document.getElementById('searchBtn').onclick = function() {
+    const val = document.getElementById('searchInput').value.trim();
+    if (val) {
+      window.location.href = `browse.html?search=${encodeURIComponent(val)}`;
+    }
+  };
+  document.getElementById('searchInput').addEventListener("keypress", function(e) {
+    if (e.key === "Enter") document.getElementById('searchBtn').onclick();
+  });
+</script>
+</body>
+</html>

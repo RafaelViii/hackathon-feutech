@@ -88,7 +88,7 @@
       border-radius: 18px;
       box-shadow: 0 2px 16px 0 rgba(60,55,170,0.09);
       padding: 32px 28px 24px 28px;
-      transition: transform 0.13s, box-shadow 0.13s;
+      transition: transform 0.13s, box-shadow 0.13s, border 0.13s;
       border: 1.5px solid rgba(60,55,170,0.07);
       min-width: 0;
       min-height: 0;
@@ -266,6 +266,77 @@
       background: linear-gradient(90deg, #2a84e9 0%, #36b37e 100%);
       box-shadow: 0 8px 24px 0 rgba(60,55,170,0.13);
     }
+    /* Styles for Authentication Section */
+    .auth-section {
+        position: absolute;
+        top: 20px; /* Adjust as needed to not overlap with back button */
+        right: 20px;
+        z-index: 15; /* Above other content */
+        background: #fff;
+        padding: 15px 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        max-width: 280px;
+        min-width: 220px;
+    }
+    .auth-status {
+        font-size: 0.9em;
+        color: #555;
+        text-align: center;
+        width: 100%;
+    }
+    .auth-btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+    .auth-btn {
+        background: linear-gradient(90deg, #2a84e9 0%, #36b37e 100%); /* Slightly different gradient or color for auth buttons */
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        padding: 10px 15px;
+        cursor: pointer;
+        transition: background .14s, box-shadow .12s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .auth-btn:hover {
+        background: linear-gradient(90deg, #36b37e 0%, #2a84e9 100%);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        margin-top: 10px;
+    }
+    .auth-form input {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 0.9em;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .auth-form .auth-btn {
+        margin-top: 5px;
+    }
+    .logout-btn {
+        background: #dc3545; /* Red color for logout */
+    }
+    .logout-btn:hover {
+        background: #c82333;
+    }
     @media (max-width: 700px) {
       .plans-grid {
         grid-template-columns: 1fr;
@@ -277,12 +348,31 @@
       .back-btn-container { padding: 10px 0 0 10px;}
       .back-btn { font-size: .98rem; padding: 6px 14px 6px 10px; }
       .modal-content { width: 96vw; min-width: unset; max-width: 99vw; padding: 6vw 3vw 5vw 3vw;}
+      .auth-section {
+          top: 10px;
+          right: 10px;
+          padding: 10px 15px;
+          max-width: 200px;
+          min-width: unset;
+      }
+      .auth-btn { font-size: 0.85rem; padding: 8px 12px; }
+      .auth-form input { padding: 8px; font-size: 0.8em; }
     }
     @media (max-width: 440px) {
       .plan-card { padding: 8vw 2vw; border-radius: 7px;}
       .back-btn-container { padding: 4px 0 0 4px;}
       .back-btn { font-size: .91rem; }
       .modal-content { padding: 5vw 1vw;}
+      .auth-section {
+          top: 5px;
+          right: 5px;
+          padding: 8px 10px;
+          max-width: 150px;
+          min-width: unset;
+      }
+      .auth-status { font-size: 0.75em; }
+      .auth-btn { font-size: 0.75rem; padding: 6px 8px; }
+      .auth-form input { padding: 6px; font-size: 0.7em; }
     }
   </style>
 </head>
@@ -290,7 +380,6 @@
   <div class="back-btn-container">
     <a class="back-btn" href="../draft.html">
       <span class="back-arrow">
-        <!-- SVG left arrow icon -->
         <svg viewBox="0 0 20 20" fill="none" width="22" height="22" xmlns="http://www.w3.org/2000/svg">
           <path d="M13.25 16L8.25 11L13.25 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -298,8 +387,22 @@
       Back
     </a>
   </div>
+
+  <div class="auth-section">
+    <div class="auth-status" id="authStatus">
+      Loading user status...
+    </div>
+    <div class="auth-btn-group" id="authButtonGroup">
+      <button class="auth-btn" id="showLoginBtn">Login with Email/Password</button>
+    
+      </div>
+    <div class="auth-form" id="authForm" style="display:none;">
+        <input type="email" id="loginEmail" placeholder="Email" value="">
+        <input type="password" id="loginPassword" placeholder="Password" value="">
+        <button class="auth-btn" id="emailLoginBtn">Login</button>
+    </div>
+  </div>
   <div class="plans-grid">
-    <!-- Day Plan -->
     <div class="plan-card day-card" tabindex="0" data-plan="Day" data-price="500" data-type="Day">
       <span class="plan-label">Day</span>
       <div class="plan-title">Daily Advertising</div>
@@ -312,7 +415,6 @@
         <li>Same-day setup available</li>
       </ul>
     </div>
-    <!-- Weekly Plan -->
     <div class="plan-card week-card" tabindex="0" data-plan="Weekly" data-price="3000" data-type="Weekly">
       <span class="plan-label">Weekly</span>
       <div class="plan-title">Weekly Advertising</div>
@@ -325,7 +427,6 @@
         <li>Easy to renew or extend</li>
       </ul>
     </div>
-    <!-- Monthly Plan -->
     <div class="plan-card month-card" tabindex="0" data-plan="Monthly" data-price="9000" data-type="Monthly">
       <span class="plan-label">Monthly</span>
       <div class="plan-title">Monthly Advertising</div>
@@ -338,7 +439,6 @@
         <li>Priority kiosk selection</li>
       </ul>
     </div>
-    <!-- Annual Plan -->
     <div class="plan-card year-card" tabindex="0" data-plan="Annual" data-price="100000" data-type="Annual">
       <span class="plan-label">Annual</span>
       <div class="plan-title">Annual Advertising</div>
@@ -352,7 +452,6 @@
       </ul>
     </div>
   </div>
-  <!-- Modal -->
   <div id="modalBackdrop" class="modal-backdrop" style="display:none;">
     <div class="modal-content" id="modalContent">
       <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
@@ -374,7 +473,41 @@
       <button class="modal-btn" id="proceedBtn" style="display:none;">Proceed to payment</button>
     </div>
   </div>
-  <script>
+  <script type="module">
+    // Firebase SDK Imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+
+    // Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZsj-cL_T_BuLtAz5bkqsw-edZXnumwe0",
+      authDomain: "iot-web-58054.firebaseapp.com",
+      databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "iot-web-58054",
+      storageBucket: "iot-web-58054.appspot.com",
+      messagingSenderId: "949884902967",
+      appId: "1:949884902967:web:6e7f78c7cd0fa1484629b2",
+      measurementId: "G-5C79490N66"
+    };
+
+    // Initialize Firebase services
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app); // Firestore might not be used here directly, but kept for consistency
+    const auth = getAuth(app);
+
+    let currentUser = null; // To store the logged-in user
+
+    // References to Authentication UI elements
+    const authStatusEl = document.getElementById('authStatus');
+    const authButtonGroup = document.getElementById('authButtonGroup');
+    const showLoginBtn = document.getElementById('showLoginBtn');
+    // Removed anonymousLoginBtn as it's no longer in the HTML
+    const authForm = document.getElementById('authForm');
+    const loginEmailInput = document.getElementById('loginEmail');
+    const loginPasswordInput = document.getElementById('loginPassword');
+    const emailLoginBtn = document.getElementById('emailLoginBtn');
+
     // Modal logic variables
     const planCards = document.querySelectorAll('.plan-card');
     const modalBackdrop = document.getElementById('modalBackdrop');
@@ -390,14 +523,108 @@
     let selectedBranch = '';
     let selectedMax = 0;
 
+    // --- Firebase Authentication Functions ---
+
+    // Function to sign in with email and password
+    async function signInWithEmailPass(email, password) {
+        emailLoginBtn.disabled = true;
+        emailLoginBtn.textContent = 'Logging in...';
+        // Removed anonymousLoginBtn.disabled = true;
+        authStatusEl.textContent = 'Attempting login...';
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            currentUser = userCredential.user;
+            console.log("Signed in with Email/Password as:", currentUser.email, "UID:", currentUser.uid);
+            updateAuthUI(currentUser);
+            return currentUser;
+        } catch (error) {
+            console.error("Error signing in with Email/Password:", error.code, error.message);
+            authStatusEl.textContent = `Login failed: ${error.message}`;
+            emailLoginBtn.disabled = false;
+            emailLoginBtn.textContent = 'Login';
+            // Removed anonymousLoginBtn.disabled = false;
+            alert(`Login failed: ${error.message}`);
+            return null;
+        }
+    }
+
+    // Removed signInAnonymouslyUser function
+
+    // Function to handle logout
+    async function handleLogout() {
+        try {
+            await signOut(auth);
+            console.log("User logged out.");
+            updateAuthUI(null); // Update UI to logged out state
+            alert("You have been logged out.");
+        } catch (error) {
+            console.error("Error logging out:", error);
+            alert(`Logout failed: ${error.message}`);
+        }
+    }
+
+    // Function to update the UI based on authentication status
+    function updateAuthUI(user) {
+        if (user) {
+            currentUser = user;
+            const displayEmail = user.email || "Anonymous User";
+            const displayUid = user.uid.substring(0, 8) + '...';
+            authStatusEl.innerHTML = `Logged in as: <b>${displayEmail}</b> (UID: ${displayUid})`;
+
+            // Hide login buttons/form
+            showLoginBtn.style.display = 'none';
+            // Removed anonymousLoginBtn.style.display = 'none';
+            authForm.style.display = 'none';
+
+            // Add a logout button if it doesn't exist
+            let logoutButton = document.getElementById('logoutBtn');
+            if (!logoutButton) {
+                logoutButton = document.createElement('button');
+                logoutButton.id = 'logoutBtn';
+                logoutButton.className = 'auth-btn logout-btn';
+                logoutButton.textContent = 'Logout';
+                logoutButton.onclick = handleLogout;
+                authButtonGroup.appendChild(logoutButton);
+            }
+        } else {
+            currentUser = null;
+            authStatusEl.textContent = 'Not logged in.';
+
+            // Show login buttons/form options
+            showLoginBtn.style.display = 'block';
+            // Removed anonymousLoginBtn.style.display = 'block';
+            authForm.style.display = 'none'; // Keep form hidden until 'showLoginBtn' is clicked
+
+            // Remove logout button if it exists
+            const logoutButton = document.getElementById('logoutBtn');
+            if (logoutButton) {
+                logoutButton.remove();
+            }
+
+            // Reset button states
+            showLoginBtn.disabled = false;
+            // Removed anonymousLoginBtn.disabled = false;
+            // Removed anonymousLoginBtn.textContent = 'Login Anonymously';
+            emailLoginBtn.disabled = false;
+            emailLoginBtn.textContent = 'Login';
+        }
+    }
+
+
+    // --- Modal and Plan Selection Logic ---
     planCards.forEach(card => {
       card.addEventListener('click', function() {
+        if (!currentUser) {
+            alert("Please log in first before selecting a plan.");
+            return;
+        }
+
         selectedPlan = card.getAttribute('data-plan');
         // Show modal, reset fields
         modalBackdrop.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         modalTitle.textContent = `Choose branch for your ${selectedPlan} Plan`;
-        branchSelect.value = '';
+        branchSelect.value = ''; // Reset selected branch
         kioskInput.value = '';
         kioskInput.style.display = 'none';
         kioskInfo.style.display = 'none';
@@ -447,24 +674,60 @@
     });
 
     proceedBtn.onclick = function() {
-  // Save details to localStorage for payment.html to use
-  // You need to get the selected plan's price per kiosk as well
-  let planPrice = 0;
-  // Find the selected plan card again (in case user changes plan)
-  document.querySelectorAll('.plan-card').forEach(card => {
-    if (card.getAttribute('data-plan') === selectedPlan) {
-      planPrice = card.getAttribute('data-price');
-    }
-  });
+      if (!currentUser) {
+          alert("You must be logged in to proceed to payment.");
+          return;
+      }
+      // Save details to localStorage for payment.html to use
+      let planPrice = 0;
+      document.querySelectorAll('.plan-card').forEach(card => {
+        if (card.getAttribute('data-plan') === selectedPlan) {
+          planPrice = card.getAttribute('data-price');
+        }
+      });
 
-  localStorage.setItem('ad_plan', selectedPlan);
-  localStorage.setItem('ad_price', planPrice);
-  localStorage.setItem('ad_branch', selectedBranch);
-  localStorage.setItem('ad_kiosks', kioskInput.value);
+      localStorage.setItem('ad_plan', selectedPlan);
+      localStorage.setItem('ad_price', planPrice);
+      localStorage.setItem('ad_branch', selectedBranch);
+      localStorage.setItem('ad_kiosks', kioskInput.value);
+      localStorage.setItem('ad_userId', currentUser.uid); // Save the current user's UID!
 
-  // Redirect to payment.html
-  window.location.href = 'payment.html';
-};
+      // Redirect to payment.html
+      window.location.href = 'payment.html';
+    };
+
+    // --- Event Listeners for Authentication Elements ---
+    showLoginBtn.onclick = () => {
+        // Toggle the visibility of the login form
+        if (authForm.style.display === 'flex') {
+            authForm.style.display = 'none';
+            showLoginBtn.textContent = 'Login with Email/Password';
+        } else {
+            authForm.style.display = 'flex';
+            showLoginBtn.textContent = 'Hide Login Form';
+        }
+    };
+
+    emailLoginBtn.onclick = () => {
+        const email = loginEmailInput.value;
+        const password = loginPasswordInput.value;
+        if (email && password) {
+            signInWithEmailPass(email, password);
+        } else {
+            alert("Please enter both email and password.");
+        }
+    };
+
+    // Removed anonymousLoginBtn.onclick = signInAnonymouslyUser;
+
+    // On page load: Check existing auth state
+    document.addEventListener('DOMContentLoaded', () => {
+        // This listener fires whenever the auth state changes (login, logout, token refresh)
+        onAuthStateChanged(auth, (user) => {
+            updateAuthUI(user); // Call the unified UI update function
+        });
+    });
+
   </script>
 </body>
 </html>
