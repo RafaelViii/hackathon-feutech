@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Settings</title>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <!-- Builder Sans is not on Google Fonts, so we rely on system/local install, fallback to Helvetica/Arial/etc -->
+  <link id="settings-css" rel="stylesheet" href="AccountManage/account.css">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      min-height: 100vh;
+      width: 100vw;
+      box-sizing: border-box;
+      background: #f6f8fb;
+      font-family: 'Builder Sans', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+      color: #191919;
+      font-size: 15px;
+      overflow-x: hidden;
+    }
+    .settings-back-header {
+      width: 100%;
+      height: 54px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 2px 12px 0 rgba(60,55,170,0.07);
+      border-bottom: 1px solid #e6e9f2;
+      z-index: 20;
+      position: relative;
+    }
+    .settings-back-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      outline: none;
+      padding: 0 18px;
+      cursor: pointer;
+      font-size: 1.4em;
+      color: #191919;
+      height: 54px;
+      width: 54px;
+      transition: background 0.1s;
+    }
+    .settings-back-btn:hover {
+      background: #f2f6fc;
+    }
+    .settings-back-btn svg {
+      display: block;
+    }
+    .settings-layout {
+      display: flex;
+      min-height: 100vh;
+      background: #f6f8fb;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .drawer {
+      width: 220px;
+      background: #fff;
+      border-right: 1.5px solid #e6e9f2;
+      box-shadow: 2px 0 16px 0 rgba(60,55,170,0.04);
+      display: flex;
+      flex-direction: column;
+      margin-top: 28px;
+      padding-top: 28px;
+      padding-bottom: 28px;
+      z-index: 2;
+      height: auto;
+      align-items: flex-start;
+    }
+    .drawer-title {
+      font-size: 1.22rem;
+      font-weight: 700;
+      color: #191919;
+      margin-bottom: 28px;
+      margin-top: 0;
+      padding-left: 32px;
+      padding-top: 0;
+      letter-spacing: 0.01em;
+      user-select: none;
+      font-family: inherit;
+      text-transform: uppercase;
+    }
+    .drawer-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      width: 100%;
+    }
+    .drawer-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 18px 12px 32px;
+      font-size: 0.97rem;
+      font-weight: 600;
+      color: #191919;
+      background: #fff;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      transition: background .12s, color .12s;
+      border-left: 3px solid transparent;
+      text-align: left;
+      width: 100%;
+      border-radius: 0 10px 10px 0;
+      font-family: inherit;
+      letter-spacing: 0.01em;
+    }
+    .drawer-item.selected,
+    .drawer-item:focus,
+    .drawer-item:hover {
+      background: #f2f6fc;
+      color: #206be6;
+      border-left: 3px solid #2a84e9;
+    }
+    .account-main-center {
+      width: 100%;
+      max-width: 860px;
+      min-width: 0;
+      margin: 32px 0 0 0;
+      display: flex;
+      flex-direction: column;
+      padding: 0 24px 32px 24px;
+      box-sizing: border-box;
+      align-items: center;
+    }
+    .edit-btn {
+      background: none;
+      border: none;
+      color: #555;
+      font-size: 1.05em;
+      cursor: pointer;
+      margin-left: 8px;
+      vertical-align: middle;
+      padding: 0;
+      transition: color 0.15s;
+    }
+    .edit-btn:hover {
+      color: #206be6;
+    }
+    .editable-field {
+      font-family: inherit;
+      font-size: 1.04rem;
+      color: #191919;
+      background: #f7f7fa;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-weight: 400;
+      text-align: left;
+      flex: 1 1 auto;
+      margin: 0;
+      border: 1px solid #e0e3ee;
+      min-width: 0;
+      word-break: break-word;
+      line-height: 1.5;
+      transition: border-color 0.14s;
+    }
+    .editable-field:focus {
+      outline: none;
+      border-color: #206be6;
+      background: #f5faff;
+    }
+    .editable-field, .edit-btn {
+      display: none;
+    }
+    .editing .editable-field {
+      display: inline-block;
+    }
+    .editing .edit-btn {
+      display: none;
+    }
+    .editing .editable-value {
+      display: none;
+    }
+    .editing .save-btn, .editing .cancel-btn {
+      display: inline-block;
+    }
+    .save-btn, .cancel-btn {
+      display: none;
+      margin-left: 5px;
+      font-size: 1em;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #206be6;
+      padding: 2px 4px;
+    }
+    .save-btn:hover, .cancel-btn:hover {
+      text-decoration: underline;
+    }
+    .editable-value {
+      display: inline-block;
+    }
+    @media (max-width: 900px) {
+      .settings-layout { flex-direction: column; align-items: flex-start; }
+      .drawer {
+        width: 100vw;
+        min-width: 0;
+        height: auto;
+        flex-direction: row;
+        border-right: none;
+        border-bottom: 1.5px solid #e6e9f2;
+        box-shadow: 0 2px 12px 0 rgba(60,55,170,0.04);
+        padding: 0;
+        position: sticky;
+        top: 0;
+        left: 0;
+        z-index: 9;
+        align-items: center;
+      }
+      .drawer-title { display: none; }
+      .drawer-menu { flex-direction: row; width: 100vw; }
+      .drawer-item {
+        padding: 14px 7vw;
+        font-size: 0.97rem;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        border-radius: 0;
+        justify-content: center;
+      }
+      .drawer-item.selected,
+      .drawer-item:focus,
+      .drawer-item:hover {
+        background: #f2f6fc;
+        color: #2469c2;
+        border-bottom: 3px solid #2a84e9;
+        border-left: none;
+      }
+      .settings-back-header {
+        height: 48px;
+      }
+      .settings-back-btn {
+        width: 48px;
+        height: 48px;
+        padding: 0 10px;
+        font-size: 1.2em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Back Button Header -->
+  <div class="settings-back-header">
+    <button class="settings-back-btn" id="settings-back-btn" aria-label="Back to previous page">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none"
+           xmlns="http://www.w3.org/2000/svg">
+        <polyline points="16.5 20 9.5 13 16.5 6" stroke="#191919" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="settings-layout">
+    <nav class="drawer" aria-label="Settings navigation">
+      <div class="drawer-title">SETTINGS</div>
+      <div class="drawer-menu">
+        <button class="drawer-item selected" id="drawer-account" tabindex="0">
+          Account
+        </button>
+        <button class="drawer-item" id="drawer-privacy" tabindex="0">
+          Privacy &amp; Security
+        </button>
+        <button class="drawer-item" id="drawer-manage" tabindex="0">
+          Manage
+        </button>
+      </div>
+    </nav>
+    <main class="account-main-center">
+      <!-- Account Section -->
+      <section id="account-section" class="tab-section active">
+        <div class="account-container">
+          <div class="account-header">
+            <h1 class="account-title">Account Settings</h1>
+          </div>
+          <div class="notification" role="alert">
+            Finish setting up your profile to make it more engaging!
+          </div>
+          <div class="sections-flex">
+            <div class="profile-section" aria-labelledby="profile-section-label">
+              <span id="profile-section-label" class="section-label">Business Info</span>
+              <div class="info-row">
+                <span class="info-label">Business Name</span>
+                <span class="unchangeable">Tite ni rafael malaki</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Product</span>
+                <span class="unchangeable">Hotdog malaki</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Tagline</span>
+                <span class="editable-value" id="tagline-value">Hotdog ko para sayo kaso maitim</span>
+                <input class="editable-field" id="tagline-input" type="text" value="Hotdog ko para sayo kaso maitim" />
+                <button class="edit-btn" onclick="editField('tagline')">✏️</button>
+                <button class="save-btn" onclick="saveField('tagline')">Save</button>
+                <button class="cancel-btn" onclick="cancelEdit('tagline')">Cancel</button>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Funding Goal</span>
+                <span class="unchangeable">₱35,000</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Purpose</span>
+                <span class="editable-value" id="purpose-value">—</span>
+                <input class="editable-field" id="purpose-input" type="text" value="—" />
+                <button class="edit-btn" onclick="editField('purpose')">✏️</button>
+                <button class="save-btn" onclick="saveField('purpose')">Save</button>
+                <button class="cancel-btn" onclick="cancelEdit('purpose')">Cancel</button>
+              </div>
+            </div>
+            <div class="required-section" aria-labelledby="enrich-section-label">
+              <span id="enrich-section-label" class="section-label">Complete Your Profile</span>
+              <div class="required-row">
+                <span class="required-field-label">Experience:</span>
+                <span class="editable-value" id="experience-value">Not set</span>
+                <input class="editable-field" id="experience-input" type="text" value="Not set" />
+                <button class="edit-btn" onclick="editField('experience')">✏️</button>
+                <button class="save-btn" onclick="saveField('experience')">Save</button>
+                <button class="cancel-btn" onclick="cancelEdit('experience')">Cancel</button>
+              </div>
+              <div class="required-row">
+                <span class="required-field-label">Location:</span>
+                <span class="editable-value" id="location-value">Not set</span>
+                <input class="editable-field" id="location-input" type="text" value="Not set" />
+                <button class="edit-btn" onclick="editField('location')">✏️</button>
+                <button class="save-btn" onclick="saveField('location')">Save</button>
+                <button class="cancel-btn" onclick="cancelEdit('location')">Cancel</button>
+              </div>
+              <div class="required-row">
+                <span class="required-field-label">Awards:</span>
+                <span class="editable-value" id="awards-value">Not set</span>
+                <input class="editable-field" id="awards-input" type="text" value="Not set" />
+                <button class="edit-btn" onclick="editField('awards')">✏️</button>
+                <button class="save-btn" onclick="saveField('awards')">Save</button>
+                <button class="cancel-btn" onclick="cancelEdit('awards')">Cancel</button>
+              </div>
+              <div class="required-row">
+                <span class="required-field-label">What you look for a partnership?</span>
+                <span class="editable-value" id="partnership-value">Not set</span>
+                <input class="editable-field" id="partnership-input" type="text" value="Not set" />
+                <button class="edit-btn" onclick="editField('partnership')">✏️</button>
+                <button class="save-btn" onclick="saveField('partnership')">Save</button>
+                <button class="cancel-btn" onclick="cancelEdit('partnership')">Cancel</button>
+              </div>
+              <div class="required-row" style="margin-bottom:0;">
+                <span class="required-field-label" style="min-width:110px;">Social Medias:</span>
+              </div>
+              <div class="social-row">
+                <span class="social-label">Facebook:</span>
+                <span class="editable-value" id="facebook-value">Not set</span>
+                <input class="editable-field" id="facebook-input" type="text" value="Not set" />
+                <button class="edit-btn" onclick="editField('facebook')">✏️</button>
+                <button class="save-btn" onclick="saveField('facebook')">Save</button>
+                <button class="cancel-btn" onclick="cancelEdit('facebook')">Cancel</button>
+              </div>
+              <div class="social-row">
+                <span class="social-label">Youtube:</span>
+                <span class="editable-value" id="youtube-value">Not set</span>
+                <input class="editable-field" id="youtube-input" type="text" value="Not set" />
+                <button class="edit-btn" onclick="editField('youtube')">✏️</button>
+                <button class="save-btn" onclick="saveField('youtube')">Save</button>
+                <button class="cancel-btn" onclick="cancelEdit('youtube')">Cancel</button>
+              </div>
+              <div class="social-row">
+                <span class="social-label">Messenger:</span>
+                <span class="editable-value" id="messenger-value">Not set</span>
+                <input class="editable-field" id="messenger-input" type="text" value="Not set" />
+                <button class="edit-btn" onclick="editField('messenger')">✏️</button>
+                <button class="save-btn" onclick="saveField('messenger')">Save</button>
+                <button class="cancel-btn" onclick="cancelEdit('messenger')">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Privacy & Security Placeholder -->
+      <section id="privacy-section" class="tab-section">
+        <div class="placeholder-section">
+          <h1 class="placeholder-title">Privacy &amp; Security</h1>
+          <div class="placeholder-desc">
+            Privacy & Security settings coming soon.
+          </div>
+        </div>
+      </section>
+      <!-- Manage Placeholder -->
+      <section id="manage-section" class="tab-section">
+        <div class="placeholder-section">
+          <h1 class="placeholder-title">Manage</h1>
+          <div class="placeholder-desc">
+            Manage settings coming soon.
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    // Back button functionality
+    document.getElementById('settings-back-btn').onclick = function() {
+      window.location.href = 'drawable.html';
+    };
+    function showSection(sectionId) {
+      document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(sectionId).classList.add('active');
+    }
+    const drawerItems = document.querySelectorAll('.drawer-item');
+    drawerItems.forEach(item => {
+      item.addEventListener('click', function () {
+        drawerItems.forEach(d => d.classList.remove('selected'));
+        this.classList.add('selected');
+        if(this.id === 'drawer-account') showSection('account-section');
+        if(this.id === 'drawer-privacy') showSection('privacy-section');
+        if(this.id === 'drawer-manage') showSection('manage-section');
+      });
+      item.addEventListener('keydown', function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          this.click();
+        }
+      });
+    });
+
+    // Editable fields logic
+    function editField(field) {
+      const row = document.getElementById(field + '-value').parentElement;
+      row.classList.add('editing');
+      document.getElementById(field + '-input').style.display = 'inline-block';
+      document.getElementById(field + '-input').focus();
+    }
+    function saveField(field) {
+      const row = document.getElementById(field + '-value').parentElement;
+      const input = document.getElementById(field + '-input');
+      document.getElementById(field + '-value').textContent = input.value;
+      row.classList.remove('editing');
+      input.style.display = 'none';
+    }
+    function cancelEdit(field) {
+      const row = document.getElementById(field + '-value').parentElement;
+      const input = document.getElementById(field + '-input');
+      input.value = document.getElementById(field + '-value').textContent;
+      row.classList.remove('editing');
+      input.style.display = 'none';
+    }
+    // Show edit button on all editable rows by default
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.style.display = 'inline-block';
+    });
+  </script>
+</body>
+</html>
