@@ -5,6 +5,7 @@
   <title>Admin Panel - ID and Product Image Upload</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+    /* ... your CSS unchanged ... */
     :root { --primary: #2B1F6F; --primary-hover: #232526; --secondary: #414345;
       --container-bg: rgba(255,255,255,0.98); --shadow: 0 8px 48px rgba(43,31,111,0.20);
       --border-radius: 16px; --border-radius-small: 8px; --input-bg: #f4f6fa;
@@ -71,7 +72,7 @@
       .product-info-label { width: 90px; font-size: 0.97em; } .account-input-row { gap: 0.5em; } }
     @media (max-width: 480px) { .container { padding: 0.2em 0.05em; } .product-info-label { width: 72px; } }
   </style>
-  <!-- Firebase -->
+  <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
@@ -79,7 +80,6 @@
 </head>
 <body>
   <div class="container">
-
     <!-- Left Panel: ID Verification -->
     <div class="panel">
       <h2>ID Verification</h2>
@@ -100,7 +100,6 @@
         <button id="verifyBtn">Verify Account</button>
       </div>
     </div>
-
     <!-- Right Panel: Product Image Upload -->
     <div class="panel">
       <!-- Account Number Input -->
@@ -145,7 +144,7 @@
       authDomain: "iot-web-58054.firebaseapp.com",
       databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "iot-web-58054",
-      storageBucket: "iot-web-58054.appspot.com",
+      storageBucket: "iot-web-58054.firebasestorage.app",
       messagingSenderId: "949884902967",
       appId: "1:949884902967:web:6e7f78c7cd0fa1484629b2",
       measurementId: "G-5C79490N66"
@@ -155,119 +154,6 @@
     }
     const database = firebase.database();
     const storage = firebase.storage();
-
-    // OCR extractIdFields helper (unchanged)
-    function extractIdFields(text) {
-      const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-      let info = {
-        name: '', dob: '', id: '', address: '',
-        sex: '', nationality: '', issued: '', expiry: '', cardType: 'Unknown'
-      };
-      for (let i = 0; i < lines.length; i++) {
-        let line = lines[i];
-        if (!info.name && /(name|cardholder|holder)/i.test(line) && /[A-Z][A-Z\s\-']+/.test(line)) {
-          info.name = line.replace(/.*(name|cardholder|holder)[:\-]?\s*/i, '').trim();
-        }
-        if (!info.name && /^[A-Z][A-Z\s\-']+$/.test(line) && line.split(' ').length >= 2 &&
-            !/(DATE|SEX|ID|ADDRESS|NATION|ISSUED|EXPIRATION)/i.test(line)) {
-          info.name = line;
-        }
-        if (!info.dob && /(date of birth|birth date|dob)[:\-]?\s*(.+)/i.test(line)) {
-          info.dob = line.match(/(date of birth|birth date|dob)[:\-]?\s*(.+)/i)[2].trim();
-        }
-        if (!info.id && /(id number|id no|id #|id:)[:\-]?\s*([A-Z0-9\-]+)/i.test(line)) {
-          info.id = line.match(/(id number|id no|id #|id:)[:\-]?\s*([A-Z0-9\-]+)/i)[2].trim();
-        }
-        if (!info.address && /(address)[:\-]?\s*(.+)/i.test(line)) {
-          info.address = line.match(/(address)[:\-]?\s*(.+)/i)[2].trim();
-        }
-        if (!info.sex && /(sex|gender)[:\-]?\s*(male|female|m|f)/i.test(line)) {
-          info.sex = line.match(/(sex|gender)[:\-]?\s*(male|female|m|f)/i)[2].toUpperCase();
-        }
-        if (!info.nationality && /(nationality|citizen(ship)?)[:\-]?\s*([A-Za-z ]+)/i.test(line)) {
-          info.nationality = line.match(/(nationality|citizen(ship)?)[:\-]?\s*([A-Za-z ]+)/i)[3].toUpperCase();
-        }
-        if (!info.issued && /(issued date|date issued|date of issue)[:\-]?\s*(.+)/i.test(line)) {
-          info.issued = line.match(/(issued date|date issued|date of issue)[:\-]?\s*(.+)/i)[2].trim();
-        }
-        if (!info.expiry && /(expiration date|expiry date|valid until|exp date)[:\-]?\s*(.+)/i.test(line)) {
-          info.expiry = line.match(/(expiration date|expiry date|valid until|exp date)[:\-]?\s*(.+)/i)[2].trim();
-        }
-      }
-      let nameIdx = -1;
-      for (let i = 0; i < lines.length; i++) {
-        if (info.name && lines[i].toUpperCase() === info.name.toUpperCase()) {
-          nameIdx = i;
-          break;
-        }
-      }
-      if (nameIdx !== -1) {
-        if (!info.dob && lines[nameIdx + 1]) info.dob = lines[nameIdx + 1];
-        if (!info.id && lines[nameIdx + 2]) info.id = lines[nameIdx + 2];
-        if (!info.address && lines[nameIdx + 3]) info.address = lines[nameIdx + 3];
-      }
-      const joined = text.toLowerCase();
-      if (joined.includes('philsys') || joined.includes('republic of the philippines')) info.cardType = 'Philippine National ID';
-      else if (joined.includes('driver')) info.cardType = 'Driver\'s License';
-      else if (joined.includes('passport')) info.cardType = 'Passport';
-      else if (joined.includes('student') && joined.includes('id')) info.cardType = 'Student ID';
-      else if (joined.includes('card')) info.cardType = 'Generic ID Card';
-      function fallback(val) { return val ? val : 'No info found'; }
-      let out = "";
-      out += `Name: ${fallback(info.name)}\n`;
-      out += `Date of Birth: ${fallback(info.dob)}\n`;
-      out += `ID Number: ${fallback(info.id)}\n`;
-      out += `Address: ${fallback(info.address)}\n`;
-      out += `Sex: ${fallback(info.sex)}\n`;
-      out += `Nationality: ${fallback(info.nationality)}\n`;
-      out += `Issued Date: ${fallback(info.issued)}\n`;
-      out += `Expiration Date: ${fallback(info.expiry)}\n`;
-      return { summary: out.trim(), cardType: info.cardType };
-    }
-
-    // --- OCR handler with workerPath/langPath for Tesseract v5+ ---
-    document.getElementById('idImage').addEventListener('change', function(e) {
-      const img = document.getElementById('idPreview');
-      const file = e.target.files[0];
-      const cardTypeDisplay = document.getElementById('cardTypeDisplay');
-      const extractedTextArea = document.getElementById('extractedText');
-      const rawOCR = document.getElementById('rawOCR');
-      const rawOCRDetails = document.getElementById('rawOCRDetails');
-      cardTypeDisplay.textContent = 'Processing...';
-      extractedTextArea.value = 'Extracting... Please wait.';
-      rawOCRDetails.style.display = "none";
-      if (file) {
-        img.src = URL.createObjectURL(file);
-        img.style.display = 'block';
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-          Tesseract.recognize(
-            ev.target.result,
-            'eng',
-            {
-              workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/worker.min.js',
-              langPath: 'https://tessdata.projectnaptha.com/4.0.0_best'
-            }
-          ).then(({ data: { text } }) => {
-            const { summary, cardType } = extractIdFields(text || '');
-            extractedTextArea.value = summary;
-            cardTypeDisplay.textContent = cardType;
-            rawOCR.textContent = text || '';
-            rawOCRDetails.style.display = "";
-          }).catch(err => {
-            extractedTextArea.value = 'OCR Error: ' + err.message;
-            cardTypeDisplay.textContent = 'Error';
-            rawOCRDetails.style.display = "none";
-          });
-        };
-        reader.readAsDataURL(file);
-      } else {
-        img.style.display = 'none';
-        extractedTextArea.value = "";
-        cardTypeDisplay.textContent = "---";
-        rawOCRDetails.style.display = "none";
-      }
-    });
 
     // Product image preview
     document.getElementById('productImage').addEventListener('change', function(e) {
