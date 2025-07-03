@@ -55,22 +55,34 @@
 <body>
   <div class="login-container">
     <h2>Admin Login</h2>
-    <input type="text" id="username" placeholder="Username" />
-    <input type="password" id="password" placeholder="Password" />
-    <button onclick="checkLogin()">Login</button>
+    <input id="login-username" placeholder="Username" autocomplete="username" />
+    <input id="login-password" type="password" placeholder="Password" autocomplete="current-password" />
+    <button onclick="loginUser()">Login</button>
     <div class="error" id="errorMsg">Invalid credentials</div>
   </div>
 
   <script>
-    function checkLogin() {
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-      if(username === "admin" && password === "admin"){
+    function loginUser() {
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+      const errorMsg = document.getElementById('errorMsg');
+
+      if (username === 'admin' && password === 'admin') {
+        errorMsg.style.display = 'none';
+        // Redirect or do something on successful login
+        alert('Login successful!');
+        // window.location.href = "admin-dashboard.html"; // Uncomment to redirect
         window.location.href = "adminhome.html";
       } else {
-        document.getElementById("errorMsg").style.display = "block";
+        errorMsg.style.display = 'block';
       }
     }
+    // Optional: allow Enter key to submit
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        loginUser();
+      }
+    });
   </script>
 </body>
 </html>

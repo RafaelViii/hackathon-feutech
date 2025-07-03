@@ -228,11 +228,21 @@
       return adjusted.toLocaleString("en-PH", { timeZone: "Asia/Manila" });
     }
 
+    // Load finger slot name mapping from Firebase
+    let slotNameMap = {};
+    firebase.database().ref("fingerSlots").on("value", snap => {
+      slotNameMap = snap.val() || {};
+      renderLogs(); // re-render logs when mapping changes
+    });
+
     // Helper: Map fingerprint IDs to person names
     function getPersonName(log) {
-      // Try both possible fields, as number or string
       let fid = log.fpid !== undefined ? log.fpid : log.fingerprintId;
       if (fid === undefined || fid === null || fid === "") return "";
+      // Try to get name from mapping
+      let name = slotNameMap[String(fid)]?.name;
+      if (name) return name;
+      // fallback as before
       if (typeof fid === "string" && fid.match(/^\d+$/)) fid = parseInt(fid, 10);
       if (fid === 2) return "Ariel";
       if (fid === 1) return "Rafael";
@@ -305,6 +315,9 @@
         db.ref("doorLogs").remove();
       }
     });
+
+
+    
   </script>
 </body>
 </html>

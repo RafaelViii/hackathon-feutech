@@ -5,85 +5,9 @@
   <meta charset="UTF-8" />
   <title>ScaleUp - Log In</title>
   <link href="https://fonts.googleapis.com/css2?family=Inder&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: var(--background);
-      font-family: 'Inder', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      position: relative;
-    }
+    <link rel="stylesheet" href="Kiosk Css/screen3.css">
 
-    .container {
-      max-width: 800px;
-      width: 90%;
-      background: #fff;
-      border-radius: 15px;
-      padding: 40px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 30px;
-    }
 
-    h1 {
-      font-size: 48px;
-      margin: 0;
-      letter-spacing: 0.1em;
-      text-align: center;
-      color: #000;
-    }
-
-    input {
-      width: 80%;
-      padding: 20px;
-      font-size: 24px;
-      border-radius: 15px;
-      border: 1px solid #ddd;
-    }
-
-    .forgot {
-      font-size: 18px;
-      color: #F21515;
-      cursor: pointer;
-      text-align: right;
-      width: 80%;
-    }
-
-    .login-button {
-      background: #748AE5;
-      color: #fff;
-      font-size: 24px;
-      border: none;
-      padding: 20px 60px;
-      border-radius: 15px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .login-button:hover {
-      background: #5c6fba;
-    }
-
-    .back {
-      position: absolute;
-      bottom: 30px;
-      left: 30px;
-      font-size: 40px;
-      cursor: pointer;
-      color: #333;
-    }
-
-    @media(max-width: 768px) {
-      h1 { font-size: 32px; }
-      input { font-size: 18px; }
-      .login-button { font-size: 18px; padding: 15px 40px; }
-    }
-  </style>
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
@@ -111,7 +35,11 @@
     <button class="login-button" id="loginButton">Log In</button>
   </div>
 
-  <div class="back" id="backButton">&#x2039;</div>
+  <div class="back-chevron" id="backButton" aria-label="Go Back">
+    <svg class="back-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <polyline points="20,8 12,16 20,24" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
 
   <script>
     document.getElementById("loginButton").addEventListener("click", function() {
@@ -144,7 +72,7 @@
           alert("✅ Password reset email sent!");
         })
         .catch(error => {
-          alert("❌ " + e("Invalid Credentials, Please login again"));
+          alert("❌ " + ("Invalid Credentials, Please login again"));
         });
     });
 

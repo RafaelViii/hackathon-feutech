@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Home Displays - Admin Dashboard</title>
+  <!-- ...styles omitted for brevity... -->
+</head>
+<body>
+  <div class="dashboard-container">
+    <h1>Images in Firebase Storage</h1>
+    <div class="upload-section">
+      <input type="file" id="uploadInput" accept="image/*" />
+      <button onclick="uploadImage()">Upload Image</button>
+      <div class="upload-status" id="uploadStatus"></div>
+    </div>
+    <div class="image-grid" id="imageGrid">
+      <!-- Images will show here -->
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script>
+    // FIXED CONFIG!
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZsj-cL_T_BuLtAz5bkqsw-edZXnumwe0",
+      authDomain: "iot-web-58054.firebaseapp.com",
+      databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "iot-web-58054",
+      storageBucket: "iot-web-58054.firebasestorage.app", // <-- FIXED HERE!
+      messagingSenderId: "949884902967",
+      appId: "1:949884902967:web:6e7f78c7cd0fa1484629b2",
+      measurementId: "G-5C79490N66"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const FOLDER = 'carousel-images';
+
+    function showFirebaseImages() {
+      const storageRef = firebase.storage().ref(FOLDER);
+      const imageGrid = document.getElementById('imageGrid');
+      imageGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#777;">Loading...</p>';
+
+      storageRef.listAll()
+        .then((res) => {
+          imageGrid.innerHTML = "";
+          if (res.items.length === 0) {
+            imageGrid.innerHTML = "<p style='grid-column:1/-1;text-align:center;color:#777;'>No images found.</p>";
+          }
+          res.items.forEach((itemRef) => {
+            itemRef.getDownloadURL().then((url) => {
+              const card = document.createElement('div');
+              card.className = 'image-card';
+              card.innerHTML = `
+                <img src="${url}" alt="${itemRef.name}" />
+                <div class="image-label">${itemRef.name}</div>
+              `;
+              imageGrid.appendChild(card);
+            });
+          });
+        })
+        .catch((error) => {
+          imageGrid.innerHTML = "<p style='grid-column:1/-1;text-align:center;color:#d00;'>Error loading images: " + error.message + "</p>";
+        });
+    }
+
+    function uploadImage() {
+      const fileInput = document.getElementById('uploadInput');
+      const statusDiv = document.getElementById('uploadStatus');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        statusDiv.textContent = "Please choose an image to upload.";
+        statusDiv.style.color = "#d00";
+        return;
+      }
+
+      statusDiv.textContent = "Uploading...";
+      statusDiv.style.color = "#333";
+
+      const fileName = Date.now() + "_" + file.name;
+      const storageRef = firebase.storage().ref(`${FOLDER}/${fileName}`);
+
+      storageRef.put(file)
+        .then((snapshot) => {
+          statusDiv.textContent = "Upload successful!";
+          statusDiv.style.color = "#2a8f40";
+          fileInput.value = "";
+          showFirebaseImages();
+        })
+        .catch((error) => {
+          statusDiv.textContent = "Upload failed: " + error.message;
+          statusDiv.style.color = "#d00";
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', showFirebaseImages);
+  </script>
+</body>
+</html>

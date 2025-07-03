@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scalable Sign Up Overlay</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Arsenal:wght@700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      min-height: 100vh;
+      min-width: 100vw;
+      height: 100vh;
+      width: 100vw;
+      background: url('pictures/login.png') no-repeat center center fixed;
+      background-size: cover;
+      overflow: hidden;
+      position: relative;
+      /* Prevents unwanted scrolling */
+    }
+    .signup {
+      position: absolute;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      font-family: 'Arsenal', sans-serif;
+      font-style: normal;
+      font-weight: 700;
+      font-size: 2.5vw;
+      line-height: 1.2;
+      color: transparent; /* Keeps the div invisible */
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 123, 255, 0); /* Fully transparent */
+      border-radius: 2px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.18s;
+      /* The overlay covers the whole screen for any device */
+    }
+    .signup:active, .signup:focus {
+      outline: none;
+    }
+    /* Optional: Make sure it's always on top */
+    @media (max-width: 767px) {
+      .signup {
+        font-size: 5vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="signup" onclick="window.location.href='loading.html'" tabindex="0"></div>
+</body>
+</html>
