@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Desktop Layout Page</title>
+  <!-- Modular CSS imports -->
+  <link rel="stylesheet" href="desktopstyle.css">
+  <link rel="stylesheet" href="imagecarousel.css">
+  <link rel="stylesheet" href="video.css">
+  <!-- Professional System Font Stack -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+  <nav>
+    <div class="navbar">
+      <!-- Left -->
+      <ul class="nav-side nav-left">
+        <li class="nav-link"><a href="#">Home</a></li>
+        <li class="nav-link dropdown-parent">
+          <button aria-haspopup="true" aria-expanded="false">About</button>
+          <div class="dropdown" role="menu">
+            <a href="#">How it Works</a>
+            <a href="#">Challenges</a>
+          </div>
+        </li>
+        <li class="nav-link dropdown-parent">
+          <button aria-haspopup="true" aria-expanded="false">Opportunities</button>
+          <div class="dropdown" role="menu">
+            <a href="#">Investment Opportunities</a>
+            <a href="#">Support Local Brands</a>
+          </div>
+        </li>
+      </ul>
+      <!-- Center -->
+      <div class="logo">Scale Up</div>
+      <!-- Right -->
+      <div class="nav-side nav-right">
+        <a href="#" class="get-started-btn">Get Started</a>
+        <button class="mode-switch" id="modeSwitch" aria-label="Switch light/dark mode">
+          <span class="icon" id="modeSwitchIcon">🌙</span>
+          <span id="modeSwitchText">Dark Mode</span>
+        </button>
+      </div>
+      <!-- Hamburger for mobile -->
+      <div class="hamburger" id="hamburger" aria-label="Open menu" tabindex="0">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+    <!-- Mobile menu (shown on small screens) -->
+    <div class="mobile-nav" id="mobileNav">
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li>
+          <button class="mobile-drop-btn">About</button>
+          <div class="mobile-dropdown">
+            <a href="#">How it Works</a>
+            <a href="#">Challenges</a>
+          </div>
+        </li>
+        <li>
+          <button class="mobile-drop-btn">Opportunities</button>
+          <div class="mobile-dropdown">
+            <a href="#">Investment Opportunities</a>
+            <a href="#">Support Local Brands</a>
+          </div>
+        </li>
+        <li><a href="#" class="get-started-btn">Get Started</a></li>
+        <li>
+          <button class="mode-switch" id="modeSwitchMobile" aria-label="Switch light/dark mode">
+            <span class="icon" id="modeSwitchIconMobile">🌙</span>
+            <span id="modeSwitchTextMobile">Dark Mode</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="hero-bg">
+  <div class="hero-flex">
+    <!-- Left: Large Action Icon -->
+    <div class="hero-visual">
+      <img src="image/2.svg.png" alt="Action Icon" class="hero-action-image" />
+    </div>
+    <!-- Right: Text Content -->
+    <div class="hero-content">
+      <h1 class="hero-title">
+        Grow your business,<br>empower your dreams
+      </h1>
+      <p class="hero-desc">
+        Scale Up helps Filipino entrepreneurs turn small ideas into global brands.<br>
+        Build a modern online store, manage inventory and orders, connect with investors, and reach new markets — all in one platform designed for you.
+      </p>
+    
+      <div class="hero-logo-row">
+        <img src="image/9.svg" alt="Scale Up Logo" class="hero-small-logo" />
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="popular-wrapper">
+    <div class="popular-inner">
+      <p>Popular now</p>
+    </div>
+  </div>
+
+  <!-- Carousel Section -->
+  <div class="carousel-container">
+    <div class="carousel-images" id="carousel-images">
+      <!-- JS will inject product boxes here -->
+    </div>
+  </div>
+
+  <!-- Video Player Section -->
+  <div class="video-wrapper">
+    <video
+      id="main-video"
+      src="https://www.w3schools.com/html/mov_bbb.mp4"
+      width="1190"
+      height="360"
+      loop
+      autoplay
+      muted
+      playsinline
+      style="pointer-events: none;"
+      tabindex="-1"
+    ></video>
+  </div>
+
+  <!-- Clickable Text Section (displayed horizontally) -->
+  <div class="center-links">
+    <a class="center-link" href="">I’m a small Business Owner</a>
+    <a class="center-link" href="">I want to Invest or Donate</a>
+    <a class="center-link" href="">How it Works</a>
+  </div>
+
+  <!-- Kiosk Steps Section -->
+  <div class="seamless-row">
+    <div class="seamless-text animated-text" id="kioskSteps">
+      <h2 class="kiosk-title">How Our Kiosk System Works</h2>
+      <ol class="kiosk-steps">
+        <li><span>Register</span></li>
+        <li><span>Submit your samples</span></li>
+        <li><span>Check your analytics on the QR</span></li>
+        <li><span>Wait for Investor or Donation</span></li>
+        <li><span>And Last, Enjoy all the benefits!</span></li>
+      </ol>
+    </div>
+    <div class="seamless-image-stack">
+      <img src="image/picture.webp" alt="Kiosk Image" class="seamless-img original-img">
+    </div>
+  </div>
+
+  <footer class="hackathon-footer">
+    <div class="footer-content">
+      <div class="footer-logo-section">
+        <span class="footer-logo">Hackathon Feu Tech</span>
+      </div>
+      <div class="footer-links">
+        <a href="#" class="footer-link">About</a>
+        <a href="#" class="footer-link">Rules</a>
+        <a href="#" class="footer-link">Schedule</a>
+        <a href="#" class="footer-link">Contact</a>
+      </div>
+      <div class="footer-copy">
+        &copy; 2025 Hackathon.  |  Sabog ang Script.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Chatbot UI -->
+  <div id="chatbot-container">
+    <div id="chatbot-header">Chatbot</div>
+    <div id="chatbot-messages"></div>
+    <div id="chatbot-input-area">
+      <input id="chatbot-input" type="text" placeholder="Type your message..." autocomplete="off" />
+      <button id="chatbot-send">Send</button>
+    </div>
+  </div>
+  <style>
+  #chatbot-container {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 340px;
+    max-width: 95vw;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.14);
+    overflow: hidden;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+  }
+  #chatbot-header {
+    background: linear-gradient(90deg, #5b6cff 60%, #7b8aff 100%);
+    color: #fff;
+    padding: 16px;
+    font-weight: 600;
+    font-size: 1.08rem;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+  #chatbot-messages {
+    height: 340px;
+    max-height: 340px;
+    overflow-y: auto;
+    background: #f4f6fb;
+    padding: 16px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: background 0.2s;
+  }
+  .chatbot-message {
+    display: flex;
+    margin-bottom: 0;
+  }
+  .chatbot-message.user {
+    justify-content: flex-end;
+  }
+  .chatbot-bubble {
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 15px;
+    line-height: 1.5;
+    box-shadow: 0 2px 12px rgba(30,32,42,0.06);
+    margin-bottom: 2px;
+    word-break: break-word;
+  }
+  .chatbot-message.user .chatbot-bubble {
+    background: linear-gradient(90deg, #5b6cff 60%, #7b8aff 100%);
+    color: #fff;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 18px;
+  }
+  .chatbot-message.bot .chatbot-bubble {
+    background: #f0f1f7;
+    color: #21243d;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 18px;
+  }
+  #chatbot-input-area {
+    display: flex;
+    gap: 8px;
+    background: #f4f6fb;
+    padding: 12px 10px;
+    border-top: 1px solid #e1e3ea;
+  }
+  #chatbot-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 15px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(30,32,42,0.04);
+    transition: box-shadow 0.2s;
+  }
+  #chatbot-input:focus {
+    box-shadow: 0 2px 8px rgba(30,32,42,0.08);
+  }
+  #chatbot-send {
+    border: none;
+    background: linear-gradient(90deg, #5b6cff 60%, #7b8aff 100%);
+    color: #fff;
+    border-radius: 8px;
+    padding: 0 20px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 2px rgba(30,32,42,0.04);
+  }
+  #chatbot-send:hover {
+    background: linear-gradient(90deg, #4a5cdb 60%, #5f70e9 100%);
+  }
+  </style>
+  <script>
+    // Chatbot logic
+    const chatbotContainer = document.getElementById('chatbot-container');
+    const chatbotHeader = document.getElementById('chatbot-header');
+    const chatbotMessages = document.getElementById('chatbot-messages');
+    const chatbotInput = document.getElementById('chatbot-input');
+    const chatbotSend = document.getElementById('chatbot-send');
+    const chatbotInputArea = document.getElementById('chatbot-input-area');
+    chatbotHeader.onclick = () => {
+      const isHidden = chatbotMessages.style.display === 'none';
+      chatbotMessages.style.display = isHidden ? 'flex' : 'none';
+      chatbotInputArea.style.display = isHidden ? 'flex' : 'none';
+    };
+    function appendMessage(text, sender) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'chatbot-message ' + sender;
+      const bubble = document.createElement('div');
+      bubble.className = 'chatbot-bubble';
+      bubble.textContent = text;
+      messageDiv.appendChild(bubble);
+      chatbotMessages.appendChild(messageDiv);
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+    chatbotSend.onclick = async () => {
+      const message = chatbotInput.value.trim();
+      if (!message) return;
+      appendMessage(message, 'user');
+      chatbotInput.value = '';
+      try {
+        const res = await fetch('http://127.0.0.1:5000/chat', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({message})
+        });
+        const data = await res.json();
+        appendMessage(data.response, 'bot');
+      } catch (e) {
+        appendMessage("Bot is not available.", "bot");
+      }
+    };
+    chatbotInput.addEventListener("keypress", e => {
+      if (e.key === "Enter") chatbotSend.onclick();
+    });
+  </script>
+  <script src="carousel.js" type="module"></script>
+  <script src="navbar.js"></script>
+  <script>
+    // Hamburger menu toggle
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobileNav');
+    hamburger.addEventListener('click', () => {
+      mobileNav.classList.toggle('open');
+    });
+
+    // Dropdown for mobile
+    document.querySelectorAll('.mobile-drop-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.mobile-drop-btn').forEach(b => {
+          if (b !== btn) b.classList.remove('open');
+        });
+        btn.classList.toggle('open');
+        const dropdown = btn.nextElementSibling;
+        if (dropdown) {
+          dropdown.style.display = btn.classList.contains('open') ? 'flex' : 'none';
+        }
+      });
+    });
+
+    // For desktop: auto-close dropbar when mouse leaves boundary
+    document.querySelectorAll('.dropdown-parent').forEach(link => {
+      const dropdown = link.querySelector('.dropdown');
+      if (dropdown) {
+        let timeoutId;
+        link.addEventListener('mouseenter', () => {
+          clearTimeout(timeoutId);
+          dropdown.style.display = 'flex';
+        });
+        link.addEventListener('mouseleave', () => {
+          timeoutId = setTimeout(() => {
+            dropdown.style.display = 'none';
+          }, 120);
+        });
+        link.addEventListener('focusin', () => {
+          dropdown.style.display = 'flex';
+        });
+        link.addEventListener('focusout', () => {
+          setTimeout(() => {
+            if (!link.contains(document.activeElement)) {
+              dropdown.style.display = 'none';
+            }
+          }, 100);
+        });
+      }
+    });
+
+    // Prevent video player from overlapping other content
+    document.addEventListener("DOMContentLoaded", function () {
+      const video = document.getElementById('main-video');
+      const wrapper = video?.parentElement;
+      if (!video || !wrapper) return;
+
+      function adjustVideo() {
+        const viewportWidth = window.innerWidth;
+        if (viewportWidth < 1440) {
+          video.style.width = "100vw";
+        } else {
+          video.style.width = "1440px";
+        }
+      }
+
+      adjustVideo();
+      window.addEventListener('resize', adjustVideo);
+    });
+
+    // Light/Dark Mode Switch (Desktop and Mobile)
+    function setMode(light) {
+      if (light) {
+        document.body.classList.add('lightmode');
+        document.getElementById('modeSwitch').classList.add('light');
+        document.getElementById('modeSwitchIcon').textContent = '☀️';
+        document.getElementById('modeSwitchText').textContent = 'Light Mode';
+        document.getElementById('modeSwitchMobile').classList.add('light');
+        document.getElementById('modeSwitchIconMobile').textContent = '☀️';
+        document.getElementById('modeSwitchTextMobile').textContent = 'Light Mode';
+      } else {
+        document.body.classList.remove('lightmode');
+        document.getElementById('modeSwitch').classList.remove('light');
+        document.getElementById('modeSwitchIcon').textContent = '🌙';
+        document.getElementById('modeSwitchText').textContent = 'Dark Mode';
+        document.getElementById('modeSwitchMobile').classList.remove('light');
+        document.getElementById('modeSwitchIconMobile').textContent = '🌙';
+        document.getElementById('modeSwitchTextMobile').textContent = 'Dark Mode';
+      }
+    }
+    function getTheme() {
+      return localStorage.getItem('theme') || 'dark';
+    }
+    function saveTheme(theme) {
+      localStorage.setItem('theme', theme);
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set initial mode
+      setMode(getTheme() === 'light');
+      // Desktop switch
+      document.getElementById('modeSwitch').addEventListener('click', () => {
+        const isLight = document.body.classList.contains('lightmode');
+        setMode(!isLight);
+        saveTheme(!isLight ? 'light' : 'dark');
+      });
+      // Mobile switch
+      document.getElementById('modeSwitchMobile').addEventListener('click', () => {
+        const isLight = document.body.classList.contains('lightmode');
+        setMode(!isLight);
+        saveTheme(!isLight ? 'light' : 'dark');
+      });
+    });
+
+    // Kiosk steps scroll animation
+    document.addEventListener('DOMContentLoaded', function () {
+      const kioskSteps = document.getElementById('kioskSteps');
+      if (!kioskSteps) return;
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            kioskSteps.classList.add('visible');
+          } else {
+            kioskSteps.classList.remove('visible');
+          }
+        },
+        { threshold: 0.3 }
+      );
+      observer.observe(kioskSteps);
+    });
+  </script>
+</body>
+</html>
