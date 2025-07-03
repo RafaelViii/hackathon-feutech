@@ -402,29 +402,43 @@ body.lightmode .mode-switch {
   gap: 1.7rem;
 }
 
-.hero-title {
-  font-size: 3.2rem;
-  font-weight: 800;
-  line-height: 1.08;
-  letter-spacing: -1px;
-  margin: 0 0 0.15em 0;
-  color: #fff;
-  font-family: inherit;
-  text-shadow: 0 2px 14px rgba(30,64,175,0.13);
+/* Make the hero-title and hero-desc resizable using input[type=range] */
+.hero-title,
+.hero-desc {
+  resize: none;
+  transition: font-size 0.2s;
 }
 
-.hero-desc {
-  font-size: 1.2rem;
-  font-weight: 400;
-  color: #f7f9fa;
-  margin: 0 0 0.8em 0;
-  max-width: 520px;
-  line-height: 1.6;
-  font-family: inherit;
+/* Controls style */
+.hero-text-controls {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin: 0.6rem 0 0 0;
+  font-size: 100rem;
+  color: #fff;
+  user-select: none;
+}
+.hero-text-controls label {
+  font-size: 50px;
+  font-weight: 500;
+  margin-right: 0.4em;
+}
+.hero-text-controls input[type="range"] {
+  width: 130px;
+  accent-color: #3533cd;
+  cursor: pointer;
+}
+.hero-text-controls output {
+  width: 2.7em;
+  display: inline-block;
+  text-align: left;
+  font-weight: 700;
+  color: #ffd700;
 }
 
 .hero-logo-row {
-  margin-top: 2.0rem;
+  margin-top: -5rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -460,7 +474,7 @@ body.lightmode .mode-switch {
     max-width: 300px;
   }
   .hero-title {
-    font-size: 2.1rem;
+    font-size: 50px;
   }
 }
 
@@ -481,10 +495,10 @@ body.lightmode .mode-switch {
     max-width: 150px;
   }
   .hero-title {
-    font-size: 1.25rem;
+    font-size: 10px;
   }
   .hero-desc {
-    font-size: 0.97rem;
+    font-size: 10px;
   }
   .hero-small-logo {
     width: 28px;
