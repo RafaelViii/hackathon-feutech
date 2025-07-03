@@ -13,7 +13,7 @@
   --color-logo-bg: #e1e7ef;
 
   --logo-size: 20px;
-  --logo-radius: 22px;
+  --logo-radius: 50px;
   --logo-group-gap: 10px;
 
   --highlight-radius: 20px;
@@ -65,12 +65,12 @@ body {
 }
 
 .landing-center-logo-img {
-  width: var(--logo-size);
-  height: var(--logo-size);
+  width: var(200);
+  height: var(200);
   border-radius: var(--logo-radius);
   background: var(--color-logo-bg);
   object-fit: cover;
-  box-shadow: 0 2px 12px #dde5ef33;
+  box-shadow: 0 2px 12px #dde5ef;
 }
 
 .landing-center-logo-title {

@@ -1,6 +1,6 @@
 @media (min-width: 1024px) {
   :root {
-    --logo-size: 20px;
+    --logo-size: 100px;
     --font-logo: 700 2.8rem var(--font-family);
     --font-big: 900 clamp(3.4rem, 8vw, 8rem) var(--font-family);
     --main-gap: 60px;
