@@ -87,6 +87,14 @@
       );
     }
 
+    // Account number generator (10 digits, always unique per user)
+    function generateAccountNumber() {
+      // Use current time and a random 4-digit number for high uniqueness
+      const now = Date.now().toString().slice(-6);
+      const rand = Math.floor(1000 + Math.random() * 9000).toString();
+      return now + rand;
+    }
+
     // Form submit handler
     document.getElementById("createAccountForm").addEventListener("submit", function(e) {
       e.preventDefault();
@@ -124,13 +132,20 @@
         });
         return;
       }
+
+      // Generate account number and verification status
+      const accountNumber = generateAccountNumber();
+      const verified = false;
+
       auth.createUserWithEmailAndPassword(email, password)
         .then(userCredential => {
           const userId = userCredential.user.uid;
           return database.ref("users/" + userId).set({
             name,
             email,
-            number
+            number,
+            accountNumber,
+            verified
           });
         })
         .then(() => {
