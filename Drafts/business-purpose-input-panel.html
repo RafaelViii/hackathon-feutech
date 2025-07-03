@@ -6,6 +6,11 @@
   <title>Funding Goal & Usage</title>
   <link rel="stylesheet" href="business-info-input-panel-style/business-info-input-panel-style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     /* ...your styles remain unchanged... */
     .modal-backdrop {
@@ -163,9 +168,14 @@
       margin-bottom: 5px;
       display: none;
     }
+    .swal2-business-modal {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 1.07em;
+      border-radius: 12px;
+      box-shadow: 0 6px 40px #23405c22;
+    }
   </style>
-  <!-- SweetAlert2 CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
   <main class="business-info-center-main">
@@ -245,6 +255,22 @@
   </div>
 
   <script>
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZsj-cL_T_BuLtAz5bkqsw-edZXnumwe0",
+      authDomain: "iot-web-58054.firebaseapp.com",
+      databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "iot-web-58054",
+      storageBucket: "iot-web-58054.appspot.com",
+      messagingSenderId: "949884902967",
+      appId: "1:949884902967:web:6e7f78c7cd0fa1484629b2",
+      measurementId: "G-5C79490N66"
+    };
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const database = firebase.database();
+
     // Peso input formatting and validation (max 999,999)
     const fundingGoal = document.getElementById('fundingGoal');
     const fundingGoalError = document.getElementById('fundingGoalError');
@@ -409,15 +435,40 @@
         localStorage.removeItem("otherPurpose");
       }
 
-      // Show success and go next
-      Swal.fire({
-        title: 'Details Saved!',
-        text: 'Awesome! Let’s keep going — review your details next and make sure everything is perfect.',
-        icon: 'success',
-        confirmButtonColor: '#2b1f6f',
-        confirmButtonText: 'Review Details'
-      }).then(() => {
-        window.location.href = "review-details.html";
+      // Save to Firebase under current user
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          const uid = user.uid;
+          firebase.database().ref('users/' + uid).update({
+            fundingGoal: enteredValue,
+            fundUsage: fundUsageInput.value.trim(),
+            otherPurpose: (fundUsageInput.value === "Other" ? otherPurposeInput.value.trim() : null)
+          }).then(() => {
+            Swal.fire({
+              title: 'Details Saved!',
+              text: 'Awesome! Let’s keep going — review your details next and make sure everything is perfect.',
+              icon: 'success',
+              confirmButtonColor: '#2b1f6f',
+              confirmButtonText: 'Review Details'
+            }).then(() => {
+              window.location.href = "review-details.html";
+            });
+          }).catch((error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.message,
+              confirmButtonColor: '#e53935'
+            });
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Not Signed In',
+            text: 'You must be signed in to continue.',
+            confirmButtonColor: '#e53935'
+          });
+        }
       });
 
       e.preventDefault();
