@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tesseract.js OCR Demo</title>
+</head>
+<body>
+  <h2>Upload Image for OCR</h2>
+  <input type="file" id="imageInput" accept="image/*" />
+  <button id="uploadBtn">Extract Text</button>
+  <div id="output"></div>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script>
+    document.getElementById('uploadBtn').onclick = function() {
+      const file = document.getElementById('imageInput').files[0];
+      const outputDiv = document.getElementById('output');
+      if (!file) {
+        alert('Please select an image file.');
+        return;
+      }
+      outputDiv.textContent = 'Processing...';
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        Tesseract.recognize(
+          e.target.result,
+          'eng',
+        ).then(({ data: { text } }) => {
+          outputDiv.textContent = text;
+        }).catch(err => {
+          outputDiv.textContent = 'Error: ' + err.message;
+        });
+      };
+      reader.readAsDataURL(file);
+    };
+  </script>
+</body>
+</html>
