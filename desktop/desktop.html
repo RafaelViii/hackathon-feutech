@@ -4,14 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Desktop Layout Page</title>
-  <!-- NEW: Separate navigation CSS -->
-  <link rel="stylesheet" href="navigation/navigation.css">
-  <!-- Your other CSS files -->
+  <!-- Modular CSS imports -->
   <link rel="stylesheet" href="desktopstyle.css">
   <link rel="stylesheet" href="imagecarousel.css">
   <link rel="stylesheet" href="video.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200&display=swap" rel="stylesheet">
-  <script type="module" src="carousel.js"></script>
+  <!-- Professional System Font Stack -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body>
   <nav>
@@ -81,14 +79,27 @@
   </nav>
 
   <div class="hero-bg">
-    <div class="hero-center">
-      <h1>
-        Turning Filipino<br>
-        Small Dreams into <br>
-        Global Brands
+  <div class="hero-flex">
+    <!-- Left: Large Action Icon -->
+    <div class="hero-visual">
+      <img src="image/1.svg" alt="Action Icon" class="hero-action-image" />
+    </div>
+    <!-- Right: Text Content -->
+    <div class="hero-content">
+      <h1 class="hero-title">
+        Grow your business,<br>empower your dreams
       </h1>
+      <p class="hero-desc">
+        Scale Up helps Filipino entrepreneurs turn small ideas into global brands.<br>
+        Build a modern online store, manage inventory and orders, connect with investors, and reach new markets — all in one platform designed for you.
+      </p>
+    
+      <div class="hero-logo-row">
+        <img src="image/9.svg" alt="Scale Up Logo" class="hero-small-logo" />
+      </div>
     </div>
   </div>
+</div>
 
   <div class="popular-wrapper">
     <div class="popular-inner">
@@ -126,7 +137,7 @@
     <a class="center-link" href="">How it Works</a>
   </div>
 
-  <!-- Place this after your .dual-kiosk-text block -->
+  <!-- Kiosk Steps Section -->
   <div class="seamless-row">
     <div class="seamless-text animated-text" id="kioskSteps">
       <h2 class="kiosk-title">How Our Kiosk System Works</h2>
@@ -146,7 +157,6 @@
   <footer class="hackathon-footer">
     <div class="footer-content">
       <div class="footer-logo-section">
-        <!-- Replace with your logo if desired -->
         <span class="footer-logo">Hackathon Feu Tech</span>
       </div>
       <div class="footer-links">
@@ -161,184 +171,163 @@
     </div>
   </footer>
 
-<!-- Chatbot UI -->
-<div id="chatbot-container">
-  <div id="chatbot-header">Chatbot</div>
-  <div id="chatbot-messages"></div>
-  <div id="chatbot-input-area">
-    <input id="chatbot-input" type="text" placeholder="Type your message..." autocomplete="off" />
-    <button id="chatbot-send">Send</button>
+  <!-- Chatbot UI -->
+  <div id="chatbot-container">
+    <div id="chatbot-header">Chatbot</div>
+    <div id="chatbot-messages"></div>
+    <div id="chatbot-input-area">
+      <input id="chatbot-input" type="text" placeholder="Type your message..." autocomplete="off" />
+      <button id="chatbot-send">Send</button>
+    </div>
   </div>
-</div>
-<style>
-#chatbot-container {
-  position: fixed;
-  bottom: 32px;
-  right: 32px;
-  width: 340px;
-  max-width: 95vw;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.14);
-  overflow: hidden;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-}
-
-#chatbot-header {
-  background: linear-gradient(90deg, #5b6cff 60%, #7b8aff 100%);
-  color: #fff;
-  padding: 16px;
-  font-weight: 600;
-  font-size: 1.08rem;
-  cursor: pointer;
-  letter-spacing: 0.5px;
-  text-align: center;
-}
-
-#chatbot-messages {
-  height: 340px;
-  max-height: 340px;
-  overflow-y: auto;
-  background: #f4f6fb;
-  padding: 16px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  transition: background 0.2s;
-}
-
-.chatbot-message {
-  display: flex;
-  margin-bottom: 0;
-}
-
-.chatbot-message.user {
-  justify-content: flex-end;
-}
-
-.chatbot-bubble {
-  max-width: 75%;
-  padding: 10px 14px;
-  border-radius: 18px;
-  font-size: 15px;
-  line-height: 1.5;
-  box-shadow: 0 2px 12px rgba(30,32,42,0.06);
-  margin-bottom: 2px;
-  word-break: break-word;
-}
-
-.chatbot-message.user .chatbot-bubble {
-  background: linear-gradient(90deg, #5b6cff 60%, #7b8aff 100%);
-  color: #fff;
-  border-bottom-right-radius: 6px;
-  border-bottom-left-radius: 18px;
-}
-
-.chatbot-message.bot .chatbot-bubble {
-  background: #f0f1f7;
-  color: #21243d;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 18px;
-}
-
-#chatbot-input-area {
-  display: flex;
-  gap: 8px;
-  background: #f4f6fb;
-  padding: 12px 10px;
-  border-top: 1px solid #e1e3ea;
-}
-
-#chatbot-input {
-  flex: 1;
-  border: none;
-  outline: none;
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 15px;
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(30,32,42,0.04);
-  transition: box-shadow 0.2s;
-}
-
-#chatbot-input:focus {
-  box-shadow: 0 2px 8px rgba(30,32,42,0.08);
-}
-
-#chatbot-send {
-  border: none;
-  background: linear-gradient(90deg, #5b6cff 60%, #7b8aff 100%);
-  color: #fff;
-  border-radius: 8px;
-  padding: 0 20px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 1px 2px rgba(30,32,42,0.04);
-}
-
-#chatbot-send:hover {
-  background: linear-gradient(90deg, #4a5cdb 60%, #5f70e9 100%);
-}
-</style>
-<script>
-const chatbotContainer = document.getElementById('chatbot-container');
-const chatbotHeader = document.getElementById('chatbot-header');
-const chatbotMessages = document.getElementById('chatbot-messages');
-const chatbotInput = document.getElementById('chatbot-input');
-const chatbotSend = document.getElementById('chatbot-send');
-const chatbotInputArea = document.getElementById('chatbot-input-area');
-
-// Collapsible header
-chatbotHeader.onclick = () => {
-  const isHidden = chatbotMessages.style.display === 'none';
-  chatbotMessages.style.display = isHidden ? 'flex' : 'none';
-  chatbotInputArea.style.display = isHidden ? 'flex' : 'none';
-};
-
-// Append a message bubble
-function appendMessage(text, sender) {
-  const messageDiv = document.createElement('div');
-  messageDiv.className = 'chatbot-message ' + sender;
-
-  const bubble = document.createElement('div');
-  bubble.className = 'chatbot-bubble';
-  bubble.textContent = text;
-  messageDiv.appendChild(bubble);
-
-  chatbotMessages.appendChild(messageDiv);
-  chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-}
-
-// Send handler
-chatbotSend.onclick = async () => {
-  const message = chatbotInput.value.trim();
-  if (!message) return;
-  appendMessage(message, 'user');
-  chatbotInput.value = '';
-  try {
-    const res = await fetch('http://127.0.0.1:5000/chat', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({message})
-    });
-    const data = await res.json();
-    appendMessage(data.response, 'bot');
-  } catch (e) {
-    appendMessage("Bot is not available.", "bot");
+  <style>
+  #chatbot-container {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 340px;
+    max-width: 95vw;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.14);
+    overflow: hidden;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
   }
-};
-
-chatbotInput.addEventListener("keypress", e => {
-  if (e.key === "Enter") chatbotSend.onclick();
-});
-</script> 
-
-  <script src="carousel.js"></script>
+  #chatbot-header {
+    background: linear-gradient(90deg, #5b6cff 60%, #7b8aff 100%);
+    color: #fff;
+    padding: 16px;
+    font-weight: 600;
+    font-size: 1.08rem;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+  #chatbot-messages {
+    height: 340px;
+    max-height: 340px;
+    overflow-y: auto;
+    background: #f4f6fb;
+    padding: 16px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: background 0.2s;
+  }
+  .chatbot-message {
+    display: flex;
+    margin-bottom: 0;
+  }
+  .chatbot-message.user {
+    justify-content: flex-end;
+  }
+  .chatbot-bubble {
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 15px;
+    line-height: 1.5;
+    box-shadow: 0 2px 12px rgba(30,32,42,0.06);
+    margin-bottom: 2px;
+    word-break: break-word;
+  }
+  .chatbot-message.user .chatbot-bubble {
+    background: linear-gradient(90deg, #5b6cff 60%, #7b8aff 100%);
+    color: #fff;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 18px;
+  }
+  .chatbot-message.bot .chatbot-bubble {
+    background: #f0f1f7;
+    color: #21243d;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 18px;
+  }
+  #chatbot-input-area {
+    display: flex;
+    gap: 8px;
+    background: #f4f6fb;
+    padding: 12px 10px;
+    border-top: 1px solid #e1e3ea;
+  }
+  #chatbot-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 15px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(30,32,42,0.04);
+    transition: box-shadow 0.2s;
+  }
+  #chatbot-input:focus {
+    box-shadow: 0 2px 8px rgba(30,32,42,0.08);
+  }
+  #chatbot-send {
+    border: none;
+    background: linear-gradient(90deg, #5b6cff 60%, #7b8aff 100%);
+    color: #fff;
+    border-radius: 8px;
+    padding: 0 20px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 2px rgba(30,32,42,0.04);
+  }
+  #chatbot-send:hover {
+    background: linear-gradient(90deg, #4a5cdb 60%, #5f70e9 100%);
+  }
+  </style>
+  <script>
+    // Chatbot logic
+    const chatbotContainer = document.getElementById('chatbot-container');
+    const chatbotHeader = document.getElementById('chatbot-header');
+    const chatbotMessages = document.getElementById('chatbot-messages');
+    const chatbotInput = document.getElementById('chatbot-input');
+    const chatbotSend = document.getElementById('chatbot-send');
+    const chatbotInputArea = document.getElementById('chatbot-input-area');
+    chatbotHeader.onclick = () => {
+      const isHidden = chatbotMessages.style.display === 'none';
+      chatbotMessages.style.display = isHidden ? 'flex' : 'none';
+      chatbotInputArea.style.display = isHidden ? 'flex' : 'none';
+    };
+    function appendMessage(text, sender) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'chatbot-message ' + sender;
+      const bubble = document.createElement('div');
+      bubble.className = 'chatbot-bubble';
+      bubble.textContent = text;
+      messageDiv.appendChild(bubble);
+      chatbotMessages.appendChild(messageDiv);
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+    chatbotSend.onclick = async () => {
+      const message = chatbotInput.value.trim();
+      if (!message) return;
+      appendMessage(message, 'user');
+      chatbotInput.value = '';
+      try {
+        const res = await fetch('http://127.0.0.1:5000/chat', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({message})
+        });
+        const data = await res.json();
+        appendMessage(data.response, 'bot');
+      } catch (e) {
+        appendMessage("Bot is not available.", "bot");
+      }
+    };
+    chatbotInput.addEventListener("keypress", e => {
+      if (e.key === "Enter") chatbotSend.onclick();
+    });
+  </script>
+  <script src="carousel.js" type="module"></script>
   <script src="navbar.js"></script>
   <script>
     // Hamburger menu toggle
