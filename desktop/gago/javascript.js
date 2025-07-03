@@ -1,91 +1,139 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
 // Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyBPbtdqBMd2uK4duSICkOd7vshfVKHL0sQ",
-  authDomain: "scaleup2.firebaseapp.com",
-  projectId: "scaleup2",
-  storageBucket: "scaleup2.firebasestorage.app",
-  messagingSenderId: "545731372745",
-  appId: "1:545731372745:web:4dc02ef445fa8057c9cf18",
-  measurementId: "G-MVQME30YMJ"
+  apiKey: "AIzaSyDZsj-cL_T_BuLtAz5bkqsw-edZXnumwe0",
+  authDomain: "iot-web-58054.firebaseapp.com",
+  databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "iot-web-58054",
+  storageBucket: "iot-web-58054.appspot.com",
+  messagingSenderId: "949884902967",
+  appId: "1:949884902967:web:6e7f78c7cd0fa1484629b2",
+  measurementId: "G-5C79490N66"
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db = getDatabase(app);
 
-const PLACEHOLDER_IMAGES = [];
 const VISIBLE = 4;
-let startIndex = 0;
+const PAGES_PER_SECTION = 5;
 
-// Fetch products from Firestore and push to carousel array
-async function loadProductsForCarousel() {
-  const snapshot = await getDocs(collection(db, "database"));
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    PLACEHOLDER_IMAGES.push({
-      imgURL: data.prodimg || "",
-      label: data.prodname || "No Name",
-      price: data.prodprice || 0,
-      owner: data.productuser || "Unknown"
-    });
-  });
+let currentSection = 0;
+let currentPage = 0;
+let products = [];
+let pages = [];
+let sections = [];
+
+// Loads all products from your database and uses the direct imageUrl property
+async function loadAllProducts() {
+  const productsSnap = await get(ref(db, "products"));
+  if (!productsSnap.exists()) return [];
+  const accounts = productsSnap.val();
+  const allProducts = [];
+  for (const accountNumber in accounts) {
+    const prods = accounts[accountNumber];
+    for (const prodId in prods) {
+      const prod = prods[prodId];
+      allProducts.push({
+        imgURL: prod.imageUrl || "",
+        label: prod.productName || "No Name",
+        owner: prod.userName || ""
+      });
+    }
+  }
+  return allProducts;
 }
 
-// Render carousel items inside carousel-images
-function renderCarousel() {
+function splitIntoPages(arr, pageSize) {
+  const pages = [];
+  let i = 0;
+  while (i < arr.length) {
+    pages.push(arr.slice(i, i + pageSize));
+    i += pageSize;
+  }
+  return pages;
+}
+
+function splitIntoSections(pages, pagesPerSection) {
+  const sections = [];
+  for (let i = 0; i < pages.length; i += pagesPerSection) {
+    sections.push(pages.slice(i, i + pagesPerSection));
+  }
+  return sections;
+}
+
+function renderCarouselPage() {
   const carousel = document.getElementById("carousel-images");
-  if (!carousel) return;
   carousel.innerHTML = "";
+  const sectionPages = sections[currentSection] || [];
+  const page = sectionPages[currentPage] || [];
+  for (let i = 0; i < page.length; i++) {
+    const item = page[i];
+    const box = document.createElement("div");
+    box.className = "carousel-img-box";
 
-  for (let i = 0; i < Math.min(VISIBLE, PLACEHOLDER_IMAGES.length); i++) {
-    const item = PLACEHOLDER_IMAGES[(startIndex + i) % PLACEHOLDER_IMAGES.length];
-    const div = document.createElement("div");
-    div.className = "carousel-img-box";
-    div.style.backgroundImage = `url(${item.imgURL})`;
-    div.style.backgroundSize = "cover";
-    div.style.backgroundPosition = "center";
+    if (item && item.imgURL) {
+      const img = document.createElement("img");
+      img.src = item.imgURL;
+      img.alt = item.label || "business";
+      img.onerror = () => { img.style.display = "none"; };
+      box.appendChild(img);
 
-    // Label, price, and owner (expand as needed)
-    const span = document.createElement('span');
-    span.className = 'carousel-img-label';
-    span.textContent = item.label;
+      // Only show label overlay
+      const label = document.createElement("span");
+      label.className = "carousel-img-label";
+      label.textContent = item.label;
+      box.appendChild(label);
+    } else {
+      // Optionally: "Add business" card (if you want, uncomment below)
+      // const empty = document.createElement("div");
+      // empty.className = "carousel-no-img";
+      // box.appendChild(empty);
+      // const label = document.createElement("span");
+      // label.className = "carousel-img-label";
+      // label.textContent = "Add business";
+      // box.appendChild(label);
+      continue;
+    }
 
-    div.appendChild(span);
-    carousel.appendChild(div);
+    carousel.appendChild(box);
+  }
+
+  // Dots (pagination)
+  const dots = document.getElementById("carousel-pagination");
+  dots.innerHTML = "";
+  for (let i = 0; i < sectionPages.length; i++) {
+    const dot = document.createElement("span");
+    dot.className = "carousel-page-dot";
+    if (i === currentPage) dot.classList.add("active");
+    dot.onclick = () => {
+      currentPage = i;
+      renderCarouselPage();
+    };
+    dots.appendChild(dot);
   }
 }
 
-function nextCarousel() {
-  if (PLACEHOLDER_IMAGES.length === 0) return;
-  startIndex = (startIndex + VISIBLE) % PLACEHOLDER_IMAGES.length;
-  renderCarousel();
+function prevPage() {
+  const sectionPages = sections[currentSection];
+  currentPage = (currentPage - 1 + sectionPages.length) % sectionPages.length;
+  renderCarouselPage();
+}
+function nextPage() {
+  const sectionPages = sections[currentSection];
+  currentPage = (currentPage + 1) % sectionPages.length;
+  renderCarouselPage();
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
-  await loadProductsForCarousel();
-  renderCarousel();
-  setInterval(nextCarousel, 5000);
+  products = await loadAllProducts();
+  pages = splitIntoPages(products, VISIBLE);
+  sections = splitIntoSections(pages, PAGES_PER_SECTION);
+  currentSection = 0;
+  currentPage = 0;
+  renderCarouselPage();
 
-  // Proximity highlight logic
-  document.addEventListener('mousemove', function(e) {
-    const cards = document.querySelectorAll('.carousel-img-box');
-    cards.forEach(card => card.classList.remove('nearby'));
-    let minDist = Infinity;
-    let nearest = null;
-    cards.forEach(card => {
-      const rect = card.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      const dist = Math.hypot(cx - e.clientX, cy - e.clientY);
-      if (dist < 120) { // adjust proximity as desired
-        card.classList.add('nearby');
-      }
-      if (dist < minDist) {
-        minDist = dist;
-        nearest = card;
-      }
-    });
-  });
-}); 
+  document.getElementById("carousel-arrow-left").onclick = prevPage;
+  document.getElementById("carousel-arrow-right").onclick = nextPage;
+});
