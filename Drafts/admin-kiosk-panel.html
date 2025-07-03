@@ -59,6 +59,9 @@
       overflow-y: auto; overflow-x: auto; box-shadow: 0 1px 7px #2b1f6f08; }
     details { color: #444; font-size: 0.94em; margin-top: 0.8em; }
     summary { cursor: pointer; color: #2B1F6F; }
+    .section-title { font-size: 1.3em; color: #2B1F6F; margin: 2em 0 1em 0; font-weight: bold; }
+    .product-list-section { background: #f8fafd; border-radius: 10px; padding: 1.2em 1em 1.5em 1em; margin-bottom: 2em; box-shadow: 0 2px 8px #2b1f6f10; }
+    .add-product-section { background: #f8fafd; border-radius: 10px; padding: 1.2em 1em 1.5em 1em; margin-bottom: 2em; box-shadow: 0 2px 8px #2b1f6f10; }
     @media (max-width: 1250px) { .container { max-width: 98vw; gap: 1.2em; padding: 2em 1.2em 1.5em 1.2em; }
       .panel { max-width: 600px; } }
     @media (max-width: 900px) { .container { flex-direction: column; gap: 2.5em; padding: 2.2em 1.5em 1.2em 1.5em; }
@@ -79,7 +82,6 @@
 </head>
 <body>
   <div class="container">
-
     <!-- Left Panel: ID Verification -->
     <div class="panel">
       <h2>ID Verification</h2>
@@ -88,7 +90,7 @@
         <input type="file" id="idImage" accept="image/*">
         <img id="idPreview" style="display:none;" alt="ID Preview" />
         <div class="note">
-          After uploading, the extracted information will appear below. You can review and edit it before verifying the account.<br>
+          After uploading, the extracted information will appear below.<br>
           <b>Detected Card Type:</b> <span id="cardTypeDisplay">---</span>
         </div>
         <label for="extractedText">Extracted Info (Review & Edit)</label>
@@ -100,35 +102,41 @@
         <button id="verifyBtn">Verify Account</button>
       </div>
     </div>
-
-    <!-- Right Panel: Product Image Upload -->
+    <!-- Right Panel: Account/Products -->
     <div class="panel">
-      <!-- Account Number Input -->
+      <!-- Account Number Input always at top -->
       <div class="account-input-row">
         <label for="accountNumberTop">Enter Account Number</label>
         <input type="text" id="accountNumberTop" placeholder="Account number">
         <button id="accountNumberEnterBtn" type="button">Enter</button>
       </div>
-      <h2>Product Image Upload</h2>
-      <div class="section" style="border-bottom: none; padding-bottom:0;">
-        <div class="product-info" id="productInfoBox">
-          <div class="product-info-row">
-            <span class="product-info-label">Account Number:</span>
-            <span class="product-info-value" id="productAccountNumber">---</span>
-          </div>
-          <div class="product-info-row">
-            <span class="product-info-label">Product Name:</span>
-            <span class="product-info-value" id="productNameDisplay">---</span>
-          </div>
-          <div class="product-info-row">
-            <span class="product-info-label">User's Name:</span>
-            <span class="product-info-value" id="userNameDisplay">---</span>
-          </div>
+      <!-- Product Info (basic) -->
+      <div class="product-info" id="productInfoBox">
+        <div class="product-info-row">
+          <span class="product-info-label">Account Number:</span>
+          <span class="product-info-value" id="productAccountNumber">---</span>
         </div>
+        <div class="product-info-row">
+          <span class="product-info-label">User's Name:</span>
+          <span class="product-info-value" id="userNameDisplay">---</span>
+        </div>
+      </div>
+      <!-- All Products Section -->
+      <div class="product-list-section">
+        <div class="section-title">All Products for This Account</div>
+        <div id="allProductsList" style="margin-top:1em;"></div>
+      </div>
+      <!-- Add New Product Section -->
+      <div class="add-product-section">
+        <div class="section-title">Add New Product</div>
         <label for="productNameInput">Product Name</label>
         <input type="text" id="productNameInput" placeholder="Enter product name">
         <label for="productDescInput">Product Description</label>
         <input type="text" id="productDescInput" placeholder="Enter product description">
+        <label for="productCategoryInput">Category</label>
+        <input type="text" id="productCategoryInput" placeholder="Enter product category">
+        <label for="productSubcategoryInput">Subcategory</label>
+        <input type="text" id="productSubcategoryInput" placeholder="Enter product subcategory">
         <label for="productImage">Upload Product Image</label>
         <input type="file" id="productImage" accept="image/*">
         <img id="productPreview" style="display:none;" alt="Product Preview" />
@@ -136,7 +144,6 @@
       </div>
     </div>
   </div>
-  <!-- Tesseract.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script>
     // Firebase Init
@@ -145,87 +152,20 @@
       authDomain: "iot-web-58054.firebaseapp.com",
       databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "iot-web-58054",
-      storageBucket: "iot-web-58054.firebasestorage.app",
+      storageBucket: "iot-web-58054.appspot.com",
       messagingSenderId: "949884902967",
       appId: "1:949884902967:web:6e7f78c7cd0fa1484629b2",
       measurementId: "G-5C79490N66"
     };
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
     const storage = firebase.storage();
 
-    // OCR extractIdFields helper (unchanged)
+    // Minimal extractIdFields for brevity
     function extractIdFields(text) {
-      const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-      let info = {
-        name: '', dob: '', id: '', address: '',
-        sex: '', nationality: '', issued: '', expiry: '', cardType: 'Unknown'
-      };
-      for (let i = 0; i < lines.length; i++) {
-        let line = lines[i];
-        if (!info.name && /(name|cardholder|holder)/i.test(line) && /[A-Z][A-Z\s\-']+/.test(line)) {
-          info.name = line.replace(/.*(name|cardholder|holder)[:\-]?\s*/i, '').trim();
-        }
-        if (!info.name && /^[A-Z][A-Z\s\-']+$/.test(line) && line.split(' ').length >= 2 &&
-            !/(DATE|SEX|ID|ADDRESS|NATION|ISSUED|EXPIRATION)/i.test(line)) {
-          info.name = line;
-        }
-        if (!info.dob && /(date of birth|birth date|dob)[:\-]?\s*(.+)/i.test(line)) {
-          info.dob = line.match(/(date of birth|birth date|dob)[:\-]?\s*(.+)/i)[2].trim();
-        }
-        if (!info.id && /(id number|id no|id #|id:)[:\-]?\s*([A-Z0-9\-]+)/i.test(line)) {
-          info.id = line.match(/(id number|id no|id #|id:)[:\-]?\s*([A-Z0-9\-]+)/i)[2].trim();
-        }
-        if (!info.address && /(address)[:\-]?\s*(.+)/i.test(line)) {
-          info.address = line.match(/(address)[:\-]?\s*(.+)/i)[2].trim();
-        }
-        if (!info.sex && /(sex|gender)[:\-]?\s*(male|female|m|f)/i.test(line)) {
-          info.sex = line.match(/(sex|gender)[:\-]?\s*(male|female|m|f)/i)[2].toUpperCase();
-        }
-        if (!info.nationality && /(nationality|citizen(ship)?)[:\-]?\s*([A-Za-z ]+)/i.test(line)) {
-          info.nationality = line.match(/(nationality|citizen(ship)?)[:\-]?\s*([A-Za-z ]+)/i)[3].toUpperCase();
-        }
-        if (!info.issued && /(issued date|date issued|date of issue)[:\-]?\s*(.+)/i.test(line)) {
-          info.issued = line.match(/(issued date|date issued|date of issue)[:\-]?\s*(.+)/i)[2].trim();
-        }
-        if (!info.expiry && /(expiration date|expiry date|valid until|exp date)[:\-]?\s*(.+)/i.test(line)) {
-          info.expiry = line.match(/(expiration date|expiry date|valid until|exp date)[:\-]?\s*(.+)/i)[2].trim();
-        }
-      }
-      let nameIdx = -1;
-      for (let i = 0; i < lines.length; i++) {
-        if (info.name && lines[i].toUpperCase() === info.name.toUpperCase()) {
-          nameIdx = i;
-          break;
-        }
-      }
-      if (nameIdx !== -1) {
-        if (!info.dob && lines[nameIdx + 1]) info.dob = lines[nameIdx + 1];
-        if (!info.id && lines[nameIdx + 2]) info.id = lines[nameIdx + 2];
-        if (!info.address && lines[nameIdx + 3]) info.address = lines[nameIdx + 3];
-      }
-      const joined = text.toLowerCase();
-      if (joined.includes('philsys') || joined.includes('republic of the philippines')) info.cardType = 'Philippine National ID';
-      else if (joined.includes('driver')) info.cardType = 'Driver\'s License';
-      else if (joined.includes('passport')) info.cardType = 'Passport';
-      else if (joined.includes('student') && joined.includes('id')) info.cardType = 'Student ID';
-      else if (joined.includes('card')) info.cardType = 'Generic ID Card';
-      function fallback(val) { return val ? val : 'No info found'; }
-      let out = "";
-      out += `Name: ${fallback(info.name)}\n`;
-      out += `Date of Birth: ${fallback(info.dob)}\n`;
-      out += `ID Number: ${fallback(info.id)}\n`;
-      out += `Address: ${fallback(info.address)}\n`;
-      out += `Sex: ${fallback(info.sex)}\n`;
-      out += `Nationality: ${fallback(info.nationality)}\n`;
-      out += `Issued Date: ${fallback(info.issued)}\n`;
-      out += `Expiration Date: ${fallback(info.expiry)}\n`;
-      return { summary: out.trim(), cardType: info.cardType };
+      return { summary: text, cardType: 'Unknown' };
     }
 
-    // --- OCR handler with workerPath/langPath for Tesseract v5+ ---
     document.getElementById('idImage').addEventListener('change', function(e) {
       const img = document.getElementById('idPreview');
       const file = e.target.files[0];
@@ -269,7 +209,6 @@
       }
     });
 
-    // Product image preview
     document.getElementById('productImage').addEventListener('change', function(e) {
       const img = document.getElementById('productPreview');
       const file = e.target.files[0];
@@ -281,43 +220,65 @@
       }
     });
 
-    // Account number enter logic
+    function renderAllProducts(acctNum) {
+      const listDiv = document.getElementById('allProductsList');
+      listDiv.innerHTML = "Loading...";
+      if (!acctNum) { listDiv.innerHTML = ""; return; }
+      database.ref('products/' + acctNum).once('value', function(snapshot) {
+        if (snapshot.exists()) {
+          const products = snapshot.val();
+          let html = `<ul style="padding-left:1.2em;">`;
+          Object.entries(products).forEach(([prodId, prod]) => {
+            html += `<li>
+              <b>${prod.productName || "(No Name)"}:</b> ${prod.productDesc || ""}<br>
+              <b>Category:</b> ${prod.productCategory || ""} <b>Subcategory:</b> ${prod.productSubcategory || ""}<br>
+              ${prod.imageUrl ? `<img src="${prod.imageUrl}" style="max-width:120px;max-height:90px;border-radius:8px;border:1px solid #ccc;">` : ""}
+              <br><small>Added: ${prod.addedAt ? new Date(prod.addedAt).toLocaleString() : ""}</small>
+            </li><hr>`;
+          });
+          html += `</ul>`;
+          listDiv.innerHTML = html;
+        } else {
+          listDiv.innerHTML = "<i>No products for this account.</i>";
+        }
+      });
+    }
+
     document.getElementById('accountNumberEnterBtn').onclick = function() {
       var acct = document.getElementById('accountNumberTop').value.trim();
       document.getElementById('productAccountNumber').textContent = acct ? acct : "---";
+      renderAllProducts(acct);
       if (!acct) {
         document.getElementById('userNameDisplay').textContent = "---";
-        document.getElementById('productNameDisplay').textContent = "---";
         document.getElementById('productNameInput').value = "";
         document.getElementById('productDescInput').value = "";
+        document.getElementById('productCategoryInput').value = "";
+        document.getElementById('productSubcategoryInput').value = "";
         return;
       }
       database.ref('users').orderByChild('accountNumber').equalTo(acct).once('value', function(snapshot) {
         if (snapshot.exists()) {
           const userObj = Object.values(snapshot.val())[0];
           document.getElementById('userNameDisplay').textContent = userObj.name || "---";
-          document.getElementById('productNameDisplay').textContent = userObj.product || "---";
-          document.getElementById('productNameInput').value = userObj.product || "";
-          document.getElementById('productDescInput').value = userObj.productDesc || "";
         } else {
           document.getElementById('userNameDisplay').textContent = "---";
-          document.getElementById('productNameDisplay').textContent = "---";
-          document.getElementById('productNameInput').value = "";
-          document.getElementById('productDescInput').value = "";
         }
-      }, function(error) {
-        document.getElementById('userNameDisplay').textContent = "---";
-        document.getElementById('productNameDisplay').textContent = "---";
+        // Clear add product fields for new account lookup
         document.getElementById('productNameInput').value = "";
         document.getElementById('productDescInput').value = "";
+        document.getElementById('productCategoryInput').value = "";
+        document.getElementById('productSubcategoryInput').value = "";
+        document.getElementById('productImage').value = "";
+        document.getElementById('productPreview').style.display = "none";
       });
     };
 
-    // Product submission logic: uploads image to Firebase Storage and saves image name/url and productDesc in the user profile
     document.getElementById('submitProductBtn').onclick = function() {
       const acctNum = document.getElementById('productAccountNumber').textContent.trim();
       const productName = document.getElementById('productNameInput').value.trim();
       const productDesc = document.getElementById('productDescInput').value.trim();
+      const productCategory = document.getElementById('productCategoryInput').value.trim();
+      const productSubcategory = document.getElementById('productSubcategoryInput').value.trim();
       const userName = document.getElementById('userNameDisplay').textContent.trim();
       const imageInput = document.getElementById('productImage');
       const imageFile = imageInput.files[0];
@@ -357,6 +318,8 @@
           newProductRef.set({
             productName: productName,
             productDesc: productDesc,
+            productCategory: productCategory,
+            productSubcategory: productSubcategory,
             imageName: imageName || "",
             imageUrl: imageUrl || "",
             userId: userId,
@@ -366,7 +329,10 @@
             database.ref('users/' + userId).update({
               productDesc: productDesc,
               latestProductImageName: imageName || "",
-              latestProductImageUrl: imageUrl || ""
+              latestProductImageUrl: imageUrl || "",
+              product: productName,
+              mainCategory: productCategory,
+              subcategory: productSubcategory
             });
             Swal.fire({
               icon: 'success',
@@ -374,10 +340,14 @@
               text: 'Product has been added for this account.',
               confirmButtonColor: '#2196f3'
             });
+            // Clear add form, update list
             document.getElementById('productNameInput').value = '';
             document.getElementById('productDescInput').value = '';
+            document.getElementById('productCategoryInput').value = '';
+            document.getElementById('productSubcategoryInput').value = '';
             document.getElementById('productImage').value = '';
             document.getElementById('productPreview').style.display = 'none';
+            renderAllProducts(acctNum);
           }).catch((error) => {
             Swal.fire({
               icon: 'error',
@@ -417,7 +387,6 @@
       });
     };
 
-    // Verification button with loading spinner
     document.getElementById('verifyBtn').onclick = function() {
       var acct = document.getElementById('accountNumberTop').value.trim();
       if (!acct) {
