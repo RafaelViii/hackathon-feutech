@@ -285,6 +285,7 @@
 
     /**
      * Processes a "fake" subscription payment and records it in Realtime Database.
+     * It will update an existing active subscription or create a new one.
      * @param {string} planType - The type of plan (e.g., 'Day', 'Weekly', 'Monthly', 'Annual').
      * @param {number} price - The price per kiosk for the selected plan.
      * @param {number} kioskCount - The number of kiosks rented.
@@ -306,17 +307,17 @@
 
         // Determine subscription duration based on plan type
         switch (planType) {
-            case 'Day': // Matches data-plan="Day" from advertise.html
+            case 'Day':
                 durationInDays = 1;
                 break;
             case 'Weekly':
                 durationInDays = 7;
                 break;
             case 'Monthly':
-                durationInDays = 30; // Approximately a month
+                durationInDays = 30;
                 break;
             case 'Annual':
-                durationInDays = 365; // Approximately a year
+                durationInDays = 365;
                 break;
             default:
                 console.error("Invalid plan type:", planType);
@@ -327,34 +328,79 @@
         }
 
         const now = new Date();
-        const startDate = now.toISOString(); // Store as ISO string for Realtime Database
-        const endDate = new Date(now.getTime() + durationInDays * 24 * 60 * 60 * 1000).toISOString();
-        const nextPaymentDate = endDate; // Simple model: next payment is when current one expires
+        let startDate;
+        let endDate;
+        let existingSubscriptionKey = null;
+
+        // 1. Check for existing active subscription for the current user
+        const userSubscriptionsRef = ref(db, 'subscriptions');
+        const userActiveSubscriptionQuery = query(userSubscriptionsRef, orderByChild('userId'), equalTo(userId));
+
+        // Fetch existing subscriptions once
+        const snapshot = await new Promise(resolve => {
+            onValue(userActiveSubscriptionQuery, (snap) => {
+                resolve(snap);
+            }, { onlyOnce: true });
+        });
+
+        if (snapshot.exists()) {
+            snapshot.forEach(childSnapshot => {
+                const sub = childSnapshot.val();
+                // Assuming we update the first active subscription found for simplicity
+                // In a more complex app, you might have multiple subscriptions or specific rules for which to update.
+                if (sub.status === "active") {
+                    existingSubscriptionKey = childSnapshot.key;
+                    const currentEndDate = new Date(sub.endDate);
+                    // If current end date is in the past, start new subscription from now.
+                    // Otherwise, extend from the current end date.
+                    startDate = (currentEndDate < now) ? now.toISOString() : sub.endDate;
+                    endDate = new Date(new Date(startDate).getTime() + durationInDays * 24 * 60 * 60 * 1000).toISOString();
+                    console.log("Found existing active subscription. Extending its duration.");
+                    return true; // Break forEach loop
+                }
+            });
+        }
+
+        if (!existingSubscriptionKey) {
+            // No active subscription found, create a new one starting from now
+            startDate = now.toISOString();
+            endDate = new Date(now.getTime() + durationInDays * 24 * 60 * 60 * 1000).toISOString();
+            console.log("No active subscription found. Creating a new one.");
+        }
 
         try {
-            // Push a new subscription record to the 'subscriptions' node
-            const subscriptionsRef = ref(db, 'subscriptions');
-            const newSubscriptionRef = push(subscriptionsRef); // Generates a unique key
-            const subscriptionId = newSubscriptionRef.key; // Get the generated key
-
-            await set(newSubscriptionRef, {
+            let subscriptionRefToUse;
+            let subscriptionId;
+            const subscriptionData = {
                 userId: userId,
                 planType: planType,
-                price: finalPrice, // Store the total price for the subscription
+                price: finalPrice,
                 startDate: startDate,
                 endDate: endDate,
-                status: "active", // Initial status
+                status: "active",
                 lastPaymentDate: now.toISOString(),
-                nextPaymentDate: nextPaymentDate,
+                nextPaymentDate: endDate, // Next payment is when current one expires
                 kioskCount: Number(kioskCount || 1),
                 paymentMethod: paymentMethod
-            });
-            console.log("Subscription added with ID: ", subscriptionId);
+            };
 
-            // Push a new payment record to the 'payments' node
+            if (existingSubscriptionKey) {
+                // Update existing subscription
+                subscriptionRefToUse = ref(db, 'subscriptions/' + existingSubscriptionKey);
+                subscriptionId = existingSubscriptionKey;
+                await set(subscriptionRefToUse, subscriptionData); // Overwrite the existing subscription with updated data
+                console.log("Subscription updated with ID: ", subscriptionId);
+            } else {
+                // Create new subscription
+                subscriptionRefToUse = push(ref(db, 'subscriptions'));
+                subscriptionId = subscriptionRefToUse.key;
+                await set(subscriptionRefToUse, subscriptionData);
+                console.log("New subscription added with ID: ", subscriptionId);
+            }
+
+            // Always add a new payment record for each transaction
             const paymentsRef = ref(db, 'payments');
-            const newPaymentRef = push(paymentsRef); // Generates a unique key
-
+            const newPaymentRef = push(paymentsRef);
             await set(newPaymentRef, {
                 subscriptionId: subscriptionId, // Link to the subscription
                 userId: userId,
@@ -363,12 +409,12 @@
                 paymentDate: now.toISOString(),
                 paymentMethod: paymentMethod,
                 status: "success",
-                transactionId: `FAKE_TXN_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`
+                transactionId: `TXN_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`
             });
-            console.log("Fake payment recorded successfully.");
+            console.log("Payment recorded successfully.");
 
             // Display success message and then redirect
-            alert("Payment successful! Your subscription is now active.");
+            alert("Payment successful! Your subscription is now active/updated.");
             setTimeout(() => {
                 window.location.href = '../draft.html'; // Redirect to your home page
             }, 1500); // Redirect after 1.5 seconds
@@ -398,14 +444,12 @@
         const userId = currentUser.uid;
         const subscriptionsRef = ref(db, 'subscriptions');
         // Create a query to listen for subscriptions where the userId matches the current user's UID
-        // Note: Realtime Database queries are slightly different from Firestore.
         // You'll need to index 'userId' in your Firebase Realtime Database rules for this query to be efficient.
         const userSubscriptionsQuery = query(subscriptionsRef, orderByChild('userId'), equalTo(userId));
 
         console.log(`Setting up real-time listener for subscriptions for user: ${userId}`);
 
         // Attach the real-time listener. The callback receives a DataSnapshot.
-        // We need to iterate through the snapshot to get individual subscription data.
         const listenerFunction = onValue(userSubscriptionsQuery, (snapshot) => {
             console.log("Real-time subscription update received!");
             const subscriptions = snapshot.val(); // Get all data at this location
@@ -425,8 +469,8 @@
             console.error("Error listening to subscriptions:", error);
         });
 
-        // Return the listener function itself, which can be passed to `off()` to detach
-        return userSubscriptionsQuery; // Return the query reference for `off`
+        // Return the query reference, which can be passed to `off()` to detach the listener
+        return userSubscriptionsQuery;
     }
 
     // --- Page Initialization and Event Handlers ---
