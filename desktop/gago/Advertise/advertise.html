@@ -447,13 +447,24 @@
     });
 
     proceedBtn.onclick = function() {
-      // You can replace this alert with your payment logic or redirection
-      alert(
-        `Plan: ${selectedPlan}\nBranch: ${selectedBranch}\nKiosks: ${kioskInput.value}\nProceeding to payment...`
-      );
-      modalBackdrop.style.display = 'none';
-      document.body.style.overflow = '';
-    };
+  // Save details to localStorage for payment.html to use
+  // You need to get the selected plan's price per kiosk as well
+  let planPrice = 0;
+  // Find the selected plan card again (in case user changes plan)
+  document.querySelectorAll('.plan-card').forEach(card => {
+    if (card.getAttribute('data-plan') === selectedPlan) {
+      planPrice = card.getAttribute('data-price');
+    }
+  });
+
+  localStorage.setItem('ad_plan', selectedPlan);
+  localStorage.setItem('ad_price', planPrice);
+  localStorage.setItem('ad_branch', selectedBranch);
+  localStorage.setItem('ad_kiosks', kioskInput.value);
+
+  // Redirect to payment.html
+  window.location.href = 'payment.html';
+};
   </script>
 </body>
 </html>
