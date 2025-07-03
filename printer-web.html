@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bluetooth Printer Control</title>
+    <!-- Use compat (v8) scripts if not using a build tool -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+    <h2>Send Text to Bluetooth Printer</h2>
+    <label for="deviceName">Printer Name (as shown on Android):</label>
+    <input type="text" id="deviceName" placeholder="eg. Printer_1234"><br><br>
+    <textarea id="printText" placeholder="Enter text to print" rows="4" cols="50"></textarea><br><br>
+    <button onclick="sendPrintRequest()">Print</button>
+    <p id="status"></p>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBPbtdqBMd2uK4duSICkOd7vshfVKHL0sQ",
+            authDomain: "scaleup2.firebaseapp.com",
+            projectId: "scaleup2",
+            storageBucket: "scaleup2.appspot.com",
+            messagingSenderId: "545731372745",
+            appId: "1:545731372745:web:4dc02ef445fa8057c9cf18",
+            measurementId: "G-MVQME30YMJ",
+            databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        function sendPrintRequest() {
+            const deviceName = document.getElementById('deviceName').value.trim();
+            const text = document.getElementById('printText').value.trim();
+            const statusElem = document.getElementById('status');
+            if (!deviceName || !text) {
+                statusElem.innerText = "Please enter printer name and text.";
+                return;
+            }
+            statusElem.innerText = "Sending request...";
+            const requestRef = db.ref('print_requests').push();
+            requestRef.set({
+                deviceName: deviceName,
+                text: text,
+                timestamp: Date.now()
+            }).then(() => {
+                statusElem.innerText = "Print request sent!";
+                console.log("Data written!");
+            }).catch(err => {
+                statusElem.innerText = "Error: " + err;
+                console.error("Error writing: ", err);
+            });
+        }
+    </script>
+</body>
+</html>
