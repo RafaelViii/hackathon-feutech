@@ -78,6 +78,9 @@
     }
     .receipt-value {
       text-align: right;
+      max-width: 140px;
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
     .receipt-thankyou {
       text-align: center;
@@ -172,7 +175,7 @@
       if (users && Object.keys(users).length > 0) {
         userSelect.innerHTML = '<option value="">Select a user...</option>';
         Object.entries(users).forEach(([userId, user]) => {
-          let name = user.name || user.fullName || user.username || userId;
+          let name = user.name || user.fullName || user.username || user.businessName || userId;
           userSelect.innerHTML += `<option value="${userId}">${name}</option>`;
         });
         userSelect.disabled = false;
@@ -193,15 +196,17 @@
         return;
       }
       selectedUser = usersData[uid];
-      // Render receipt preview for this user (customize fields as needed)
       receiptPreview.innerHTML = `
         <h2>ScaleUp Kiosk Receipt</h2>
         <div class="receipt-line"><span class="receipt-label">Name:</span> <span class="receipt-value">${selectedUser.name || selectedUser.fullName || selectedUser.username || uid}</span></div>
         ${selectedUser.businessName ? `<div class="receipt-line"><span class="receipt-label">Business Name:</span> <span class="receipt-value">${selectedUser.businessName}</span></div>` : ""}
         ${selectedUser.product ? `<div class="receipt-line"><span class="receipt-label">Product:</span> <span class="receipt-value">${selectedUser.product}</span></div>` : ""}
+        ${selectedUser.mainCategory ? `<div class="receipt-line"><span class="receipt-label">Category:</span> <span class="receipt-value">${selectedUser.mainCategory}</span></div>` : ""}
+        ${selectedUser.subcategory ? `<div class="receipt-line"><span class="receipt-label">Subcategory:</span> <span class="receipt-value">${selectedUser.subcategory}</span></div>` : ""}
         ${selectedUser.tagline ? `<div class="receipt-line"><span class="receipt-label">Tagline:</span> <span class="receipt-value">${selectedUser.tagline}</span></div>` : ""}
-        ${selectedUser.funding ? `<div class="receipt-line"><span class="receipt-label">Funding Goal:</span> <span class="receipt-value">₱${selectedUser.funding}</span></div>` : ""}
-        ${selectedUser.purpose ? `<div class="receipt-line"><span class="receipt-label">Purpose:</span> <span class="receipt-value">${selectedUser.purpose}</span></div>` : ""}
+        ${selectedUser.fundingGoal ? `<div class="receipt-line"><span class="receipt-label">Funding Goal:</span> <span class="receipt-value">₱${selectedUser.fundingGoal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span></div>` : ""}
+        ${selectedUser.fundUsage ? `<div class="receipt-line"><span class="receipt-label">Usage:</span> <span class="receipt-value">${selectedUser.fundUsage}</span></div>` : ""}
+        ${selectedUser.otherPurpose ? `<div class="receipt-line"><span class="receipt-label">Purpose (detail):</span> <span class="receipt-value">${selectedUser.otherPurpose}</span></div>` : ""}
         <div class="receipt-thankyou">Thank you for using ScaleUp!</div>
       `;
       receiptPreview.style.display = "";
@@ -217,9 +222,12 @@
       ];
       if (user.businessName) lines.push(`Business Name: ${user.businessName}`);
       if (user.product) lines.push(`Product:      ${user.product}`);
+      if (user.mainCategory) lines.push(`Category:     ${user.mainCategory}`);
+      if (user.subcategory) lines.push(`Subcategory:  ${user.subcategory}`);
       if (user.tagline) lines.push(`Tagline:      ${user.tagline}`);
-      if (user.funding) lines.push(`Funding Goal: ₱${user.funding}`);
-      if (user.purpose) lines.push(`Purpose:      ${user.purpose}`);
+      if (user.fundingGoal) lines.push(`Funding Goal: ₱${user.fundingGoal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`);
+      if (user.fundUsage) lines.push(`Usage:        ${user.fundUsage}`);
+      if (user.otherPurpose) lines.push(`Purpose:      ${user.otherPurpose}`);
       lines.push("", "   Thank You for Using ScaleUp!", "==============================");
       return lines.join('\n');
     }

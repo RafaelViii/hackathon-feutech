@@ -140,6 +140,8 @@
       auth.createUserWithEmailAndPassword(email, password)
         .then(userCredential => {
           const userId = userCredential.user.uid;
+          // SAVE UID TO LOCALSTORAGE FOR PRINTING PAGE
+          localStorage.setItem('registeredUID', userId);
           return database.ref("users/" + userId).set({
             name,
             email,
