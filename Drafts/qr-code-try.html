@@ -2,37 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>QR Code Generator & Print</title>
+  <title>POS QR Code Print</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
       min-height: 100vh;
+      background: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #2B1F6F 0%, #232526 60%, #414345 100%);
       font-family: Arial, sans-serif;
       margin: 0;
     }
-    .qr-container {
+    .wrapper {
       background: #fff;
-      border-radius: 18px;
-      padding: 2em 2em 1.8em 2em;
-      box-shadow: 0 8px 48px rgba(43,31,111,0.16);
-      max-width: 400px;
+      border-radius: 10px;
+      padding: 2em 2em 1.5em 2em;
+      box-shadow: 0 6px 32px #2222;
+      max-width: 380px;
       width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-    h2 {
-      color: #2B1F6F;
-      margin-bottom: 1.1em;
-      font-size: 1.55em;
-      text-align: center;
-      letter-spacing: .02em;
-    }
-    .input-row {
+    .row {
       width: 100%;
       display: flex;
       gap: 0.5em;
@@ -70,54 +63,41 @@
     #qrcode {
       margin-bottom: 1.2em;
       background: #fff;
-      padding: 1em;
-      border-radius: 12px;
-      min-height: 120px;
-      min-width: 120px;
+      padding: 0;
+      border-radius: 6px;
+      min-height: 128px;
+      min-width: 128px;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 2px 14px #2b1f6f0e;
     }
-    @media (max-width: 500px) {
-      .qr-container {
-        padding: 1.2em 0.5em 1em 0.5em;
-        min-width: 0;
-        border-radius: 0;
-        box-shadow: none;
-      }
-      h2 {
-        font-size: 1.1em;
-      }
-      #qrcode {
-        min-width: 80px;
-        min-height: 80px;
-        padding: 0.5em;
-      }
-    }
-    /* Print Styles */
     @media print {
-      body {
+      body, html {
         background: #fff !important;
       }
-      .qr-container {
+      .wrapper {
         box-shadow: none !important;
         padding: 0 !important;
         background: #fff !important;
         width: 100vw !important;
         max-width: 100vw !important;
       }
-      .input-row, h2, #printBtn {
+      .row, #printBtn {
         display: none !important;
       }
       #qrcode {
-        margin-top: 2em !important;
-        margin-bottom: 2em !important;
+        margin: 0 !important;
         box-shadow: none !important;
         background: #fff !important;
         padding: 0 !important;
         min-width: 0 !important;
         min-height: 0 !important;
+        justify-content: flex-start;
+      }
+      #qrcode img, #qrcode canvas {
+        max-width: 100vw !important;
+        max-height: 100vh !important;
       }
     }
   </style>
@@ -125,51 +105,45 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
-  <div class="qr-container">
-    <h2>QR Code Generator</h2>
-    <div class="input-row">
-      <input type="text" id="qrInput" placeholder="Enter text here">
+  <div class="wrapper">
+    <div class="row">
+      <input type="text" id="qrInput" placeholder="Enter text to encode">
       <button id="generateBtn" type="button">Enter</button>
     </div>
     <div id="qrcode"></div>
     <button id="printBtn" type="button">Print</button>
   </div>
   <script>
-    let qrcode = new QRCode(document.getElementById("qrcode"), {
-      text: "",
-      width: 180,
-      height: 180,
-      colorDark : "#000000",
-      colorLight : "#ffffff",
-      correctLevel : QRCode.CorrectLevel.H
-    });
-
     function generateQR() {
       const text = document.getElementById('qrInput').value.trim();
-      if (!text) {
-        // Optionally, clear or show an error
-        document.getElementById("qrcode").innerHTML = "";
-        return;
-      }
-      document.getElementById("qrcode").innerHTML = "";
-      qrcode = new QRCode(document.getElementById("qrcode"), {
+      const qrDiv = document.getElementById("qrcode");
+      qrDiv.innerHTML = "";
+      if (!text) return;
+      // Generate 128x128 for your printer
+      var qrcode = new QRCode(qrDiv, {
         text: text,
-        width: 180,
-        height: 180,
+        width: 128,
+        height: 128,
         colorDark : "#000000",
         colorLight : "#ffffff",
         correctLevel : QRCode.CorrectLevel.H
       });
+      setTimeout(function() {
+        // Convert canvas to image for printing (POS printers prefer <img>)
+        var canvas = qrDiv.querySelector("canvas");
+        if (canvas) {
+          var img = new Image();
+          img.src = canvas.toDataURL("image/png");
+          qrDiv.innerHTML = "";
+          qrDiv.appendChild(img);
+        }
+      }, 400);
     }
 
     document.getElementById('generateBtn').onclick = generateQR;
-
     document.getElementById('qrInput').addEventListener('keydown', function(e){
-      if (e.key === 'Enter') {
-        generateQR();
-      }
+      if (e.key === 'Enter') generateQR();
     });
-
     document.getElementById('printBtn').onclick = function() {
       window.print();
     };
