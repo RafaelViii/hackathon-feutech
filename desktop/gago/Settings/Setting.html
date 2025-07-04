@@ -6,6 +6,7 @@
   <title>Settings</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link id="settings-css" rel="stylesheet" href="AccountManage/account.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"/>
   <style>
     html, body {
       margin: 0; padding: 0; height: 100%; min-height: 100vh; width: 100vw;
@@ -214,6 +215,49 @@
     #payments-table tr:last-child td {
       border-bottom: none;
     }
+    /* Hide inline editing UI but keep them in DOM */
+    .editable-field, .save-btn, .cancel-btn { display: none !important; }
+    .edit-btn {
+      display: inline-block;
+      background: none;
+      border: none;
+      outline: none;
+      margin-left: 7px;
+      cursor: pointer;
+      font-size: 1.11em;
+      color: #206be6;
+      transition: color .14s;
+      padding: 1px 6px;
+      border-radius: 6px;
+    }
+    .edit-btn:hover {
+      background: #eaf3ff;
+      color: #195fc1;
+    }
+    /* SweetAlert2 customization */
+    .swal2-confirm.custom-save-btn {
+      background: linear-gradient(90deg, #5c7dfa 45%, #2a84e9 100%) !important;
+      color: #fff !important; font-weight: 700 !important;
+      border-radius: 6px !important; padding: 9px 32px !important;
+      font-size: 1.09em !important; box-shadow: 0 2px 12px #bfcafc1c;
+      border: none !important;
+    }
+    .swal2-cancel.custom-cancel-btn {
+      background: #eaf3ff !important; color: #206be6 !important;
+      border-radius: 6px !important; font-weight: 600 !important;
+      font-size: 1.09em !important; padding: 9px 32px !important;
+      border: none !important; margin-left: 7px !important;
+    }
+    .swal2-popup {
+      font-size: 1.09em !important;
+      font-family: inherit !important;
+    }
+    .swal2-input {
+      padding: 9px 13px !important; border-radius: 6px !important;
+      border: 1px solid #d7dae8 !important; background: #f6faff !important;
+      color: #191919 !important;
+      font-size: 1.05em !important;
+    }
   </style>
 </head>
 <body>
@@ -255,17 +299,25 @@
               <span id="profile-section-label" class="section-label">Business Info</span>
               <div class="info-row">
                 <span class="info-label">Business Name</span>
-                <span class="unchangeable" id="business-name-value">Loading...</span>
+                <span class="editable-value" id="business-name-value">Loading...</span>
+                <input class="editable-field" id="business-name-input" type="text" value="" />
+                <button class="edit-btn" onclick="editFieldModal('businessName')">✏️</button>
+                <button class="save-btn" onclick="saveField('businessName')">Save</button>
+                <button class="cancel-btn" onclick="cancelEdit('businessName')">Cancel</button>
               </div>
               <div class="info-row">
                 <span class="info-label">Product</span>
-                <span class="unchangeable" id="product-value">Loading...</span>
+                <span class="editable-value" id="product-value">Loading...</span>
+                <input class="editable-field" id="product-input" type="text" value="" />
+                <button class="edit-btn" onclick="editFieldModal('product')">✏️</button>
+                <button class="save-btn" onclick="saveField('product')">Save</button>
+                <button class="cancel-btn" onclick="cancelEdit('product')">Cancel</button>
               </div>
               <div class="info-row">
                 <span class="info-label">Tagline</span>
                 <span class="editable-value" id="tagline-value">Loading...</span>
                 <input class="editable-field" id="tagline-input" type="text" value="" />
-                <button class="edit-btn" onclick="editField('tagline')">✏️</button>
+                <button class="edit-btn" onclick="editFieldModal('tagline')">✏️</button>
                 <button class="save-btn" onclick="saveField('tagline')">Save</button>
                 <button class="cancel-btn" onclick="cancelEdit('tagline')">Cancel</button>
               </div>
@@ -273,7 +325,7 @@
                 <span class="info-label">Purpose</span>
                 <span class="editable-value" id="purpose-value">Loading...</span>
                 <input class="editable-field" id="purpose-input" type="text" value="" />
-                <button class="edit-btn" onclick="editField('purpose')">✏️</button>
+                <button class="edit-btn" onclick="editFieldModal('purpose')">✏️</button>
                 <button class="save-btn" onclick="saveField('purpose')">Save</button>
                 <button class="cancel-btn" onclick="cancelEdit('purpose')">Cancel</button>
               </div>
@@ -284,7 +336,7 @@
                 <span class="required-field-label">Experience:</span>
                 <span class="editable-value" id="experience-value">Loading...</span>
                 <input class="editable-field" id="experience-input" type="text" value="" />
-                <button class="edit-btn" onclick="editField('experience')">✏️</button>
+                <button class="edit-btn" onclick="editFieldModal('experience')">✏️</button>
                 <button class="save-btn" onclick="saveField('experience')">Save</button>
                 <button class="cancel-btn" onclick="cancelEdit('experience')">Cancel</button>
               </div>
@@ -292,7 +344,7 @@
                 <span class="required-field-label">Location:</span>
                 <span class="editable-value" id="location-value">Loading...</span>
                 <input class="editable-field" id="location-input" type="text" value="" />
-                <button class="edit-btn" onclick="editField('location')">✏️</button>
+                <button class="edit-btn" onclick="editFieldModal('location')">✏️</button>
                 <button class="save-btn" onclick="saveField('location')">Save</button>
                 <button class="cancel-btn" onclick="cancelEdit('location')">Cancel</button>
               </div>
@@ -300,7 +352,7 @@
                 <span class="required-field-label">Awards:</span>
                 <span class="editable-value" id="awards-value">Loading...</span>
                 <input class="editable-field" id="awards-input" type="text" value="" />
-                <button class="edit-btn" onclick="editField('awards')">✏️</button>
+                <button class="edit-btn" onclick="editFieldModal('awards')">✏️</button>
                 <button class="save-btn" onclick="saveField('awards')">Save</button>
                 <button class="cancel-btn" onclick="cancelEdit('awards')">Cancel</button>
               </div>
@@ -308,7 +360,7 @@
                 <span class="required-field-label">What you look for a partnership?</span>
                 <span class="editable-value" id="partnership-value">Loading...</span>
                 <input class="editable-field" id="partnership-input" type="text" value="" />
-                <button class="edit-btn" onclick="editField('partnership')">✏️</button>
+                <button class="edit-btn" onclick="editFieldModal('partnership')">✏️</button>
                 <button class="save-btn" onclick="saveField('partnership')">Save</button>
                 <button class="cancel-btn" onclick="cancelEdit('partnership')">Cancel</button>
               </div>
@@ -319,7 +371,7 @@
                 <span class="social-label">Facebook:</span>
                 <span class="editable-value" id="facebook-value">Loading...</span>
                 <input class="editable-field" id="facebook-input" type="text" value="" />
-                <button class="edit-btn" onclick="editField('facebook')">✏️</button>
+                <button class="edit-btn" onclick="editFieldModal('facebook')">✏️</button>
                 <button class="save-btn" onclick="saveField('facebook')">Save</button>
                 <button class="cancel-btn" onclick="cancelEdit('facebook')">Cancel</button>
               </div>
@@ -327,7 +379,7 @@
                 <span class="social-label">Youtube:</span>
                 <span class="editable-value" id="youtube-value">Loading...</span>
                 <input class="editable-field" id="youtube-input" type="text" value="" />
-                <button class="edit-btn" onclick="editField('youtube')">✏️</button>
+                <button class="edit-btn" onclick="editFieldModal('youtube')">✏️</button>
                 <button class="save-btn" onclick="saveField('youtube')">Save</button>
                 <button class="cancel-btn" onclick="cancelEdit('youtube')">Cancel</button>
               </div>
@@ -335,7 +387,7 @@
                 <span class="social-label">Messenger:</span>
                 <span class="editable-value" id="messenger-value">Loading...</span>
                 <input class="editable-field" id="messenger-input" type="text" value="" />
-                <button class="edit-btn" onclick="editField('messenger')">✏️</button>
+                <button class="edit-btn" onclick="editFieldModal('messenger')">✏️</button>
                 <button class="save-btn" onclick="saveField('messenger')">Save</button>
                 <button class="cancel-btn" onclick="cancelEdit('messenger')">Cancel</button>
               </div>
@@ -375,15 +427,18 @@
           </div>
           <div class="manage-row">
             <span class="manage-label">Billing Status:</span>
-            <span class="manage-value" id="billing-status">Loading...</span>
+            <span class="manage-value" id="billing-status"></span>
           </div>
           <div class="manage-row">
             <span class="manage-label">Subscription:</span>
-            <span class="manage-value" id="subscription-status">Loading...</span>
+            <span class="manage-value" id="subscription-status"></span>
           </div>
           <div class="sub-box" id="sub-details" style="display:none;">
             <div><b>Plan:</b> <span id="plan-name"></span></div>
             <div><b>Renewal:</b> <span id="plan-renewal"></span></div>
+            <div><b>Payment Method:</b> <span id="plan-method"></span></div>
+            <div><b>Price:</b> <span id="plan-price"></span></div>
+            <div><b>Kiosk Count:</b> <span id="plan-kiosk"></span></div>
           </div>
           <div class="divider"></div>
           <div class="payments-section">
@@ -410,6 +465,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     // Firebase config...
     const firebaseConfig = {
@@ -439,7 +495,6 @@
       item.addEventListener('click', function () {
         drawerItems.forEach(d => d.classList.remove('selected'));
         this.classList.add('selected');
-        // Tab logic
         Object.values(sectionMap).forEach(id => {
           document.getElementById(id).classList.remove('active');
         });
@@ -453,7 +508,7 @@
       });
     });
 
-    // Editable fields logic for Account Section
+    // Editable fields logic for Account Section (original)
     function editField(field) {
       const row = document.getElementById(field + '-value').parentElement;
       row.classList.add('editing');
@@ -474,6 +529,8 @@
       const userId = user.uid;
       let updateObj = {};
       switch(field) {
+        case 'businessName': updateObj['businessName'] = value; break;
+        case 'product': updateObj['product'] = value; break;
         case 'tagline': updateObj['tagline'] = value; break;
         case 'purpose': updateObj['fundUsage'] = value; break;
         case 'experience': updateObj['experience'] = value; break;
@@ -497,6 +554,76 @@
     document.querySelectorAll('.edit-btn').forEach(btn => {
       btn.style.display = 'inline-block';
     });
+
+    // New: SweetAlert2 modal-based editing for Account Section
+    async function editFieldModal(field) {
+      // Get current value
+      const valueSpan = document.getElementById(field + '-value');
+      let currentValue = valueSpan.textContent === "Not set" || valueSpan.textContent === "Loading..." ? "" : valueSpan.textContent;
+
+      // Define titles/placeholders
+      const fieldNames = {
+        businessName: 'Business Name',
+        product: 'Product',
+        tagline: 'Tagline',
+        purpose: 'Purpose',
+        experience: 'Experience',
+        location: 'Location',
+        awards: 'Awards',
+        partnership: 'What you look for a partnership?',
+        facebook: 'Facebook',
+        youtube: 'Youtube',
+        messenger: 'Messenger'
+      };
+      const placeholder = "Enter " + (fieldNames[field] || field);
+
+      // Show SweetAlert2 modal
+      const { value: newValue } = await Swal.fire({
+        title: `Edit ${fieldNames[field] || field}`,
+        input: 'text',
+        inputValue: currentValue,
+        showCancelButton: true,
+        confirmButtonText: 'Save',
+        cancelButtonText: 'Cancel',
+        inputPlaceholder: placeholder,
+        customClass: {
+          confirmButton: 'swal2-confirm custom-save-btn',
+          cancelButton: 'swal2-cancel custom-cancel-btn'
+        },
+        inputValidator: (val) => {
+          if (val === "") return 'Value cannot be empty';
+        }
+      });
+
+      // On "Save"
+      if (newValue !== undefined) {
+        valueSpan.textContent = newValue;
+        // Save to Firebase
+        const user = firebase.auth().currentUser;
+        if (!user) {
+          Swal.fire('Not signed in', 'Please sign in to save changes.', 'error');
+          return;
+        }
+        const userId = user.uid;
+        let updateObj = {};
+        switch(field) {
+          case 'businessName': updateObj['businessName'] = newValue; break;
+          case 'product': updateObj['product'] = newValue; break;
+          case 'tagline': updateObj['tagline'] = newValue; break;
+          case 'purpose': updateObj['fundUsage'] = newValue; break;
+          case 'experience': updateObj['experience'] = newValue; break;
+          case 'location': updateObj['location'] = newValue; break;
+          case 'awards': updateObj['awards'] = newValue; break;
+          case 'partnership': updateObj['partnership'] = newValue; break;
+          case 'facebook': updateObj['facebook'] = newValue; break;
+          case 'youtube': updateObj['youtube'] = newValue; break;
+          case 'messenger': updateObj['messenger'] = newValue; break;
+          default: return;
+        }
+        await firebase.database().ref("users/" + userId).update(updateObj);
+        Swal.fire('Saved!', `${fieldNames[field] || field} updated successfully.`, 'success');
+      }
+    }
 
     // Payments display logic
     function renderPayments(userId) {
@@ -527,41 +654,6 @@
 
     // Load user data from Firebase for Account, Manage, Privacy
     firebase.auth().onAuthStateChanged(function(user) {
-
-        if (user) {
-        const billingStatusEl = document.getElementById("billing-status");
-        const subscriptionStatusEl = document.getElementById("subscription-status");
-        const planNameEl = document.getElementById("plan-name");
-        const planRenewalEl = document.getElementById("plan-renewal");
-        firebase.database().ref("payments").orderByChild("userId").equalTo(user.uid).once("value")
-          .then(snapshot => {
-            let latestPayment = null;
-            snapshot.forEach(childSnap => {
-              const payment = childSnap.val();
-              if (payment.status === "success") {
-                if (!latestPayment || new Date(payment.paymentDate) > new Date(latestPayment.paymentDate)) {
-                  latestPayment = payment;
-                }
-              }
-            });
-            if (latestPayment) {
-              billingStatusEl.textContent = "Active / Paid";
-              subscriptionStatusEl.textContent = latestPayment.subscriptionId || "Active";
-              if (planNameEl) planNameEl.textContent = latestPayment.planName || "—";
-              if (planRenewalEl) planRenewalEl.textContent = latestPayment.paymentDate
-                ? new Date(latestPayment.paymentDate).toLocaleDateString()
-                : "—";
-              document.getElementById("sub-details").style.display = "flex";
-            } else {
-              billingStatusEl.textContent = "Free / Not set";
-              subscriptionStatusEl.textContent = "None";
-              if (planNameEl) planNameEl.textContent = "—";
-              if (planRenewalEl) planRenewalEl.textContent = "—";
-              document.getElementById("sub-details").style.display = "none";
-            }
-          });
-      }
-      // Account Section (profile info)
       if (user) {
         const userId = user.uid;
         const ref = firebase.database().ref("users/" + userId);
@@ -571,7 +663,6 @@
             businessName: "Not set", product: "Not set", tagline: "",
             fundUsage: "", experience: "", location: "", awards: "",
             partnership: "", facebook: "", youtube: "", messenger: "",
-            billingStatus: "", subscription: "", planName: "", renewal: "",
             verified: false
           };
           let needsUpdate = false;
@@ -585,7 +676,9 @@
 
           // Fill Account fields
           document.getElementById("business-name-value").textContent = data.businessName || "Not set";
+          document.getElementById("business-name-input").value = data.businessName || "";
           document.getElementById("product-value").textContent = data.product || "Not set";
+          document.getElementById("product-input").value = data.product || "";
           document.getElementById("tagline-value").textContent = data.tagline || "Not set";
           document.getElementById("tagline-input").value = data.tagline || "";
           document.getElementById("purpose-value").textContent = data.fundUsage || "Not set";
@@ -605,17 +698,6 @@
           document.getElementById("messenger-value").textContent = data.messenger || "Not set";
           document.getElementById("messenger-input").value = data.messenger || "";
 
-          // Fill Manage billing/subscription
-          document.getElementById("billing-status").textContent = data.billingStatus || "Free / Not set";
-          document.getElementById("subscription-status").textContent = data.subscription || "None";
-          if (data.planName || data.renewal) {
-            document.getElementById("sub-details").style.display = "flex";
-            document.getElementById("plan-name").textContent = data.planName || "—";
-            document.getElementById("plan-renewal").textContent = data.renewal || "—";
-          } else {
-            document.getElementById("sub-details").style.display = "none";
-          }
-
           // MANAGE VERIFICATION: verified must be true in /users/{uid}/verified
           const manageVerifiedStatusBox = document.getElementById("manage-verified-status-box");
           const manageVerifiedStatusText = document.getElementById("manage-verified-status-text");
@@ -624,19 +706,17 @@
           const sendMsg = document.getElementById("manage-send-verif-msg");
           if (data.verified === true) {
             manageVerifiedStatusBox.classList.add("verified");
-            manageVerifiedStatusIcon.innerHTML = "&#x2714;"; // checkmark
+            manageVerifiedStatusIcon.innerHTML = "&#x2714;";
             manageVerifiedStatusText.textContent = "ID Verified";
             resendBtn.style.display = "none";
             sendMsg.textContent = "";
           } else {
             manageVerifiedStatusBox.classList.remove("verified");
-            manageVerifiedStatusIcon.innerHTML = "&#10060;"; // cross mark
+            manageVerifiedStatusIcon.innerHTML = "&#10060;";
             manageVerifiedStatusText.textContent = "ID Not Verified";
             resendBtn.style.display = "inline-block";
             sendMsg.textContent = "";
             resendBtn.onclick = async function() {
-              // You should implement your own backend cloud function to approve verification,
-              // but as a placeholder, we'll just set verified to true for this demo.
               await firebase.database().ref("users/" + userId).update({verified:true});
               manageVerifiedStatusBox.classList.add("verified");
               manageVerifiedStatusIcon.innerHTML = "&#x2714;";
@@ -652,8 +732,7 @@
         [
           "business-name-value","product-value","tagline-value","purpose-value",
           "experience-value","location-value","awards-value","partnership-value",
-          "facebook-value","youtube-value","messenger-value","billing-status",
-          "subscription-status","plan-name","plan-renewal"
+          "facebook-value","youtube-value","messenger-value"
         ].forEach(id => {
           const el = document.getElementById(id);
           if (el) el.textContent = "Not signed in";
@@ -673,6 +752,61 @@
         resendBtn.style.display = "none";
         sendMsg.textContent = "";
       }
+
+      // Only use subscriptions for billing/subscription display
+      const billingStatusEl = document.getElementById("billing-status");
+      const subscriptionStatusEl = document.getElementById("subscription-status");
+      const planNameEl = document.getElementById("plan-name");
+      const planRenewalEl = document.getElementById("plan-renewal");
+      const planMethodEl = document.getElementById("plan-method");
+      const planPriceEl = document.getElementById("plan-price");
+      const planKioskEl = document.getElementById("plan-kiosk");
+      if (user) {
+        firebase.database().ref("subscriptions").orderByChild("userId").equalTo(user.uid).once("value")
+          .then(snapshot => {
+            let latestActiveSub = null;
+            snapshot.forEach(childSnap => {
+              const sub = childSnap.val();
+              if (sub.status === "active") {
+                if (!latestActiveSub || new Date(sub.endDate) > new Date(latestActiveSub.endDate)) {
+                  latestActiveSub = sub;
+                }
+              }
+            });
+            if (latestActiveSub) {
+              billingStatusEl.textContent = "Active / Paid";
+              subscriptionStatusEl.textContent = latestActiveSub.planType || "Active";
+              if (planNameEl) planNameEl.textContent = latestActiveSub.planType || "—";
+              if (planRenewalEl) planRenewalEl.textContent = latestActiveSub.nextPaymentDate
+                ? new Date(latestActiveSub.nextPaymentDate).toLocaleString()
+                : "—";
+              if (planMethodEl) planMethodEl.textContent = latestActiveSub.paymentMethod || "—";
+              if (planPriceEl) planPriceEl.textContent = latestActiveSub.price
+                ? latestActiveSub.price.toLocaleString() : "—";
+              if (planKioskEl) planKioskEl.textContent = latestActiveSub.kioskCount || "—";
+              document.getElementById("sub-details").style.display = "flex";
+            } else {
+              billingStatusEl.textContent = "Free / Not set";
+              subscriptionStatusEl.textContent = "None";
+              if (planNameEl) planNameEl.textContent = "—";
+              if (planRenewalEl) planRenewalEl.textContent = "—";
+              if (planMethodEl) planMethodEl.textContent = "—";
+              if (planPriceEl) planPriceEl.textContent = "—";
+              if (planKioskEl) planKioskEl.textContent = "—";
+              document.getElementById("sub-details").style.display = "none";
+            }
+          });
+      } else {
+        billingStatusEl.textContent = "Not signed in";
+        subscriptionStatusEl.textContent = "Not signed in";
+        if (planNameEl) planNameEl.textContent = "—";
+        if (planRenewalEl) planRenewalEl.textContent = "—";
+        if (planMethodEl) planMethodEl.textContent = "—";
+        if (planPriceEl) planPriceEl.textContent = "—";
+        if (planKioskEl) planKioskEl.textContent = "—";
+        document.getElementById("sub-details").style.display = "none";
+      }
+
       // Privacy Section - Verification and Password Change
       const emailStatus = document.getElementById("email-status");
       const verifiedStatus = document.getElementById("verified-status");
@@ -717,12 +851,6 @@
         msg.textContent = err.message; msg.className += " error";
       }
     };
-
-    
-
-    
   </script>
-
-  
 </body>
 </html>
