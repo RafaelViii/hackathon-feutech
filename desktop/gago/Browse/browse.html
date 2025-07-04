@@ -143,107 +143,58 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-async function getProductImagesMap() {
+
+
+async function getAllProductsFromProductsNode() {
   const snap = await db.ref("products").once("value");
-  const map = {};
+  const allProducts = [];
   const obj = snap.val() || {};
-  Object.entries(obj).forEach(([userId, prodGroup]) => {
-    if (typeof prodGroup === 'object') {
-      Object.entries(prodGroup).forEach(([prodId, prod]) => {
-        if ((prod.productName || prod.name) && prod.imageUrl) {
-          map[`${userId}|${prod.productName || prod.name}`] = prod.imageUrl;
-        }
+  Object.entries(obj).forEach(([accountNum, prodGroup]) => {
+    Object.entries(prodGroup || {}).forEach(([prodId, prod]) => {
+      allProducts.push({
+        ...prod,
+        prodId,
+        accountNum
       });
-    }
+    });
   });
-  return map;
+  return allProducts;
 }
 
-async function getAllCategoryProducts() {
-  return db.ref("categories").once("value").then(snapshot => snapshot.val() || {});
-}
-
-async function renderCategoriesWithImages(categoriesData, productImagesMap, searchTerm) {
+// 2. Render products into a nice grid/list
+function renderAllProductsList(products) {
   const container = document.getElementById('all-categories');
   container.innerHTML = '';
-  let anyShown = false;
-
-  Object.entries(categoriesData).forEach(([mainCat, subcats]) => {
-    let catHtml = '';
-
-    Object.entries(subcats || {}).forEach(([subcat, products]) => {
-      let filteredProducts = [];
-      Object.values(products || {}).forEach(prod => {
-        const businessName = prod.businessName || "";
-        const product = prod.product || "";
-        if (
-          !searchTerm ||
-          businessName.toLowerCase().includes(searchTerm) ||
-          product.toLowerCase().includes(searchTerm)
-        ) {
-          filteredProducts.push(prod);
-        }
-      });
-
-      if (filteredProducts.length > 0) {
-        anyShown = true;
-        catHtml += `<div style="margin-top:1.5em;">
-          <div class="category-title" style="font-size:1.25rem;margin-bottom:.4em;">${subcat}</div>
-          <div class="category-carousel">`;
-        filteredProducts.forEach(prod => {
-          let imgSrc = 'https://via.placeholder.com/80';
-          if (prod.uid && prod.product) {
-            const foundUrl = productImagesMap[`${prod.uid}|${prod.product}`];
-            if (foundUrl) imgSrc = foundUrl;
-          }
-          catHtml += `
-            <div class="product-card">
-              <img src="${imgSrc}" alt="${prod.businessName || prod.product}">
-              <div class="product-title">${prod.businessName || prod.product || ''}</div>
-              <div class="product-desc">${prod.product || ''}</div>
-              <div style="color:#888;font-size:0.98em;margin-top:3px;">${prod.tagline || ''}</div>
-            </div>
-          `;
-        });
-        catHtml += `</div></div>`;
-      }
-    });
-
-    if (catHtml) {
-      container.insertAdjacentHTML('beforeend', `
-        <section class="category-section">
-          <div class="category-title" style="font-size:2rem;">${mainCat}</div>
-          ${catHtml}
-        </section>
-      `);
-    }
-  });
-
-  if (!anyShown) {
+  if (!products.length) {
     container.innerHTML = `<div style="text-align:center;color:#aaa;font-style:italic;margin:50px 0;">No products found.</div>`;
+    return;
   }
+  let html = `<div style="display:flex;flex-wrap:wrap;gap:32px;justify-content:center;">`;
+  products.forEach(prod => {
+    html += `
+      <div class="product-card" style="max-width:240px;">
+        <img src="${prod.imageUrl || 'https://via.placeholder.com/80'}" alt="${prod.productName || ''}">
+        <div class="product-title">${prod.productName || ''}</div>
+        <div class="product-desc">${prod.productDesc || ''}</div>
+        <div style="color:#555;font-size:0.95em;margin:3px 0 0 0;">
+          <b>Owner:</b> ${prod.userName || prod.userId || ''}
+        </div>
+        <div style="color:#888;font-size:0.92em;">Category: ${prod.productCategory || ''} • ${prod.productSubcategory || ''}</div>
+      </div>
+    `;
+  });
+  html += `</div>`;
+  container.innerHTML = html;
 }
 
-async function loadAllCategories(search) {
-  const [categoriesData, productImagesMap] = await Promise.all([
-    getAllCategoryProducts(),
-    getProductImagesMap()
-  ]);
-  const searchTerm = (search || '').trim().toLowerCase();
-  renderCategoriesWithImages(categoriesData, productImagesMap, searchTerm);
+// 3. Load and display all products on page load
+async function loadAllProductsFromProductsNode() {
+  const allProducts = await getAllProductsFromProductsNode();
+  renderAllProductsList(allProducts);
 }
-
-// Search events (now works from nav bar)
-document.getElementById('searchBtn').onclick = function() {
-  const val = document.getElementById('searchInput').value;
-  loadAllCategories(val);
-};
-document.getElementById('searchInput').addEventListener("keypress", function(e) {
-  if (e.key === "Enter") document.getElementById('searchBtn').onclick();
-});
 
 window.onload = function() {
-  loadAllCategories('');
+  loadAllProductsFromProductsNode();
 };
 </script>
 </body>

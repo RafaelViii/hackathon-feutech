@@ -4,76 +4,8 @@
   <meta charset="UTF-8">
   <title>Admin Panel - ID and Product Image Upload</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    :root { --primary: #2B1F6F; --primary-hover: #232526; --secondary: #414345;
-      --container-bg: rgba(255,255,255,0.98); --shadow: 0 8px 48px rgba(43,31,111,0.20);
-      --border-radius: 16px; --border-radius-small: 8px; --input-bg: #f4f6fa;
-      --input-border: #bfc1cc; --label-color: #2B1F6F; --note-color: #888;
-      --color-bg-gradient: linear-gradient(135deg, #2B1F6F 0%, #232526 60%, #414345 100%);
-    }
-    html, body { height: 100%; margin: 0; padding: 0; box-sizing: border-box; }
-    body { min-height: 100vh; font-family: 'Segoe UI', Arial, sans-serif;
-      background: var(--color-bg-gradient); background-attachment: fixed; margin: 0; padding: 0; }
-    .container { max-width: 1100px; min-width: 350px; margin: 64px auto 48px auto;
-      background: var(--container-bg); border-radius: var(--border-radius); box-shadow: var(--shadow);
-      padding: 3.5em 4em 2.5em 4em; box-sizing: border-box; backdrop-filter: blur(2px);
-      display: flex; flex-direction: row; gap: 3em; justify-content: center; }
-    .panel { flex: 1 1 0; min-width: 0; max-width: 480px; display: flex; flex-direction: column; }
-    h2 { margin-top: 0; color: var(--primary); font-size: 2em; letter-spacing: 0.02em;
-      text-shadow: 0 2px 8px rgba(43,31,111,0.06); margin-bottom: 0.25em; }
-    .section { margin-bottom: 2.5em; border-bottom: 1px solid #e0e0e0; padding-bottom: 2em; }
-    label { display: block; margin: 1em 0 0.5em 0; font-weight: bold; color: var(--label-color);
-      font-size: 1.05em; letter-spacing: .01em; }
-    input[type="text"], select { width: 100%; padding: 1.1em 1em; font-size: 1.18em;
-      border: 1.5px solid var(--input-border); border-radius: var(--border-radius-small); margin-bottom: 0;
-      box-sizing: border-box; background: var(--input-bg); transition: border 0.2s, box-shadow 0.2s;
-      font-family: 'Segoe UI', Arial, sans-serif; min-width: 0; }
-    input[type="file"] { margin-bottom: 1em; font-size: 1em; }
-    input[type="text"]:focus, textarea:focus, select:focus { border: 2px solid var(--primary); outline: none; background: #fff;
-      box-shadow: 0 0 0 3px #2b1f6f22; }
-    img { display: block; max-width: 100%; max-height: 280px; margin: 1em 0 0.7em 0;
-      border-radius: var(--border-radius-small); box-shadow: 0 2px 12px rgba(43,31,111,0.11);
-      object-fit: contain; background: #eee; border: 1.5px solid #e1e1ef; }
-    button { padding: 1em 0; background: var(--primary); color: #fff; border: none;
-      border-radius: var(--border-radius-small); font-size: 1.17em; cursor: pointer;
-      transition: background 0.2s, box-shadow 0.2s; margin-top: 0.5em; margin-bottom: 1em; width: 100%;
-      box-sizing: border-box; box-shadow: 0 2px 16px rgba(43,31,111,0.10); font-weight: 600;
-      letter-spacing: 0.04em; }
-    button:hover, button:focus { background: var(--secondary); box-shadow: 0 4px 20px rgba(35,37,38,0.17); }
-    .note { color: var(--note-color); font-size: 1em; margin-bottom: 1em; }
-    .account-input-row { display: flex; align-items: flex-end; gap: 1em; margin-bottom: 2.5em; margin-top: -1.5em;
-      flex-wrap: wrap; }
-    .account-input-row label { margin: 0 0 0.5em 0; flex-basis: 100%; }
-    .account-input-row input[type="text"] { margin-bottom: 0; flex: 3 1 220px; font-size: 1.3em; padding: 1.1em 1em;
-      border-radius: var(--border-radius-small); min-width: 0; }
-    .account-input-row button { width: auto; padding: 1.1em 2.5em; font-size: 1.15em; margin: 0; margin-bottom: 0.1em;
-      border-radius: var(--border-radius-small); box-shadow: 0 2px 8px rgba(43,31,111,0.10); min-width: 110px; flex: 0 0 auto; }
-    .product-info { background: #f3f5fa; border-radius: var(--border-radius-small); padding: 1.3em 1em 1em 1em;
-      margin-bottom: 1.5em; margin-top: 0.3em; box-shadow: 0 2px 8px 0 #2b1f6f10; border: 1px solid #e6e8f0; }
-    .product-info-row { display: flex; align-items: center; margin-bottom: 0.6em; font-size: 1.07em; }
-    .product-info-label { width: 130px; color: var(--primary); font-weight: 500; margin-right: 0.4em; flex-shrink: 0; }
-    .product-info-value { color: #222; font-weight: 600; letter-spacing: 0.03em; word-break: break-all; }
-    textarea { width: 100%; min-width: 0; font-size: 1.09em; padding: 1em 1.2em; border: 1.5px solid var(--input-border);
-      border-radius: var(--border-radius-small); box-sizing: border-box; background: var(--input-bg); resize: vertical;
-      margin-bottom: 1.2em; min-height: 140px; max-height: 260px; line-height: 1.48em; max-width: 100%;
-      overflow-y: auto; overflow-x: auto; box-shadow: 0 1px 7px #2b1f6f08; }
-    details { color: #444; font-size: 0.94em; margin-top: 0.8em; }
-    summary { cursor: pointer; color: #2B1F6F; }
-    .section-title { font-size: 1.3em; color: #2B1F6F; margin: 2em 0 1em 0; font-weight: bold; }
-    .product-list-section { background: #f8fafd; border-radius: 10px; padding: 1.2em 1em 1.5em 1em; margin-bottom: 2em; box-shadow: 0 2px 8px #2b1f6f10; }
-    .add-product-section { background: #f8fafd; border-radius: 10px; padding: 1.2em 1em 1.5em 1em; margin-bottom: 2em; box-shadow: 0 2px 8px #2b1f6f10; }
-    @media (max-width: 1250px) { .container { max-width: 98vw; gap: 1.2em; padding: 2em 1.2em 1.5em 1.2em; }
-      .panel { max-width: 600px; } }
-    @media (max-width: 900px) { .container { flex-direction: column; gap: 2.5em; padding: 2.2em 1.5em 1.2em 1.5em; }
-      .panel { max-width: 100vw; } }
-    @media (max-width: 700px) { .container { padding: 0.8em 0.2em 0.2em 0.2em; border-radius: 0; box-shadow: none; min-width: 0; }
-      .section { padding-bottom: 1em; margin-bottom: 1em; } h2 { font-size: 1.2em; }
-      img { max-height: 100px; } button, .account-input-row button { font-size: 1em !important; padding: 0.7em 0.8em !important; }
-      label, .note { font-size: 0.98em; } textarea, input[type="text"], select, .account-input-row input[type="text"] {
-        font-size: 0.98em !important; padding: 0.7em 0.6em !important; min-width: 0; }
-      .product-info-label { width: 90px; font-size: 0.97em; } .account-input-row { gap: 0.5em; } }
-    @media (max-width: 480px) { .container { padding: 0.2em 0.05em; } .product-info-label { width: 72px; } }
-  </style>
+  <link rel="stylesheet" href="admin-kiosk.css">
+    
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -126,6 +58,31 @@
         <div class="section-title">All Products for This Account</div>
         <div id="allProductsList" style="margin-top:1em;"></div>
       </div>
+
+<!-- Edit Product Modal -->
+<div id="editProductModal" style="display:none;position:fixed;z-index:1000;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.28);align-items:center;justify-content:center;">
+  <div style="background:#fff;padding:22px 24px 20px 24px;border-radius:12px;max-width:350px;width:95vw;box-shadow:0 8px 48px #0002;position:relative;">
+    <button id="editModalClose" style="position:absolute;right:8px;top:8px;font-size:1.4em;border:none;background:none;cursor:pointer;">×</button>
+    <h3 style="margin-top:0;">Edit Product</h3>
+    <input type="hidden" id="editProductKey">
+    <label>Product Name</label>
+    <input type="text" id="editProductName" class="admin-edit-input" style="width:100%;margin-bottom:10px;">
+    <label>Description</label>
+    <input type="text" id="editProductDesc" class="admin-edit-input" style="width:100%;margin-bottom:10px;">
+    <label>Category</label>
+    <select id="editProductCategory" style="width:100%;margin-bottom:10px;"></select>
+    <label>Subcategory</label>
+    <select id="editProductSubcategory" style="width:100%;margin-bottom:10px;"></select>
+    <label>Image</label><br>
+    <img id="editProductPreview" style="max-width:120px;max-height:80px;border-radius:7px;border:1px solid #ccc;margin-bottom:5px;display:block;">
+    <input type="file" id="editProductImage" accept="image/*" style="margin-bottom:12px;">
+    <button id="editProductSaveBtn" style="width:100%;margin-top:8px;background:#2196f3;color:#fff;border:none;border-radius:6px;padding:8px;font-weight:600;">Save Changes</button>
+  </div>
+</div>
+<style>
+  .admin-edit-input {padding:6px 8px;font-size:1em;border:1px solid #bbb;border-radius:5px;}
+</style>
+
       <!-- Add New Product Section -->
       <div class="add-product-section">
         <div class="section-title">Add New Product</div>
@@ -177,6 +134,144 @@
       return { summary: text, cardType: 'Unknown' };
     }
 
+    let currentAcctNum = ""; // Will update as user switches account
+
+function renderAllProducts(acctNum) {
+  const listDiv = document.getElementById('allProductsList');
+  listDiv.innerHTML = "Loading...";
+  if (!acctNum) { listDiv.innerHTML = ""; return; }
+  database.ref('products/' + acctNum).once('value', function(snapshot) {
+    if (snapshot.exists()) {
+      const products = snapshot.val();
+      let html = `<ul style="padding-left:1.2em;">`;
+      Object.entries(products).forEach(([prodId, prod]) => {
+        html += `<li>
+          <b>${prod.productName || "(No Name)"}:</b> ${prod.productDesc || ""}<br>
+          <b>Category:</b> ${prod.productCategory || ""} <b>Subcategory:</b> ${prod.productSubcategory || ""}<br>
+          ${prod.imageUrl ? `<img src="${prod.imageUrl}" style="max-width:120px;max-height:90px;border-radius:8px;border:1px solid #ccc;">` : ""}
+          <br><small>Added: ${prod.addedAt ? new Date(prod.addedAt).toLocaleString() : ""}</small>
+          <br>
+          <button type="button" class="editProductBtn" data-key="${prodId}" style="margin-top:4px;margin-bottom:5px;background:#ffb300;color:#212121;border:none;border-radius:4px;padding:3px 10px;cursor:pointer;">Edit</button>
+        </li><hr>`;
+      });
+      html += `</ul>`;
+      listDiv.innerHTML = html;
+      // Add event listeners to all edit buttons:
+      Array.from(document.getElementsByClassName('editProductBtn')).forEach(btn => {
+        btn.onclick = function() { openEditProductModal(this.getAttribute('data-key'), acctNum); };
+      });
+    } else {
+      listDiv.innerHTML = "<i>No products for this account.</i>";
+    }
+  });
+}
+
+// 2. Modal logic:
+function populateEditCategorySubcategory(selectedCat, selectedSubcat) {
+  const catSel = document.getElementById('editProductCategory');
+  const subcatSel = document.getElementById('editProductSubcategory');
+  catSel.innerHTML = `<option value="">Select Category</option>`;
+  Object.keys(subcategories).forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat;
+    if (cat === selectedCat) opt.selected = true;
+    catSel.appendChild(opt);
+  });
+  subcatSel.innerHTML = `<option value="">Select Subcategory</option>`;
+  if (selectedCat && subcategories[selectedCat]) {
+    subcategories[selectedCat].forEach(sub => {
+      const opt = document.createElement('option');
+      opt.value = sub;
+      opt.textContent = sub;
+      if (sub === selectedSubcat) opt.selected = true;
+      subcatSel.appendChild(opt);
+    });
+  }
+  catSel.onchange = () => {
+    const newCat = catSel.value;
+    subcatSel.innerHTML = `<option value="">Select Subcategory</option>`;
+    if (newCat && subcategories[newCat]) {
+      subcategories[newCat].forEach(sub => {
+        const opt = document.createElement('option');
+        opt.value = sub;
+        opt.textContent = sub;
+        subcatSel.appendChild(opt);
+      });
+    }
+  };
+}
+
+function openEditProductModal(prodKey, acctNum) {
+  const modal = document.getElementById('editProductModal');
+  modal.style.display = 'flex';
+  database.ref('products/' + acctNum + '/' + prodKey).once('value').then(snap => {
+    const prod = snap.val();
+    document.getElementById('editProductKey').value = prodKey;
+    document.getElementById('editProductName').value = prod.productName || "";
+    document.getElementById('editProductDesc').value = prod.productDesc || "";
+    document.getElementById('editProductPreview').src = prod.imageUrl || "";
+    document.getElementById('editProductPreview').style.display = prod.imageUrl ? "block" : "none";
+    populateEditCategorySubcategory(prod.productCategory, prod.productSubcategory);
+    document.getElementById('editProductImage').value = '';
+  });
+}
+document.getElementById('editModalClose').onclick = function() {
+  document.getElementById('editProductModal').style.display = 'none';
+};
+document.getElementById('editProductImage').addEventListener('change', function(e) {
+  const img = document.getElementById('editProductPreview');
+  const file = e.target.files[0];
+  if (file) {
+    img.src = URL.createObjectURL(file);
+    img.style.display = 'block';
+  }
+});
+document.getElementById('editProductSaveBtn').onclick = function() {
+  const prodKey = document.getElementById('editProductKey').value;
+  const name = document.getElementById('editProductName').value.trim();
+  const desc = document.getElementById('editProductDesc').value.trim();
+  const cat = document.getElementById('editProductCategory').value;
+  const subcat = document.getElementById('editProductSubcategory').value;
+  const file = document.getElementById('editProductImage').files[0];
+
+  if (!name) { Swal.fire({icon:'warning',title:'Missing Name',text:'Please enter the product name.'}); return; }
+  if (!cat) { Swal.fire({icon:'warning',title:'Missing Category',text:'Please select a category.'}); return; }
+  if (!subcat) { Swal.fire({icon:'warning',title:'Missing Subcategory',text:'Please select a subcategory.'}); return; }
+
+  const prodRef = database.ref('products/' + currentAcctNum + '/' + prodKey);
+
+  function updateProduct(imageUrl, imageName) {
+    prodRef.update({
+      productName: name,
+      productDesc: desc,
+      productCategory: cat,
+      productSubcategory: subcat,
+      ...(imageUrl ? { imageUrl: imageUrl, imageName: imageName } : {})
+    }).then(() => {
+      Swal.fire({icon:'success',title:'Product Updated!',text:'Product information has been updated.'});
+      document.getElementById('editProductModal').style.display = 'none';
+      renderAllProducts(currentAcctNum);
+    }).catch((err) => {
+      Swal.fire({icon:'error',title:'Error',text:err.message});
+    });
+  }
+  if (file) {
+    Swal.fire({title:'Uploading...','text':'Uploading new image.','allowOutsideClick':false,didOpen:()=>{Swal.showLoading();}});
+    const imageName = Date.now() + "_" + file.name.replace(/\s+/g, "_");
+    const storageRef = storage.ref('product_images/' + currentAcctNum + '/' + imageName);
+    storageRef.put(file).then(snapshot => {
+      snapshot.ref.getDownloadURL().then(imageUrl => {
+        Swal.close();
+        updateProduct(imageUrl, imageName);
+      });
+    }).catch(err => {
+      Swal.fire({icon:'error',title:'Image Upload Failed',text:err.message});
+    });
+  } else {
+    updateProduct();
+  }
+};
       let idImageFile = null;
 
     document.getElementById('idImage').addEventListener('change', function(e) {
@@ -261,30 +356,7 @@
       }
     });
 
-    function renderAllProducts(acctNum) {
-      const listDiv = document.getElementById('allProductsList');
-      listDiv.innerHTML = "Loading...";
-      if (!acctNum) { listDiv.innerHTML = ""; return; }
-      database.ref('products/' + acctNum).once('value', function(snapshot) {
-        if (snapshot.exists()) {
-          const products = snapshot.val();
-          let html = `<ul style="padding-left:1.2em;">`;
-          Object.entries(products).forEach(([prodId, prod]) => {
-            html += `<li>
-              <b>${prod.productName || "(No Name)"}:</b> ${prod.productDesc || ""}<br>
-              <b>Category:</b> ${prod.productCategory || ""} <b>Subcategory:</b> ${prod.productSubcategory || ""}<br>
-              ${prod.imageUrl ? `<img src="${prod.imageUrl}" style="max-width:120px;max-height:90px;border-radius:8px;border:1px solid #ccc;">` : ""}
-              <br><small>Added: ${prod.addedAt ? new Date(prod.addedAt).toLocaleString() : ""}</small>
-            </li><hr>`;
-          });
-          html += `</ul>`;
-          listDiv.innerHTML = html;
-        } else {
-          listDiv.innerHTML = "<i>No products for this account.</i>";
-        }
-      });
-    }
-
+    
     document.getElementById('accountNumberEnterBtn').onclick = function() {
       var acct = document.getElementById('accountNumberTop').value.trim();
       document.getElementById('productAccountNumber').textContent = acct ? acct : "---";

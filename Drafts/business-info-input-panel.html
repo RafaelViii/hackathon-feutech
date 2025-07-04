@@ -277,42 +277,50 @@
       localStorage.setItem("mainCategory", mainCategory);
       localStorage.setItem("subcategory", subcategory);
 
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          const uid = user.uid;
-          database.ref('users/' + uid).update({
-            businessName: businessName,
-            product: product,
-            tagline: tagline,
-            mainCategory: mainCategory,
-            subcategory: subcategory
-          }).then(() => {
-            // Optionally add to categories db for analytics, etc.
-            database.ref('categories/' + mainCategory.replace(/[.#$\[\]]/g, "_") + '/' + subcategory.replace(/[.#$\[\]]/g, "_")).push({
-              uid: uid,
-              businessName: businessName,
-              product: product,
-              tagline: tagline,
-              timestamp: new Date().toISOString()
-            });
-            window.location.href = "business-purpose-input-panel.html";
-          }).catch((error) => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: error.message,
-              confirmButtonColor: '#e53935'
-            });
-          });
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Not Signed In',
-            text: 'You must be signed in to continue.',
-            confirmButtonColor: '#e53935'
-          });
-        }
+     firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    const uid = user.uid;
+    const productData = {
+      businessName: businessName,
+      product: product,
+      tagline: tagline,
+      mainCategory: mainCategory,
+      subcategory: subcategory,
+      timestamp: new Date().toISOString()
+    };
+    // Update user info
+    database.ref('users/' + uid).update(productData)
+    .then(() => {
+      // Add to /categories for analytics, etc.
+      database.ref('categories/' + mainCategory.replace(/[.#$\[\]]/g, "_") + '/' + subcategory.replace(/[.#$\[\]]/g, "_")).push({
+        uid: uid,
+        businessName: businessName,
+        product: product,
+        tagline: tagline,
+        timestamp: productData.timestamp
       });
+      // NEW: Add to /products/{uid} (push if you want multiple products per user)
+      database.ref('products/' + uid).push(productData)
+      .then(() => {
+        window.location.href = "business-purpose-input-panel.html";
+      });
+    }).catch((error) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message,
+        confirmButtonColor: '#e53935'
+      });
+    });
+  } else {
+    Swal.fire({
+      icon: 'error',
+      title: 'Not Signed In',
+      text: 'You must be signed in to continue.',
+      confirmButtonColor: '#e53935'
+    });
+  }
+});
     });
   </script>
   <style>
