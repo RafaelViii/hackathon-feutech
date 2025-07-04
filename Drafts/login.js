@@ -1,10 +1,8 @@
 // Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-// Import SweetAlert2 as an ES module
 import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11.10.4/+esm";
 
-// Your Firebase config (fill with your details)
 const firebaseConfig = {
   apiKey: "AIzaSyDZsj-cL_T_BuLtAz5bkqsw-edZXnumwe0",
   authDomain: "iot-web-58054.firebaseapp.com",
@@ -16,15 +14,15 @@ const firebaseConfig = {
   measurementId: "G-8NXYYY4ETV"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Login form handler
-document.querySelector('.login-form').addEventListener('submit', function(e) {
+document.getElementById('loginForm').addEventListener('submit', function(e) {
   e.preventDefault();
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const msg = document.getElementById('loginErrorMsg');
+  msg.style.display = 'none';
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       Swal.fire({
@@ -34,15 +32,16 @@ document.querySelector('.login-form').addEventListener('submit', function(e) {
         timer: 1500,
         showConfirmButton: false
       }).then(() => {
-        window.location.href = "../raf/index.html"; // Redirect to the main page
+        window.location.href = "../desktop/raf/index.html";
       });
     })
     .catch((error) => {
-      let msg = error.message.replace("Firebase:", "");
+      msg.textContent = error.message || "Login failed.";
+      msg.style.display = 'block';
       Swal.fire({
         icon: 'error',
         title: 'Login Failed',
-        text: msg,
+        text: error.message.replace("Firebase:", ""),
         confirmButtonColor: '#1976d2'
       });
     });
