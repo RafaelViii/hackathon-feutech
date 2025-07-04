@@ -484,6 +484,63 @@
       window.location.href = '../draft.html';
     };
 
+
+     const profilePic = document.getElementById('profile-picture');
+  const profilePicInput = document.getElementById('profile-pic-upload');
+  const defaultPfpUrl = "https://firebasestorage.googleapis.com/v0/b/iot-web-58054.firebasestorage.app/o/pfp%2Fdefault.png?alt=media&token=5626551d-e7cf-45f6-9b23-f52ede3f55a1";
+
+  // Show the user's profile pic on load
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      const userId = user.uid;
+      // Try to get pfpurl from Realtime Database first
+      firebase.database().ref("users/" + userId + "/pfpurl").once("value").then(snapshot => {
+        const dbPfpUrl = snapshot.val();
+        if (dbPfpUrl) {
+          profilePic.src = dbPfpUrl;
+        } else if (user.photoURL) {
+          profilePic.src = user.photoURL;
+        } else {
+          profilePic.src = defaultPfpUrl;
+        }
+      }).catch(() => {
+        // Fallback to Auth or default if DB fails
+        profilePic.src = user.photoURL || defaultPfpUrl;
+      });
+    } else {
+      profilePic.src = defaultPfpUrl;
+    }
+  });
+
+  // On file select, upload image to Firebase Storage and update DB
+  profilePicInput.addEventListener('change', async function() {
+    const file = this.files[0];
+    if (!file) return;
+    const user = firebase.auth().currentUser;
+    if (!user) {
+      Swal.fire('Not signed in', 'Please sign in to update your profile picture.', 'error');
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      Swal.fire('Invalid file', 'Please select an image file.', 'error');
+      return;
+    }
+    Swal.fire({ title: 'Uploading...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    try {
+      const storageRef = firebase.storage().ref();
+      const ext = file.name.split('.').pop();
+      const imgRef = storageRef.child(`user-profile-pics/${user.uid}.${ext}`);
+      await imgRef.put(file);
+      const url = await imgRef.getDownloadURL();
+      // Update both pfpurl in DB and photoURL in Auth
+      await firebase.database().ref("users/" + user.uid).update({ pfpurl: url });
+      try { await user.updateProfile({ photoURL: url }); } catch(e){}
+      profilePic.src = url;
+      Swal.fire('Uploaded!', 'Profile picture updated.', 'success');
+    } catch (err) {
+      Swal.fire('Upload failed', err.message, 'error');
+    }
+  }); 
     // TAB LOGIC: Only one section visible at a time, smooth scroll
     const sectionMap = {
       'drawer-account': 'account-section',

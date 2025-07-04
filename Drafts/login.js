@@ -32,7 +32,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
         timer: 1500,
         showConfirmButton: false
       }).then(() => {
-        window.location.href = "../desktop/raf/index.html";
+        window.location.href = "../desktop/raf folder/index.html";
       });
     })
     .catch((error) => {
