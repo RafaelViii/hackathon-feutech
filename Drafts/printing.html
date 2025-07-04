@@ -202,25 +202,28 @@
     }
 
     printBtn.addEventListener("click", function() {
-      if (!selectedUser) return;
-      loader.style.display = "block";
-      printingText.style.display = "block";
-      printBtn.style.display = "none";
-      receiptPreview.style.display = "block";
+  if (!selectedUser) return;
+  loader.style.display = "block";
+  printingText.style.display = "block";
+  printBtn.style.display = "none";
+  receiptPreview.style.display = "block";
 
-      // Send print request to Firebase
-      const deviceName = "POS58DE487";
-      const requestRef = firebase.database().ref('print_requests').push();
-      requestRef.set({
-        deviceName: deviceName,
-        text: formatForPrinter(selectedUser, uid),
-        timestamp: Date.now()
-      }).finally(() => {
-        setTimeout(function() {
-          window.location.href = "screen8.html";
-        }, 8000);
-      });
-    });
+  // Send print request to Firebase
+  const deviceName = "POS58DE487";
+  const requestRef = firebase.database().ref('print_requests').push();
+  requestRef.set({
+    deviceName: deviceName,
+    text: formatForPrinter(selectedUser, uid),
+    timestamp: Date.now()
+  }).finally(() => {
+    // Reset all local storage and session storage before redirect
+    localStorage.clear();
+    sessionStorage.clear();
+    setTimeout(function() {
+      window.location.href = "screen8.html";
+    }, 8000);
+  });
+});
   </script>
 </body>
 </html>
