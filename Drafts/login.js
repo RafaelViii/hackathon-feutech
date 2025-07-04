@@ -1,6 +1,8 @@
 // Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+// Import SweetAlert2 as an ES module
+import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11.10.4/+esm";
 
 // Your Firebase config (fill with your details)
 const firebaseConfig = {
@@ -32,7 +34,7 @@ document.querySelector('.login-form').addEventListener('submit', function(e) {
         timer: 1500,
         showConfirmButton: false
       }).then(() => {
-        window.location.href = "dashboard.html";
+        window.location.href = "../raf/index.html"; // Redirect to the main page
       });
     })
     .catch((error) => {
