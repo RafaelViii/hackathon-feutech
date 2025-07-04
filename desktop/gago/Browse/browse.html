@@ -4,58 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Browse - Scale Up</title>
-  <link rel="stylesheet" href="index.css">
+  <!-- Custom navigation bar CSS -->
+  <link rel="stylesheet" href="navigationtop.css">
   <style>
-   body {
+    body {
       margin: 0;
       background: #f5f6fa;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
       color: #111;
-    }
-    .browse-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #fff;
-      padding: 24px 36px 16px 36px;
-      border-bottom: 1px solid #e8eaf0;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .search-bar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #f0f1f7;
-      border-radius: 8px;
-      padding: 10px 18px;
-      flex: 1;
-      max-width: 480px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-      margin: 0 auto 0 0;
-    }
-    .search-bar input[type="text"] {
-      border: none;
-      background: transparent;
-      outline: none;
-      font-size: 1.15rem;
-      font-weight: 600;
-      flex: 1;
-      padding: 6px 0;
-      color: #222;
-    }
-    .search-icon-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      display: flex;
-      align-items: center;
-    }
-    .search-icon-btn svg {
-      width: 22px;
-      height: 22px;
     }
     h1 {
       font-size: 2.4rem;
@@ -135,12 +91,6 @@
       white-space: nowrap;
     }
     @media (max-width: 700px) {
-      .browse-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 16px;
-        padding: 16px 10px 10px 10px;
-      }
       h1 { font-size: 1.45rem; }
       .category-title { font-size: 1.13rem; }
       .category-carousel { gap: 12px; padding: 10px 4vw 6px 4vw; }
@@ -149,7 +99,15 @@
   </style>
 </head>
 <body>
-<header class="browse-header">
+<!-- Navigation Bar Example (customize as needed) -->
+<nav class="nav-top">
+  <a href="index.html" class="nav-logo">Scale Up</a>
+  <div class="nav-links">
+    <a href="browse.html" class="nav-link active">Browse</a>
+    <a href="about.html" class="nav-link">About</a>
+    <a href="contact.html" class="nav-link">Contact</a>
+  </div>
+  <!-- Search Bar moved into nav-top -->
   <form class="search-bar" id="browseSearchForm" autocomplete="off" onsubmit="return false;">
     <input type="text" id="searchInput" placeholder="Search businesses, products, or keywords..." />
     <button class="search-icon-btn" id="searchBtn" aria-label="Search">
@@ -159,14 +117,16 @@
       </svg>
     </button>
   </form>
-</header>
+  <div class="nav-user">
+    <img src="https://via.placeholder.com/34" class="nav-avatar" alt="User" />
+    <button class="nav-btn">Sign In</button>
+  </div>
+</nav>
+
 <h1>Browse Categories</h1>
 <div id="all-categories"></div>
 
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-<!-- ...your usual HTML and CSS... -->
+<!-- Firebase SDKs (version 8 - Realtime Database) -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 <script>
@@ -183,7 +143,6 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Build a fast lookup: { 'uid|productName': imageUrl }
 async function getProductImagesMap() {
   const snap = await db.ref("products").once("value");
   const map = {};
@@ -191,9 +150,7 @@ async function getProductImagesMap() {
   Object.entries(obj).forEach(([userId, prodGroup]) => {
     if (typeof prodGroup === 'object') {
       Object.entries(prodGroup).forEach(([prodId, prod]) => {
-        // Only add if we have both productName and imageUrl
         if ((prod.productName || prod.name) && prod.imageUrl) {
-          // Support both productName and name fields
           map[`${userId}|${prod.productName || prod.name}`] = prod.imageUrl;
         }
       });
@@ -202,7 +159,6 @@ async function getProductImagesMap() {
   return map;
 }
 
-// Fetch all categories/subcategories/products
 async function getAllCategoryProducts() {
   return db.ref("categories").once("value").then(snapshot => snapshot.val() || {});
 }
@@ -212,11 +168,9 @@ async function renderCategoriesWithImages(categoriesData, productImagesMap, sear
   container.innerHTML = '';
   let anyShown = false;
 
-  // Loop over main categories
   Object.entries(categoriesData).forEach(([mainCat, subcats]) => {
     let catHtml = '';
 
-    // Loop over subcategories
     Object.entries(subcats || {}).forEach(([subcat, products]) => {
       let filteredProducts = [];
       Object.values(products || {}).forEach(prod => {
@@ -270,7 +224,6 @@ async function renderCategoriesWithImages(categoriesData, productImagesMap, sear
   }
 }
 
-// Main load and search logic
 async function loadAllCategories(search) {
   const [categoriesData, productImagesMap] = await Promise.all([
     getAllCategoryProducts(),
@@ -280,7 +233,7 @@ async function loadAllCategories(search) {
   renderCategoriesWithImages(categoriesData, productImagesMap, searchTerm);
 }
 
-// Search event
+// Search events (now works from nav bar)
 document.getElementById('searchBtn').onclick = function() {
   const val = document.getElementById('searchInput').value;
   loadAllCategories(val);
@@ -289,7 +242,6 @@ document.getElementById('searchInput').addEventListener("keypress", function(e) 
   if (e.key === "Enter") document.getElementById('searchBtn').onclick();
 });
 
-// Initial load
 window.onload = function() {
   loadAllCategories('');
 };

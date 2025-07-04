@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Scale Up</title>
-  <link rel="stylesheet" href="style.css"/>
-<link rel="stylesheet" href="media.css">
-
+  <link rel="stylesheet" href="../raf folder/style.css"/>
+  <link rel="stylesheet" href="../raf folder/media.css"/>
 </head>
 <body>
   <!-- Navbar -->
@@ -21,12 +20,11 @@
             <a href="#" onclick="scrollToSection('challenges')">Challenges</a>
           </div>
         </li>
-        <li><a href="#">Opportunities</a></li>
+        <li><a href="#">Explore</a></li>
       </ul>
       <div class="logo">Scale Up</div>
       <div class="navbar-actions">
         <button class="get-started">Get Started</button>
-        <button class="search-btn"><span class="icon-search"></span></button>
       </div>
     </div>
   </nav>
@@ -34,13 +32,57 @@
   <!-- Hero/Home Section -->
   <section class="hero-section" id="home">
     <div class="hero-content">
-      <img src="https://cdn.jsdelivr.net/gh/LeeZZ2/assets@main/robot.png" alt="Robot Mascot" class="hero-img"/>
+      <img src="3.svg" alt="Robot Mascot" class="hero-img"/>
       <div class="hero-text">
         <h1>Grow your business,<br/>empower your dreams</h1>
         <p>Scale Up helps Filipino entrepreneurs turn small ideas into global brands.<br/>Build a modern online store, manage inventory and orders, connect with investors, and reach new markets — all in one platform designed for you.</p>
       </div>
     </div>
   </section>
+
+  <!-- Card View Carousel Section -->
+  <section class="card-carousel-section">
+    <div class="card-carousel">
+      <div class="card-list" id="carousel-cards">
+        <!-- Example Card (repeat and customize as needed) -->
+        <!-- ... Keep your product cards here ... -->
+      </div>
+    </div>
+    <div class="carousel-dots" id="carousel-dots"></div>
+  </section>
+
+  <!-- Modal Template -->
+  <div id="product-modal" class="modal-view">
+    <div class="modal-content modal-business">
+      <span class="close-modal" id="close-modal">&times;</span>
+      <img class="modal-avatar" src="" alt="Avatar">
+      <div class="modal-profile-name"></div>
+      <div class="modal-profile-role">
+        <span class="modal-profile-title"></span> | 
+        <a href="#" target="_blank" class="modal-profile-link"></a>
+      </div>
+      <div class="modal-socials"></div>
+      <button class="modal-message-btn">Message Now</button>
+      <div class="modal-stats-row">
+        <div class="modal-stat">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Wallets<br>Balance</div>
+        </div>
+        <div class="modal-stat">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Income<br>amounts</div>
+        </div>
+        <div class="modal-stat">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Total<br>Transactions</div>
+        </div>
+      </div>
+      <div class="modal-story-box">
+        <div class="modal-story-title">Their Story</div>
+        <textarea class="modal-story-text" placeholder="Write something about their story..." readonly></textarea>
+      </div>
+    </div>
+  </div>
 
   <!-- How it works Section -->
   <section class="info-section" id="how-it-works">
@@ -50,6 +92,15 @@
     </p>
   </section>
 
+  <!-- Place this below your "How it works" section -->
+<div class="seamless-image-grid">
+  <img src="image1.png" alt="Image 1">
+  <img src="image2.png" alt="Image 2">
+  <img src="image3.png" alt="Image 3">
+  <img src="image4.png" alt="Image 4">
+</div>
+
+
   <!-- Challenges Section -->
   <section class="info-section" id="challenges">
     <h2>Challenges</h2>
@@ -57,6 +108,355 @@
       Entrepreneurs face tough challenges: limited resources, complex logistics, and market access barriers. Scale Up provides tools and a support network to overcome these obstacles and achieve your business goals.
     </p>
   </section>
+
+  <!-- Chatbot UI -->
+  <!-- Floating label above the chatbot button -->
+  <div id="chatbot-fab-label">Ai Chatbot</div>
+  <!-- Floating Chatbot Button (hidden when open) -->
+  <div id="chatbot-fab" title="Chat with us!">
+    <img src="2.png" alt="Chatbot" class="chatbot-fab-img"/>
+  </div>
+  <!-- Chatbot Container (collapsed by default) -->
+  <div id="chatbot-container" class="collapsed">
+    <div id="chatbot-header">
+      <span>Chatbot</span>
+      <button id="chatbot-close" title="Close">&times;</button>
+    </div>
+    <div id="chatbot-messages"></div>
+    <div id="chatbot-input-area">
+      <input id="chatbot-input" type="text" placeholder="Type your message..." autocomplete="off" />
+      <button id="chatbot-send">Send</button>
+    </div>
+  </div>
+
+  <!-- Chatbot CSS (place at the end of the body so it overrides if needed) -->
+  <style>
+  /* Floating Chatbot Label */
+  #chatbot-fab-label {
+    position: fixed;
+    right: 32px;
+    bottom: 100px;
+    background: #acacac;
+    color: #fff;
+    padding: 7px 18px 7px 18px;
+    border-radius: 24px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px #0002;
+    z-index: 1002;
+    opacity: 0.95;
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    text-align: center;
+    user-select: none;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    animation: chatbot-label-appear 0.9s;
+  }
+  @keyframes chatbot-label-appear {
+    0% { opacity: 0; transform: translateY(20px);}
+    100% { opacity: 0.95; transform: translateY(0);}
+  }
+  /* Show/hide label with chatbot */
+  #chatbot-container:not(.collapsed) ~ #chatbot-fab-label,
+  #chatbot-fab[style*="display: none"] ~ #chatbot-fab-label {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  /* Floating Chatbot Button (FAB) */
+  #chatbot-fab {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 58px;
+    height: 58px;
+    background: linear-gradient(135deg, #303454 60%, #7b8aff 100%);
+    color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 3px 18px #0003, 0 1.5px 6px #5b6cff70;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1001;
+    transition: background 0.2s, transform 0.25s;
+    animation: chatbot-bounce 2.8s infinite;
+    padding: 0;
+    overflow: hidden;
+  }
+  #chatbot-fab:hover {
+    animation: chatbot-wave 0.9s;
+    background: linear-gradient(135deg, #303454 60%, #7b8aff 100%);
+  }
+  #chatbot-fab img.chatbot-fab-img {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+    user-select: none;
+  }
+
+.seamless-image-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 420px;
+  max-width: 95vw;
+  margin: 36px auto 0 auto;
+  padding: 0;
+  gap: 0;
+  /* ensures grid is centered */
+}
+.seamless-image-grid img {
+  width: 100%;
+  height: 210px;
+  object-fit: cover;
+  display: block;
+  border: none;
+  margin: 0;
+  padding: 0;
+  background: #f5f5f5; /* fallback background if image is transparent */
+}
+
+@media (max-width: 600px) {
+  .seamless-image-grid {
+    width: 98vw;
+  }
+  .seamless-image-grid img {
+    height: 23vw;
+    min-height: 60px;
+  }
+}
+
+  @keyframes chatbot-bounce {
+    0%, 100% { transform: translateY(0) scale(1);}
+    7% { transform: translateY(-10px) scale(1.04);}
+    14% { transform: translateY(0) scale(1);}
+    16% { transform: scale(1.1) rotate(-8deg);}
+    19% { transform: scale(1.07) rotate(10deg);}
+    21% { transform: scale(1.1) rotate(-8deg);}
+    24% { transform: scale(1) rotate(0);}
+  }
+  @keyframes chatbot-wave {
+    0% { transform: rotate(0deg) scale(1);}
+    16% { transform: rotate(-18deg) scale(1.13);}
+    30% { transform: rotate(16deg) scale(1.09);}
+    45% { transform: rotate(-16deg) scale(1.15);}
+    60% { transform: rotate(12deg) scale(1.12);}
+    70% { transform: rotate(-8deg) scale(1.11);}
+    80% { transform: rotate(5deg) scale(1.08);}
+    100% { transform: rotate(0deg) scale(1);}
+  }
+
+  /* Chatbot Container */
+  #chatbot-container {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 340px;
+    max-width: 95vw;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 1px 3px 12px rgba(0, 0, 0, 0.31);
+    overflow: hidden;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+    z-index: 1002;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.32s cubic-bezier(.68,-0.55,.27,1.55), opacity 0.23s;
+    opacity: 1;
+  }
+  #chatbot-container.collapsed {
+    transform: scale(0.5) translateY(120px);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  #chatbot-header {
+    background: linear-gradient(90deg, #303454 60%, #7b8affa0 100%);
+    color: #fff;
+    padding: 16px;
+    font-weight: 600;
+    font-size: 1.08rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+  #chatbot-close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 12px;
+    padding: 0 4px;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+  }
+  #chatbot-close:hover { opacity: 1; }
+
+  #chatbot-messages {
+    height: 340px;
+    max-height: 340px;
+    overflow-y: auto;
+    background: #f4f6fb;
+    padding: 16px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: background 0.2s;
+  }
+  .chatbot-message { display: flex; }
+  .chatbot-message.user { justify-content: flex-end; }
+  .chatbot-bubble {
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 15px;
+    line-height: 1.5;
+    box-shadow: 0 2px 12px rgba(30,32,42,0.06);
+    margin-bottom: 2px;
+    word-break: break-word;
+  }
+  .chatbot-message.user .chatbot-bubble {
+    background: linear-gradient(90deg, #5b6cff 60%, #7b8aff 100%);
+    color: #fff;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 18px;
+  }
+  .chatbot-message.bot .chatbot-bubble {
+    background: #f0f1f7;
+    color: #21243d;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 18px;
+  }
+  #chatbot-input-area {
+    display: flex;
+    gap: 8px;
+    background: #f4f6fb;
+    padding: 12px 10px;
+    border-top: 1px solid #e1e3ea;
+  }
+  #chatbot-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 15px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(30,32,42,0.04);
+    transition: box-shadow 0.2s;
+  }
+  #chatbot-input:focus {
+    box-shadow: 0 2px 8px rgba(30,32,42,0.08);
+  }
+  #chatbot-send {
+    border: none;
+    background: linear-gradient(90deg, #5b6cff 60%, #7b8aff 100%);
+    color: #fff;
+    border-radius: 8px;
+    padding: 0 20px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 2px rgba(30,32,42,0.04);
+  }
+  #chatbot-send:hover {
+    background: linear-gradient(90deg, #4a5cdb 60%, #5f70e9 100%);
+  }
+
+  @media (max-width: 450px) {
+    #chatbot-fab, #chatbot-container, #chatbot-fab-label {
+      right: 10px; bottom: 10px;
+    }
+    #chatbot-fab-label {
+      bottom: 74px;
+      left: auto;
+      right: 10px;
+    }
+    #chatbot-container { width: 98vw; }
+  }
+  </style>
+
+  <script>
+    // Floating Button and Chatbot Show/Hide Logic
+    const fab = document.getElementById('chatbot-fab');
+    const container = document.getElementById('chatbot-container');
+    const closeBtn = document.getElementById('chatbot-close');
+    const chatbotMessages = document.getElementById('chatbot-messages');
+    const chatbotInput = document.getElementById('chatbot-input');
+    const chatbotSend = document.getElementById('chatbot-send');
+    const fabLabel = document.getElementById('chatbot-fab-label');
+
+    // Show chat window & hide FAB and label
+    fab.onclick = () => {
+      container.classList.remove('collapsed');
+      fab.style.display = 'none';
+      fabLabel.style.opacity = '0';
+      setTimeout(() => chatbotInput.focus(), 350);
+    };
+    // Hide chat window & show FAB and label
+    closeBtn.onclick = () => {
+      container.classList.add('collapsed');
+      setTimeout(() => { 
+        fab.style.display = 'flex'; 
+        fabLabel.style.opacity = '0.95';
+      }, 290);
+    };
+    // Animation: On hover, trigger the wave animation
+    fab.addEventListener('mouseenter', () => {
+      fab.style.animation = 'chatbot-wave 0.9s';
+      fabLabel.style.transform = "scale(1.14)";
+    });
+    fab.addEventListener('mouseleave', () => {
+      fab.style.animation = '';
+      fabLabel.style.transform = "scale(1)";
+      setTimeout(() => { fab.style.animation = 'chatbot-bounce 2.8s infinite'; }, 900);
+    });
+
+    // Chat Logic
+    function appendMessage(text, sender) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'chatbot-message ' + sender;
+      const bubble = document.createElement('div');
+      bubble.className = 'chatbot-bubble';
+      bubble.textContent = text;
+      messageDiv.appendChild(bubble);
+      chatbotMessages.appendChild(messageDiv);
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+    chatbotSend.onclick = async () => {
+      const message = chatbotInput.value.trim();
+      if (!message) return;
+      appendMessage(message, 'user');
+      chatbotInput.value = '';
+      try {
+        const res = await fetch('http://127.0.0.1:5000/chat', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({message})
+        });
+        const data = await res.json();
+        appendMessage(data.response, 'bot');
+      } catch (e) {
+        appendMessage("Bot is not available.", "bot");
+      }
+    };
+    chatbotInput.addEventListener("keypress", e => {
+      if (e.key === "Enter") chatbotSend.onclick();
+    });
+
+    // Optional: Start minimized
+    container.classList.add('collapsed');
+    fab.style.display = 'flex';
+    fabLabel.style.opacity = '0.95';
+  </script>
 
   <script src="script.js"></script>
 </body>
