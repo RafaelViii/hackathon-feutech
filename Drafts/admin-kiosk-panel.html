@@ -163,7 +163,7 @@
       authDomain: "iot-web-58054.firebaseapp.com",
       databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "iot-web-58054",
-      storageBucket: "iot-web-58054.appspot.com",
+      storageBucket: "iot-web-58054.firebasestorage.app",
       messagingSenderId: "949884902967",
       appId: "1:949884902967:web:6e7f78c7cd0fa1484629b2",
       measurementId: "G-5C79490N66"
@@ -177,12 +177,15 @@
       return { summary: text, cardType: 'Unknown' };
     }
 
+      let idImageFile = null;
+
     document.getElementById('idImage').addEventListener('change', function(e) {
       const img = document.getElementById('idPreview');
       const file = e.target.files[0];
       const cardTypeDisplay = document.getElementById('cardTypeDisplay');
       const extractedTextArea = document.getElementById('extractedText');
       const rawOCR = document.getElementById('rawOCR');
+        idImageFile = e.target.files[0] || null; //
       const rawOCRDetails = document.getElementById('rawOCRDetails');
       cardTypeDisplay.textContent = 'Processing...';
       extractedTextArea.value = 'Extracting... Please wait.';
@@ -442,63 +445,47 @@
         }
       });
     };
-
-    document.getElementById('verifyBtn').onclick = function() {
-      var acct = document.getElementById('accountNumberTop').value.trim();
-      if (!acct) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Missing Account Number',
-          text: 'Please enter the account number in the Product Panel first!',
-          confirmButtonColor: '#e53935'
-        });
-        return;
-      }
-      Swal.fire({
-        title: 'Verifying...',
-        text: 'Please wait while we verify the account.',
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        }
-      });
-      database.ref('users').orderByChild('accountNumber').equalTo(acct).once('value', function(snapshot) {
-        if (snapshot.exists()) {
-          const userId = Object.keys(snapshot.val())[0];
-          database.ref('users/' + userId).update({ verified: true })
-            .then(() => {
-              Swal.fire({
-                icon: 'success',
-                title: 'Account Verified!',
-                text: 'The user account has been marked as verified.',
-                confirmButtonColor: '#2196f3'
-              });
-            })
-            .catch((error) => {
-              Swal.fire({
-                icon: 'error',
-                title: 'Verification Failed',
-                text: error.message,
-                confirmButtonColor: '#e53935'
-              });
-            });
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Account Not Found',
-            text: 'No user found for this account number.',
-            confirmButtonColor: '#e53935'
+document.getElementById('verifyBtn').onclick = function() {
+  var acct = document.getElementById('accountNumberTop').value.trim();
+  if (!acct) {
+    Swal.fire({icon:'error',title:'Missing Account Number',text:'Please enter the account number in the Product Panel first!',confirmButtonColor:'#e53935'});
+    return;
+  }
+  Swal.fire({title:'Verifying...',text:'Please wait while we verify the account.',allowOutsideClick:false,didOpen:()=>{Swal.showLoading();}});
+  database.ref('users').orderByChild('accountNumber').equalTo(acct).once('value', function(snapshot) {
+    if (snapshot.exists()) {
+      const userId = Object.keys(snapshot.val())[0];
+      function finishVerification(idImageUrl) {
+        let updateObj = { verified: true };
+        if (idImageUrl) updateObj.idImageUrl = idImageUrl;
+        database.ref('users/' + userId).update(updateObj)
+          .then(() => {
+            Swal.fire({icon:'success',title:'Account Verified!',text:'The user account has been marked as verified.' + (idImageUrl ? ' ID image uploaded.' : ''),confirmButtonColor:'#2196f3'});
+          })
+          .catch((error) => {
+            Swal.fire({icon:'error',title:'Verification Failed',text:error.message,confirmButtonColor:'#e53935'});
           });
-        }
-      }, function(error) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: error.message,
-          confirmButtonColor: '#e53935'
+      }
+      if (idImageFile) {
+        const imageName = 'id_' + Date.now() + '_' + (idImageFile.name || 'id.jpg');
+        const storageRef = storage.ref('id_images/' + acct + '/' + imageName);
+        storageRef.put(idImageFile).then(snapshot => {
+          snapshot.ref.getDownloadURL().then(idImageUrl => {
+            finishVerification(idImageUrl);
+          });
+        }).catch(err => {
+          Swal.fire({icon:'error',title:'ID Image Upload Failed',text:err.message,confirmButtonColor:'#e53935'});
         });
-      });
-    };
+      } else {
+        finishVerification();
+      }
+    } else {
+      Swal.fire({icon:'error',title:'Account Not Found',text:'No user found for this account number.',confirmButtonColor:'#e53935'});
+    }
+  }, function(error) {
+    Swal.fire({icon:'error',title:'Error',text:error.message,confirmButtonColor:'#e53935'});
+  });
+}
   </script>
 </body>
 </html>
