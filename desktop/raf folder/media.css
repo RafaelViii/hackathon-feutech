@@ -1,71 +1,53 @@
-@media (max-width: 1024px) {
-  .navbar-container {
-    flex-direction: column;
-    height: auto;
-    gap: 8px;
-  }
-  .logo {
-    margin: 0;
-    margin-bottom: 8px;
-  }
-  .hero-content {
-    flex-direction: column;
-    gap: 36px;
-    text-align: center;
-  }
-  .hero-img {
-    margin: 0 auto;
-  }
-  .hero-text h1 {
-    font-size: 2.6rem;
-  }
-}
-
-@media (max-width: 700px) {
-  .navbar-container {
-    padding: 0 10px;
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .nav-links {
+@media (max-width: 1200px) {
+  .card-list {
     gap: 18px;
+    max-width: 900px;
   }
-  .logo {
-    font-size: 1.4rem;
-    margin: 0;
-    margin-bottom: 10px;
-    text-align: center;
-  }
-  .hero-section {
-    padding: 32px 0 24px 0;
-    min-height: unset;
-  }
-  .hero-content {
-    flex-direction: column;
-    gap: 28px;
-    padding: 0 8px;
-  }
-  .hero-img {
-    width: 110px;
-  }
-  .hero-text h1 {
-    font-size: 1.6rem;
-  }
-  .info-section {
-    padding: 24px 8px;
-    margin: 28px 8px;
-  }
-}
-
-@media (max-width: 480px) {
-  .navbar-container {
+  .card-carousel-section {
     padding: 0 4px;
   }
-  .nav-links {
+}
+@media (max-width: 900px) {
+  .card-list {
     gap: 8px;
+    max-width: 700px;
   }
-  .get-started {
-    padding: 8px 16px;
-    font-size: 0.95rem;
+  .card {
+    width: 38vw;
+    min-width: 140px;
+    max-width: 270px;
+    padding: 20px 5px 10px 5px;
+  }
+}
+@media (max-width: 700px) {
+  .card-list {
+    gap: 5px;
+    max-width: 99vw;
+  }
+  .card {
+    width: 80vw;
+    min-width: 100px;
+    max-width: 95vw;
+    padding: 12px 4px 9px 4px;
+  }
+  .carousel-dots {
+    margin-top: 12px;
+  }
+}
+@media (max-width: 480px) {
+  .card {
+    width: 98vw;
+    min-width: 70px;
+    max-width: 99vw;
+    padding: 6px 2px 6px 2px;
+  }
+  .carousel-dot {
+    width: 12px;
+    height: 12px;
+  }
+  .modal-content.modal-business {
+    max-width: 98vw;
+    min-width: 0;
+    padding: 18px 2px;
   }
 }

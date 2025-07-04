@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Scale Up</title>
-  <link rel="stylesheet" href="style.css"/>
-<link rel="stylesheet" href="media.css">
-
+  <link rel="stylesheet" href="../raf folder/style.css"/>
+<link rel="stylesheet" href="../raf folder/media.css"/>
 </head>
 <body>
   <!-- Navbar -->
@@ -21,12 +20,17 @@
             <a href="#" onclick="scrollToSection('challenges')">Challenges</a>
           </div>
         </li>
-        <li><a href="#">Opportunities</a></li>
+        <li><a href="#">Explore</a></li>
       </ul>
       <div class="logo">Scale Up</div>
       <div class="navbar-actions">
+        
+          
+          
+           
+          </button>
+        </form>
         <button class="get-started">Get Started</button>
-        <button class="search-btn"><span class="icon-search"></span></button>
       </div>
     </div>
   </nav>
@@ -34,13 +38,211 @@
   <!-- Hero/Home Section -->
   <section class="hero-section" id="home">
     <div class="hero-content">
-      <img src="https://cdn.jsdelivr.net/gh/LeeZZ2/assets@main/robot.png" alt="Robot Mascot" class="hero-img"/>
+      <img src="2.png" alt="Robot Mascot" class="hero-img"/>
       <div class="hero-text">
         <h1>Grow your business,<br/>empower your dreams</h1>
         <p>Scale Up helps Filipino entrepreneurs turn small ideas into global brands.<br/>Build a modern online store, manage inventory and orders, connect with investors, and reach new markets — all in one platform designed for you.</p>
       </div>
     </div>
   </section>
+
+  <!-- Card View Carousel Section -->
+  <section class="card-carousel-section">
+    <div class="card-carousel">
+      <div class="card-list" id="carousel-cards">
+        <!-- Example Card (repeat and customize as needed) -->
+        <div class="card"
+          data-product='{
+            "productName":"Scale Up POS",
+            "tagline":"All-in-one retail management",
+            "owner":"LeeZZ2",
+            "verified":true,
+            "img":"https://images.unsplash.com/photo-1515168833906-d2a3b82b3025?auto=format&fit=facearea&w=400&h=400",
+            "profileImg":"https://cdn.jsdelivr.net/gh/LeeZZ2/assets@main/robot.png",
+            "profileName":"Freddie J. Plourde",
+            "profileRole":"@Founder",
+            "profileWebsite":"https://websitename.com",
+            "wallets":2563,
+            "income":6952,
+            "transactions":1125,
+            "story":"We started with a dream to make retail easier and more accessible for everyone. Today, our platform empowers thousands of businesses to manage and grow efficiently.",
+            "socials":[
+              {"icon":"facebook","url":"#"},
+              {"icon":"twitter","url":"#"},
+              {"icon":"skype","url":"#"}
+            ]
+          }'>
+          <img src="https://images.unsplash.com/photo-1515168833906-d2a3b82b3025?auto=format&fit=facearea&w=400&h=400" alt="Scale Up POS" />
+          <div class="card-product-row">
+            <div>
+              <div class="card-product-name">Scale Up POS</div>
+              <div class="card-tagline">All-in-one retail management</div>
+              <div class="card-owner">by LeeZZ2</div>
+            </div>
+            <span class="verified-badge verified"></span>
+          </div>
+        </div>
+        <div class="card"
+          data-product='{
+            "productName":"Smart Shop",
+            "tagline":"Easy online selling",
+            "owner":"Jane Doe",
+            "verified":false,
+            "img":"https://cdn.jsdelivr.net/gh/LeeZZ2/assets@main/robot.png",
+            "profileImg":"https://cdn.jsdelivr.net/gh/LeeZZ2/assets@main/robot.png",
+            "profileName":"Jane Doe",
+            "profileRole":"@Seller",
+            "profileWebsite":"https://example.com",
+            "wallets":1022,
+            "income":4120,
+            "transactions":980,
+            "story":"Built for entrepreneurs who want to start fast and scale quickly. Smart Shop takes care of the tech, so you can focus on selling.",
+            "socials":[
+              {"icon":"facebook","url":"#"},
+              {"icon":"twitter","url":"#"},
+              {"icon":"skype","url":"#"}
+            ]
+          }'>
+          <img src="https://cdn.jsdelivr.net/gh/LeeZZ2/assets@main/robot.png" alt="Smart Shop" />
+          <div class="card-product-row">
+            <div>
+              <div class="card-product-name">Smart Shop</div>
+              <div class="card-tagline">Easy online selling</div>
+              <div class="card-owner">by Jane Doe</div>
+            </div>
+            <span class="verified-badge"></span>
+          </div>
+        </div>
+        <div class="card"
+          data-product='{
+            "productName":"Foodies",
+            "tagline":"Order food in a tap",
+            "owner":"John Smith",
+            "verified":true,
+            "img":"https://cdn.pixabay.com/photo/2014/09/27/13/44/id-card-463459_1280.jpg",
+            "profileImg":"https://cdn.jsdelivr.net/gh/LeeZZ2/assets@main/robot.png",
+            "profileName":"John Smith",
+            "profileRole":"@Chef",
+            "profileWebsite":"https://foodies.com",
+            "wallets":867,
+            "income":5120,
+            "transactions":2300,
+            "story":"Foodies makes it easy for customers to order and for restaurants to manage orders. Quick, seamless, and delicious.",
+            "socials":[
+              {"icon":"facebook","url":"#"},
+              {"icon":"twitter","url":"#"},
+              {"icon":"skype","url":"#"}
+            ]
+          }'>
+          <img src="https://cdn.pixabay.com/photo/2014/09/27/13/44/id-card-463459_1280.jpg" alt="Foodies" />
+          <div class="card-product-row">
+            <div>
+              <div class="card-product-name">Foodies</div>
+              <div class="card-tagline">Order food in a tap</div>
+              <div class="card-owner">by John Smith</div>
+            </div>
+            <span class="verified-badge verified"></span>
+          </div>
+        </div>
+        <div class="card"
+          data-product='{
+            "productName":"QuickPay",
+            "tagline":"Payments made easy",
+            "owner":"D. Cruz",
+            "verified":false,
+            "img":"https://cdn.jsdelivr.net/gh/LeeZZ2/assets@main/robot.png",
+            "profileImg":"https://cdn.jsdelivr.net/gh/LeeZZ2/assets@main/robot.png",
+            "profileName":"D. Cruz",
+            "profileRole":"@Cashier",
+            "profileWebsite":"https://quickpay.com",
+            "wallets":432,
+            "income":1200,
+            "transactions":540,
+            "story":"QuickPay bridges the gap between customers and merchants, making every payment instant and secure.",
+            "socials":[
+              {"icon":"facebook","url":"#"},
+              {"icon":"twitter","url":"#"},
+              {"icon":"skype","url":"#"}
+            ]
+          }'>
+          <img src="https://cdn.jsdelivr.net/gh/LeeZZ2/assets@main/robot.png" alt="QuickPay" />
+          <div class="card-product-row">
+            <div>
+              <div class="card-product-name">QuickPay</div>
+              <div class="card-tagline">Payments made easy</div>
+              <div class="card-owner">by D. Cruz</div>
+            </div>
+            <span class="verified-badge"></span>
+          </div>
+        </div>
+        <div class="card"
+          data-product='{
+            "productName":"Biz Portal",
+            "tagline":"Your business, your way",
+            "owner":"A. Reyes",
+            "verified":true,
+            "img":"https://cdn.jsdelivr.net/gh/LeeZZ2/assets@main/robot.png",
+            "profileImg":"https://cdn.jsdelivr.net/gh/LeeZZ2/assets@main/robot.png",
+            "profileName":"A. Reyes",
+            "profileRole":"@Manager",
+            "profileWebsite":"https://bizportal.com",
+            "wallets":1650,
+            "income":8000,
+            "transactions":3370,
+            "story":"A full-featured business management platform for modern entrepreneurs. Biz Portal adapts to your needs.",
+            "socials":[
+              {"icon":"facebook","url":"#"},
+              {"icon":"twitter","url":"#"},
+              {"icon":"skype","url":"#"}
+            ]
+          }'>
+          <img src="https://cdn.jsdelivr.net/gh/LeeZZ2/assets@main/robot.png" alt="Biz Portal" />
+          <div class="card-product-row">
+            <div>
+              <div class="card-product-name">Biz Portal</div>
+              <div class="card-tagline">Your business, your way</div>
+              <div class="card-owner">by A. Reyes</div>
+            </div>
+            <span class="verified-badge verified"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-dots" id="carousel-dots"></div>
+  </section>
+
+  <!-- Modal Template -->
+  <div id="product-modal" class="modal-view">
+    <div class="modal-content modal-business">
+      <span class="close-modal" id="close-modal">&times;</span>
+      <img class="modal-avatar" src="" alt="Avatar">
+      <div class="modal-profile-name"></div>
+      <div class="modal-profile-role">
+        <span class="modal-profile-title"></span> | 
+        <a href="#" target="_blank" class="modal-profile-link"></a>
+      </div>
+      <div class="modal-socials"></div>
+      <button class="modal-message-btn">Message Now</button>
+      <div class="modal-stats-row">
+        <div class="modal-stat">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Wallets<br>Balance</div>
+        </div>
+        <div class="modal-stat">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Income<br>amounts</div>
+        </div>
+        <div class="modal-stat">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Total<br>Transactions</div>
+        </div>
+      </div>
+      <div class="modal-story-box">
+        <div class="modal-story-title">Their Story</div>
+        <textarea class="modal-story-text" placeholder="Write something about their story..." readonly></textarea>
+      </div>
+    </div>
+  </div>
 
   <!-- How it works Section -->
   <section class="info-section" id="how-it-works">
@@ -57,6 +259,164 @@
       Entrepreneurs face tough challenges: limited resources, complex logistics, and market access barriers. Scale Up provides tools and a support network to overcome these obstacles and achieve your business goals.
     </p>
   </section>
+
+  <!-- Chatbot UI -->
+  <div id="chatbot-container">
+    <div id="chatbot-header">Chatbot</div>
+    <div id="chatbot-messages"></div>
+    <div id="chatbot-input-area">
+      <input id="chatbot-input" type="text" placeholder="Type your message..." autocomplete="off" />
+      <button id="chatbot-send">Send</button>
+    </div>
+  </div>
+  <style>
+  #chatbot-container {
+    position: fixed;
+    bottom: 32px;
+    border: solid 1px #22223b35;
+    right: 32px;
+    width: 340px;
+    max-width: 95vw;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 32px rgba(255, 255, 255, 0.14);
+    overflow: hidden;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+  }
+  #chatbot-header {
+    background: linear-gradient(90deg, #22223b 60%, #7b8affa0 100%);
+    color: #fff;
+    padding: 16px;
+    font-weight: 600;
+    font-size: 1.08rem;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+  #chatbot-messages {
+    height: 340px;
+    max-height: 340px;
+    overflow-y: auto;
+    background: #f4f6fb;
+    padding: 16px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: background 0.2s;
+  }
+  .chatbot-message {
+    display: flex;
+    margin-bottom: 0;
+  }
+  .chatbot-message.user {
+    justify-content: flex-end;
+  }
+  .chatbot-bubble {
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 15px;
+    line-height: 1.5;
+    box-shadow: 0 2px 12px rgba(30,32,42,0.06);
+    margin-bottom: 2px;
+    word-break: break-word;
+  }
+  .chatbot-message.user .chatbot-bubble {
+    background: linear-gradient(90deg, #5b6cff 60%, #7b8aff 100%);
+    color: #fff;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 18px;
+  }
+  .chatbot-message.bot .chatbot-bubble {
+    background: #f0f1f7;
+    color: #21243d;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 18px;
+  }
+  #chatbot-input-area {
+    display: flex;
+    gap: 8px;
+    background: #f4f6fb;
+    padding: 12px 10px;
+    border-top: 1px solid #e1e3ea;
+  }
+  #chatbot-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 15px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(30,32,42,0.04);
+    transition: box-shadow 0.2s;
+  }
+  #chatbot-input:focus {
+    box-shadow: 0 2px 8px rgba(30,32,42,0.08);
+  }
+  #chatbot-send {
+    border: none;
+    background: linear-gradient(90deg, #5b6cff 60%, #7b8aff 100%);
+    color: #fff;
+    border-radius: 8px;
+    padding: 0 20px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 2px rgba(30,32,42,0.04);
+  }
+  #chatbot-send:hover {
+    background: linear-gradient(90deg, #4a5cdb 60%, #5f70e9 100%);
+  }
+  </style>
+  <script>
+    // Chatbot logic
+    const chatbotContainer = document.getElementById('chatbot-container');
+    const chatbotHeader = document.getElementById('chatbot-header');
+    const chatbotMessages = document.getElementById('chatbot-messages');
+    const chatbotInput = document.getElementById('chatbot-input');
+    const chatbotSend = document.getElementById('chatbot-send');
+    const chatbotInputArea = document.getElementById('chatbot-input-area');
+    chatbotHeader.onclick = () => {
+      const isHidden = chatbotMessages.style.display === 'none';
+      chatbotMessages.style.display = isHidden ? 'flex' : 'none';
+      chatbotInputArea.style.display = isHidden ? 'flex' : 'none';
+    };
+    function appendMessage(text, sender) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'chatbot-message ' + sender;
+      const bubble = document.createElement('div');
+      bubble.className = 'chatbot-bubble';
+      bubble.textContent = text;
+      messageDiv.appendChild(bubble);
+      chatbotMessages.appendChild(messageDiv);
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+    chatbotSend.onclick = async () => {
+      const message = chatbotInput.value.trim();
+      if (!message) return;
+      appendMessage(message, 'user');
+      chatbotInput.value = '';
+      try {
+        const res = await fetch('http://127.0.0.1:5000/chat', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({message})
+        });
+        const data = await res.json();
+        appendMessage(data.response, 'bot');
+      } catch (e) {
+        appendMessage("Bot is not available.", "bot");
+      }
+    };
+    chatbotInput.addEventListener("keypress", e => {
+      if (e.key === "Enter") chatbotSend.onclick();
+    });
+  </script>
 
   <script src="script.js"></script>
 </body>
