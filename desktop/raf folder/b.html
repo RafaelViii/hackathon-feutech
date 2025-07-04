@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Scale Up</title>
+  <link rel="stylesheet" href="bmedia.css"/>
+<link rel="stylesheet" href="bstyle.css">
+
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <ul class="nav-links">
+        <li><a href="#" class="active" onclick="scrollToSection('home')">Home</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropbtn" onclick="toggleDropdown(event)">About</a>
+          <div class="dropdown-content" id="aboutDropdown">
+            <a href="#" onclick="scrollToSection('how-it-works')">How it works</a>
+            <a href="#" onclick="scrollToSection('challenges')">Challenges</a>
+          </div>
+        </li>
+        <li><a href="#">Opportunities</a></li>
+      </ul>
+      <div class="logo">Scale Up</div>
+      <div class="navbar-actions">
+        <button class="get-started">Get Started</button>
+        <button class="search-btn"><span class="icon-search"></span></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero/Home Section -->
+  <section class="hero-section" id="home">
+    <div class="hero-content">
+      <img src="https://cdn.jsdelivr.net/gh/LeeZZ2/assets@main/robot.png" alt="Robot Mascot" class="hero-img"/>
+      <div class="hero-text">
+        <h1>Grow your business,<br/>empower your dreams</h1>
+        <p>Scale Up helps Filipino entrepreneurs turn small ideas into global brands.<br/>Build a modern online store, manage inventory and orders, connect with investors, and reach new markets — all in one platform designed for you.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works Section -->
+  <section class="info-section" id="how-it-works">
+    <h2>How it works</h2>
+    <p>
+      Discover how Scale Up simplifies business growth: from setting up your online shop to connecting with investors and scaling operations. Each step is guided, intuitive, and built for your success.
+    </p>
+  </section>
+
+  <!-- Challenges Section -->
+  <section class="info-section" id="challenges">
+    <h2>Challenges</h2>
+    <p>
+      Entrepreneurs face tough challenges: limited resources, complex logistics, and market access barriers. Scale Up provides tools and a support network to overcome these obstacles and achieve your business goals.
+    </p>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
