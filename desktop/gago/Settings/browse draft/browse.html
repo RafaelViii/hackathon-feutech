@@ -160,16 +160,7 @@
     });
   });
 
-  // Navbar search integration (call your search/filter here)
-  document.getElementById('navbar-search-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const val = document.getElementById('navbar-search').value.trim().toLowerCase();
-    if (val) {
-      // Example: You could reload or filter products-list here
-      window.location.href = `browse.html?search=${encodeURIComponent(val)}`;
-    }
-  });
-
+  // --- Firebase + Search Integration ---
   // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyA2kNUF7lU2pJvAhyX6WkH5vTQqk3H1z2o",
@@ -228,6 +219,26 @@
   const searchTerm = getQueryParam("search");
   document.getElementById('navbar-search').value = searchTerm;
   loadProducts(searchTerm);
+
+  // Navbar search: live filtering without reload (Optional: you can keep the reload if you want)
+  document.getElementById('navbar-search-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const val = document.getElementById('navbar-search').value.trim();
+    // If you want reload-on-search, use this:
+    // window.location.href = `browse.html?search=${encodeURIComponent(val)}`;
+    // If you want dynamic search (no reload), use this:
+    loadProducts(val);
+    // Optionally update the URL without reload:
+    if (history.pushState) {
+      const url = new URL(window.location);
+      if (val) {
+        url.searchParams.set('search', val);
+      } else {
+        url.searchParams.delete('search');
+      }
+      window.history.replaceState({}, '', url);
+    }
+  });
 </script>
 </body>
 </html>

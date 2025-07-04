@@ -1,3 +1,4 @@
+/* Root styles */
 :root {
   --primary-gradient: linear-gradient(920deg, #28244c 60%, #ffd582 100%);
   --nav-bg: #1b1c22;
@@ -8,6 +9,7 @@
   --font-main: 'Montserrat', Arial, sans-serif;
 }
 
+/* Reset and base styles */
 * {
   margin: 0;
   padding: 0;
@@ -20,6 +22,7 @@ body {
   min-height: 100vh;
 }
 
+/* Navbar */
 .navbar {
   width: 100%;
   background: var(--nav-bg);
@@ -110,6 +113,7 @@ body {
   background: url('https://cdn.jsdelivr.net/gh/LeeZZ2/assets@main/search.svg') no-repeat center/cover;
 }
 
+/* Dropdown menu */
 .dropdown-content {
   display: none;
   position: absolute;
@@ -142,6 +146,7 @@ body {
   display: block;
 }
 
+/* Hero section */
 .hero-section {
   background: var(--primary-gradient);
   border-radius: 0 0 40px 40px;
@@ -179,6 +184,8 @@ body {
   font-weight: 400;
   max-width: 540px;
 }
+
+/* Info sections */
 .info-section {
   max-width: 900px;
   margin: 54px auto;
@@ -197,4 +204,78 @@ body {
   color: #28244c;
   font-size: 1.18rem;
   line-height: 1.6;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .navbar-container {
+    flex-direction: column;
+    height: auto;
+    gap: 8px;
+  }
+  .logo {
+    margin: 0;
+    margin-bottom: 8px;
+  }
+  .hero-content {
+    flex-direction: column;
+    gap: 36px;
+    text-align: center;
+  }
+  .hero-img {
+    margin: 0 auto;
+  }
+  .hero-text h1 {
+    font-size: 2.6rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .navbar-container {
+    padding: 0 10px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .nav-links {
+    gap: 18px;
+  }
+  .logo {
+    font-size: 1.4rem;
+    margin: 0;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .hero-section {
+    padding: 32px 0 24px 0;
+    min-height: unset;
+  }
+  .hero-content {
+    flex-direction: column;
+    gap: 28px;
+    padding: 0 8px;
+  }
+  .hero-img {
+    width: 110px;
+  }
+  .hero-text h1 {
+    font-size: 1.6rem;
+  }
+  .info-section {
+    padding: 24px 8px;
+    margin: 28px 8px;
+  }
+}
+
+/* Separate Media Queries for easy editing */
+@media (max-width: 480px) {
+  .navbar-container {
+    padding: 0 4px;
+  }
+  .nav-links {
+    gap: 8px;
+  }
+  .get-started {
+    padding: 8px 16px;
+    font-size: 0.95rem;
+  }
 }
