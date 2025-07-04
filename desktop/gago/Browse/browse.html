@@ -6,7 +6,7 @@
   <title>Browse - Scale Up</title>
   <link rel="stylesheet" href="index.css">
   <style>
-    body {
+   body {
       margin: 0;
       background: #f5f6fa;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
@@ -149,12 +149,11 @@
   </style>
 </head>
 <body>
-<header class="browse-header" style="position:relative;">
+<header class="browse-header">
   <form class="search-bar" id="browseSearchForm" autocomplete="off" onsubmit="return false;">
     <input type="text" id="searchInput" placeholder="Search businesses, products, or keywords..." />
     <button class="search-icon-btn" id="searchBtn" aria-label="Search">
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" 
-        xmlns="http://www.w3.org/2000/svg">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
         <circle cx="10" cy="10" r="7" stroke="#222" stroke-width="2"/>
         <line x1="15.293" y1="15.707" x2="20" y2="20" stroke="#222" stroke-width="2" stroke-linecap="round"/>
       </svg>
@@ -165,93 +164,135 @@
 <div id="all-categories"></div>
 
 <!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<!-- ...your usual HTML and CSS... -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 <script>
-  // Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyA2kNUF7lU2pJvAhyX6WkH5vTQqk3H1z2o",
-    authDomain: "scaleup-1269e.firebaseapp.com",
-    projectId: "scaleup-1269e",
-    storageBucket: "scaleup-1269e.appspot.com",
-    messagingSenderId: "814069465313",
-    appId: "1:814069465313:web:2bf8f2e0f5d4bce2b49e7b"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+const firebaseConfig = {
+  apiKey: "AIzaSyDZsj-cL_T_BuLtAz5bkqsw-edZXnumwe0",
+  authDomain: "iot-web-58054.firebaseapp.com",
+  databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "iot-web-58054",
+  storageBucket: "iot-web-58054.appspot.com",
+  messagingSenderId: "949884902967",
+  appId: "1:949884902967:web:6e7f78c7cd0fa1484629b2",
+  measurementId: "G-5C79490N66"
+};
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-  // Define the categories to show
-  const categories = [
-    "Fashion & Apparel",
-    "Electronics",
-    "Home & Living",
-    "Beauty & Personal Care",
-    "Food & Grocery",
-    "Toys & Games",
-    "Pet Supplies",
-    "Fitness & Sports",
-    "Books & Stationery",
-    "Automotive",
-    "Services"
-  ];
-
-  // Search event
-  document.getElementById('searchBtn').onclick = function() {
-    const val = document.getElementById('searchInput').value.trim();
-    if (val) {
-      // Filter all categories by search term
-      loadAllCategories(val.toLowerCase());
-    } else {
-      loadAllCategories('');
+// Build a fast lookup: { 'uid|productName': imageUrl }
+async function getProductImagesMap() {
+  const snap = await db.ref("products").once("value");
+  const map = {};
+  const obj = snap.val() || {};
+  Object.entries(obj).forEach(([userId, prodGroup]) => {
+    if (typeof prodGroup === 'object') {
+      Object.entries(prodGroup).forEach(([prodId, prod]) => {
+        // Only add if we have both productName and imageUrl
+        if ((prod.productName || prod.name) && prod.imageUrl) {
+          // Support both productName and name fields
+          map[`${userId}|${prod.productName || prod.name}`] = prod.imageUrl;
+        }
+      });
     }
-  };
-  document.getElementById('searchInput').addEventListener("keypress", function(e) {
-    if (e.key === "Enter") document.getElementById('searchBtn').onclick();
+  });
+  return map;
+}
+
+// Fetch all categories/subcategories/products
+async function getAllCategoryProducts() {
+  return db.ref("categories").once("value").then(snapshot => snapshot.val() || {});
+}
+
+async function renderCategoriesWithImages(categoriesData, productImagesMap, searchTerm) {
+  const container = document.getElementById('all-categories');
+  container.innerHTML = '';
+  let anyShown = false;
+
+  // Loop over main categories
+  Object.entries(categoriesData).forEach(([mainCat, subcats]) => {
+    let catHtml = '';
+
+    // Loop over subcategories
+    Object.entries(subcats || {}).forEach(([subcat, products]) => {
+      let filteredProducts = [];
+      Object.values(products || {}).forEach(prod => {
+        const businessName = prod.businessName || "";
+        const product = prod.product || "";
+        if (
+          !searchTerm ||
+          businessName.toLowerCase().includes(searchTerm) ||
+          product.toLowerCase().includes(searchTerm)
+        ) {
+          filteredProducts.push(prod);
+        }
+      });
+
+      if (filteredProducts.length > 0) {
+        anyShown = true;
+        catHtml += `<div style="margin-top:1.5em;">
+          <div class="category-title" style="font-size:1.25rem;margin-bottom:.4em;">${subcat}</div>
+          <div class="category-carousel">`;
+        filteredProducts.forEach(prod => {
+          let imgSrc = 'https://via.placeholder.com/80';
+          if (prod.uid && prod.product) {
+            const foundUrl = productImagesMap[`${prod.uid}|${prod.product}`];
+            if (foundUrl) imgSrc = foundUrl;
+          }
+          catHtml += `
+            <div class="product-card">
+              <img src="${imgSrc}" alt="${prod.businessName || prod.product}">
+              <div class="product-title">${prod.businessName || prod.product || ''}</div>
+              <div class="product-desc">${prod.product || ''}</div>
+              <div style="color:#888;font-size:0.98em;margin-top:3px;">${prod.tagline || ''}</div>
+            </div>
+          `;
+        });
+        catHtml += `</div></div>`;
+      }
+    });
+
+    if (catHtml) {
+      container.insertAdjacentHTML('beforeend', `
+        <section class="category-section">
+          <div class="category-title" style="font-size:2rem;">${mainCat}</div>
+          ${catHtml}
+        </section>
+      `);
+    }
   });
 
-  async function loadAllCategories(search) {
-    const container = document.getElementById('all-categories');
-    container.innerHTML = '';
-    for (const cat of categories) {
-      let html = `<section class="category-section">
-        <div class="category-title">${cat}</div>
-        <div class="category-carousel">`;
-      try {
-        let q = db.collection("products").where("category", "==", cat).limit(20);
-        const snapshot = await q.get();
-        let found = false;
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          if (
-            !search ||
-            (data.name && data.name.toLowerCase().includes(search)) ||
-            (data.description && data.description.toLowerCase().includes(search))
-          ) {
-            found = true;
-            html += `
-              <div class="product-card">
-                <img src="${data.imageUrl || 'https://via.placeholder.com/80'}" alt="${data.name}">
-                <div class="product-title">${data.name}</div>
-                <div class="product-desc">${data.description || ""}</div>
-              </div>
-            `;
-          }
-        });
-        if (!found) {
-          html += `<div style="color:#757575;font-style:italic;padding:20px 0;">No products found.</div>`;
-        }
-      } catch (e) {
-        html += `<div style="color:#b91c1c;font-style:italic;padding:20px;">Error loading products.</div>`;
-      }
-      html += `</div></section>`;
-      container.insertAdjacentHTML('beforeend', html);
-    }
+  if (!anyShown) {
+    container.innerHTML = `<div style="text-align:center;color:#aaa;font-style:italic;margin:50px 0;">No products found.</div>`;
   }
+}
 
-  // Initial load, show all categories
-  window.onload = function() {
-    loadAllCategories('');
-  };
+// Main load and search logic
+async function loadAllCategories(search) {
+  const [categoriesData, productImagesMap] = await Promise.all([
+    getAllCategoryProducts(),
+    getProductImagesMap()
+  ]);
+  const searchTerm = (search || '').trim().toLowerCase();
+  renderCategoriesWithImages(categoriesData, productImagesMap, searchTerm);
+}
+
+// Search event
+document.getElementById('searchBtn').onclick = function() {
+  const val = document.getElementById('searchInput').value;
+  loadAllCategories(val);
+};
+document.getElementById('searchInput').addEventListener("keypress", function(e) {
+  if (e.key === "Enter") document.getElementById('searchBtn').onclick();
+});
+
+// Initial load
+window.onload = function() {
+  loadAllCategories('');
+};
 </script>
 </body>
 </html>
