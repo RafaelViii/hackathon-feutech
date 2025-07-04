@@ -8,6 +8,21 @@
   <link id="settings-css" rel="stylesheet" href="AccountManage/account.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"/>
   <style>
+    .profile-pic-row {
+  display: flex; align-items: center; gap: 20px; margin-bottom: 28px; margin-top: 8px;
+}
+.profile-picture {
+  width: 96px; height: 96px; border-radius: 50%;
+  object-fit: cover; border: 3px solid #e3eafc; background: #f6faff;
+  box-shadow: 0 4px 16px #bfcafc33;
+}
+.profile-pic-upload-label {
+  font-weight: 500; color: #206be6; cursor: pointer; border: 1px solid #e3eafc; background: #f2f6fc;
+  border-radius: 8px; padding: 8px 18px; transition: background 0.14s, color 0.14s;
+  margin-left: 2px; display: inline-block;
+}
+.profile-pic-upload-label:hover { background: #eaf3ff; color: #195fc1; }
+#profile-pic-upload { display: none; }
     html, body {
       margin: 0; padding: 0; height: 100%; min-height: 100vh; width: 100vw;
       box-sizing: border-box; background: linear-gradient(135deg, #f6f8fb 65%, #e7eafd 100%);
@@ -261,6 +276,7 @@
   </style>
 </head>
 <body>
+
   <div class="settings-back-header">
     <button class="settings-back-btn" id="settings-back-btn" aria-label="Back to previous page">
       <svg width="26" height="26" viewBox="0 0 26 26" fill="none"
@@ -296,6 +312,11 @@
           </div>
           <div class="sections-flex">
             <div class="profile-section" aria-labelledby="profile-section-label">
+              <div class="profile-pic-row">
+  <img src="https://ui-avatars.com/api/?name=User&background=dae6ff&color=3d4ba3" alt="Profile Picture" id="profile-picture" class="profile-picture" />
+  <label class="profile-pic-upload-label" for="profile-pic-upload">Change Photo</label>
+  <input type="file" accept="image/*" id="profile-pic-upload" />
+</div>
               <span id="profile-section-label" class="section-label">Business Info</span>
               <div class="info-row">
                 <span class="info-label">Business Name</span>
@@ -465,6 +486,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     // Firebase config...
@@ -473,17 +495,79 @@
       authDomain: "iot-web-58054.firebaseapp.com",
       databaseURL: "https://iot-web-58054-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "iot-web-58054",
-      storageBucket: "iot-web-58054.appspot.com",
+      storageBucket: "iot-web-58054.firebasestorage.app",
       messagingSenderId: "949884902967",
       appId: "1:949884902967:web:6e7f78c7cd0fa1484629b2",
       measurementId: "G-5C79490N66"
     };
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const storage = firebase.storage();
 
     document.getElementById('settings-back-btn').onclick = function() {
-      window.location.href = '../draft.html';
+      window.location.href = '../../raf/index.html';
     };
 
+
+     // Profile Picture Logic
+  const profilePic = document.getElementById('profile-picture');
+  const profilePicInput = document.getElementById('profile-pic-upload');
+  const profilePicLabel = document.querySelector('.profile-pic-upload-label');
+  const defaultPic = "https://ui-avatars.com/api/?name=User&background=dae6ff&color=3d4ba3";
+
+ profilePicInput.addEventListener('change', async function() {
+  const file = this.files[0];
+  if (!file) return;
+  const user = firebase.auth().currentUser;
+  if (!user) {
+    Swal.fire('Not signed in', 'Please sign in to update your profile picture.', 'error');
+    return;
+  }
+  if (!file.type.startsWith('image/')) {
+    Swal.fire('Invalid file', 'Please select an image file.', 'error');
+    return;
+  }
+  Swal.fire({ title: 'Uploading...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+  try {
+    const storageRef = firebase.storage().ref();
+    const ext = file.name.split('.').pop();
+    const imgRef = storageRef.child(`user-profile-pics/${user.uid}.${ext}`);
+    await imgRef.put(file);
+    const url = await imgRef.getDownloadURL();
+    // Update both pfpurl in DB and photoURL in Auth
+    await firebase.database().ref("users/" + user.uid).update({ pfpurl: url });
+    try { await user.updateProfile({ photoURL: url }); } catch(e){}
+    profilePic.src = url;
+    Swal.fire('Uploaded!', 'Profile picture updated.', 'success');
+  } catch (err) {
+    Swal.fire('Upload failed', err.message, 'error');
+  }
+});
+
+  // Show the user's profile pic on load
+  // Show the user's profile pic on load
+firebase.auth().onAuthStateChanged(function(user) {
+  const defaultPfpUrl = "https://firebasestorage.googleapis.com/v0/b/iot-web-58054.firebasestorage.app/o/pfp%2Fdefault.png?alt=media&token=5626551d-e7cf-45f6-9b23-f52ede3f55a1";
+  if (user) {
+    const userId = user.uid;
+    // Try to get pfpurl from Realtime Database first
+    firebase.database().ref("users/" + userId + "/pfpurl").once("value").then(snapshot => {
+      const dbPfpUrl = snapshot.val();
+      if (dbPfpUrl) {
+        profilePic.src = dbPfpUrl;
+      } else if (user.photoURL) {
+        profilePic.src = user.photoURL;
+      } else {
+        profilePic.src = defaultPfpUrl;
+      }
+    }).catch(() => {
+      // Fallback to Auth or default if DB fails
+      profilePic.src = user.photoURL || defaultPfpUrl;
+    });
+  } else {
+    // User not signed in
+    profilePic.src = defaultPfpUrl;
+  }
+});
     // TAB LOGIC: Only one section visible at a time, smooth scroll
     const sectionMap = {
       'drawer-account': 'account-section',
