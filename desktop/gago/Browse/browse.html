@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Browse - Scale Up</title>
-  <link rel="stylesheet" href="index.css">
+  <!-- Custom navigation bar CSS -->
+  <link rel="stylesheet" href="navigationtop.css">
   <style>
-   body {
+    body {
       margin: 0;
       background: #f5f6fa;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
@@ -149,6 +150,20 @@
   </style>
 </head>
 <body>
+<!-- Navigation Bar Example (customize as needed) -->
+<nav class="nav-top">
+  <a href="index.html" class="nav-logo">Scale Up</a>
+  <div class="nav-links">
+    <a href="browse.html" class="nav-link active">Browse</a>
+    <a href="about.html" class="nav-link">About</a>
+    <a href="contact.html" class="nav-link">Contact</a>
+  </div>
+  <div class="nav-user">
+    <img src="https://via.placeholder.com/34" class="nav-avatar" alt="User" />
+    <button class="nav-btn">Sign In</button>
+  </div>
+</nav>
+
 <header class="browse-header">
   <form class="search-bar" id="browseSearchForm" autocomplete="off" onsubmit="return false;">
     <input type="text" id="searchInput" placeholder="Search businesses, products, or keywords..." />
@@ -163,10 +178,7 @@
 <h1>Browse Categories</h1>
 <div id="all-categories"></div>
 
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-<!-- ...your usual HTML and CSS... -->
+<!-- Firebase SDKs (version 8 - Realtime Database) -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 <script>
@@ -183,7 +195,6 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Build a fast lookup: { 'uid|productName': imageUrl }
 async function getProductImagesMap() {
   const snap = await db.ref("products").once("value");
   const map = {};
@@ -191,9 +202,7 @@ async function getProductImagesMap() {
   Object.entries(obj).forEach(([userId, prodGroup]) => {
     if (typeof prodGroup === 'object') {
       Object.entries(prodGroup).forEach(([prodId, prod]) => {
-        // Only add if we have both productName and imageUrl
         if ((prod.productName || prod.name) && prod.imageUrl) {
-          // Support both productName and name fields
           map[`${userId}|${prod.productName || prod.name}`] = prod.imageUrl;
         }
       });
@@ -202,7 +211,6 @@ async function getProductImagesMap() {
   return map;
 }
 
-// Fetch all categories/subcategories/products
 async function getAllCategoryProducts() {
   return db.ref("categories").once("value").then(snapshot => snapshot.val() || {});
 }
@@ -212,11 +220,9 @@ async function renderCategoriesWithImages(categoriesData, productImagesMap, sear
   container.innerHTML = '';
   let anyShown = false;
 
-  // Loop over main categories
   Object.entries(categoriesData).forEach(([mainCat, subcats]) => {
     let catHtml = '';
 
-    // Loop over subcategories
     Object.entries(subcats || {}).forEach(([subcat, products]) => {
       let filteredProducts = [];
       Object.values(products || {}).forEach(prod => {
@@ -270,7 +276,6 @@ async function renderCategoriesWithImages(categoriesData, productImagesMap, sear
   }
 }
 
-// Main load and search logic
 async function loadAllCategories(search) {
   const [categoriesData, productImagesMap] = await Promise.all([
     getAllCategoryProducts(),
@@ -280,7 +285,6 @@ async function loadAllCategories(search) {
   renderCategoriesWithImages(categoriesData, productImagesMap, searchTerm);
 }
 
-// Search event
 document.getElementById('searchBtn').onclick = function() {
   const val = document.getElementById('searchInput').value;
   loadAllCategories(val);
@@ -289,7 +293,6 @@ document.getElementById('searchInput').addEventListener("keypress", function(e) 
   if (e.key === "Enter") document.getElementById('searchBtn').onclick();
 });
 
-// Initial load
 window.onload = function() {
   loadAllCategories('');
 };
