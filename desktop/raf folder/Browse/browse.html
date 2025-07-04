@@ -60,6 +60,12 @@
       scroll-snap-align: start;
       border: 1px solid #e5e7eb;
       padding: 16px 18px;
+      cursor: pointer;
+      transition: box-shadow 0.12s;
+    }
+    .product-card:hover {
+      box-shadow: 0 6px 24px #8bb2ec46;
+      border-color: #b3cfff;
     }
     .product-card img {
       width: 74px;
@@ -91,11 +97,71 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+    /* Modal Styling */
+    #ownerModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(50,50,70,0.32);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+    }
+    #ownerModalCard {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 40px #2233ac33;
+      max-width: 340px;
+      width: 95vw;
+      padding: 30px 30px 22px 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      animation: fadeIn .21s;
+    }
+    #ownerModalClose {
+      position: absolute;
+      top: 10px; right: 12px;
+      border: none;
+      background: none;
+      font-size: 1.8em;
+      color: #bbb;
+      cursor: pointer;
+      z-index: 2;
+    }
+    #ownerModalPfp {
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #e3eafc;
+      background: #f6faff;
+      margin-bottom: 8px;
+    }
+    .owner-modal-label {
+      font-weight: 600;
+      color: #31418a;
+      margin-right: 3px;
+    }
+    .owner-modal-row {
+      margin-bottom: 4px;
+      font-size: 1em;
+      color: #444;
+      width: 100%;
+      text-align: left;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(22px);}
+      to   { opacity: 1; transform: none;}
+    }
     @media (max-width: 700px) {
       h1 { font-size: 1.45rem; }
       .category-title { font-size: 1.13rem; }
       .category-carousel { gap: 12px; padding: 10px 4vw 6px 4vw; }
       .product-card { min-width: 130px; max-width: 88vw; padding: 9px 4vw; }
+      #ownerModalCard { max-width: 94vw; padding: 17px 7vw 15px 7vw;}
     }
   </style>
 </head>
@@ -121,7 +187,6 @@
       </div>
     </div>
   </div>
-  <!-- Search Bar moved into nav-top -->
   <form class="search-bar" id="browseSearchForm" autocomplete="off" onsubmit="return false;">
     <input type="text" id="searchInput" placeholder="Search businesses, products, or keywords..." />
     <button class="search-icon-btn" id="searchBtn" aria-label="Search">
@@ -135,6 +200,30 @@
 
 <h1>Browse Categories</h1>
 <div id="all-categories"></div>
+
+<!-- Modal for owner profile -->
+<div id="ownerModal">
+  <div id="ownerModalCard">
+    <button id="ownerModalClose">&times;</button>
+    <img id="ownerModalPfp" src="" alt="Profile Picture" />
+    <div class="owner-modal-row"><span class="owner-modal-label">Business Name:</span> <span id="ownerModalBusiness">-</span></div>
+    <div class="owner-modal-row"><span class="owner-modal-label">Name:</span> <span id="ownerModalName">-</span></div>
+    <div class="owner-modal-row"><span class="owner-modal-label">Email:</span> <span id="ownerModalEmail">-</span></div>
+    <div class="owner-modal-row"><span class="owner-modal-label">Number:</span> <span id="ownerModalNumber">-</span></div>
+    <div class="owner-modal-row"><span class="owner-modal-label">Main Category:</span> <span id="ownerModalMainCategory">-</span></div>
+    <div class="owner-modal-row"><span class="owner-modal-label">Product:</span> <span id="ownerModalProduct">-</span></div>
+    <div class="owner-modal-row"><span class="owner-modal-label">Funding Usage:</span> <span id="ownerModalUsage">-</span></div>
+    <div style="width:100%;margin:12px 0 12px 0;">
+      <div style="color:#3f3f3f;font-size:.93em;margin-bottom:3px;">Funding Progress</div>
+      <div style="background:#e3eafc;border-radius:7px;width:100%;height:13px;overflow:hidden;">
+        <div id="ownerModalFundingBar" style="background:linear-gradient(90deg,#2abbfa,#41e3b5);height:100%;width:0%;transition:width 0.5s;"></div>
+      </div>
+      <div style="font-size:.98em;margin-top:3px;">
+        <span id="ownerModalFundingRaised">₱0</span> / <span id="ownerModalFundingGoal">₱0</span>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Firebase SDKs (version 8 - Realtime Database) -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -156,7 +245,57 @@ window.onload = function() {
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // ----------- Auth UI Logic -----------
+  // ----------- Modal Logic -----------
+  const ownerModal = document.getElementById("ownerModal");
+  const ownerModalClose = document.getElementById("ownerModalClose");
+  ownerModalClose.onclick = () => ownerModal.style.display = "none";
+  ownerModal.onclick = (e) => { if(e.target === ownerModal) ownerModal.style.display = "none"; };
+
+  function showOwnerModal(ownerData) {
+    document.getElementById("ownerModalPfp").src = ownerData.pfpurl || "https://ui-avatars.com/api/?name=User&background=dae6ff&color=3d4ba3";
+    document.getElementById("ownerModalBusiness").textContent = ownerData.businessName || "-";
+    document.getElementById("ownerModalName").textContent = ownerData.name || "-";
+    document.getElementById("ownerModalEmail").textContent = ownerData.email || "-";
+    document.getElementById("ownerModalNumber").textContent = ownerData.number || "-";
+    document.getElementById("ownerModalMainCategory").textContent = ownerData.mainCategory || "-";
+    document.getElementById("ownerModalProduct").textContent = ownerData.product || "-";
+    document.getElementById("ownerModalUsage").textContent = ownerData.fundUsage || "-";
+    // Funding
+    let fundingGoal = ownerData.fundingGoal ? Number(ownerData.fundingGoal) : 0;
+    document.getElementById("ownerModalFundingRaised").textContent = "₱0";
+    document.getElementById("ownerModalFundingGoal").textContent = "₱" + (fundingGoal ? fundingGoal.toLocaleString() : "0");
+    document.getElementById("ownerModalFundingBar").style.width = "0%";
+    ownerModal.style.display = "flex";
+  }
+
+  function addProductCardModalListeners() {
+    document.querySelectorAll('.product-card').forEach(card => {
+      // Use mouseenter for hover, click for mobile
+      card.addEventListener('mouseenter', handleOwnerModalEvent);
+      card.addEventListener('click', handleOwnerModalEvent);
+    });
+  }
+
+  async function handleOwnerModalEvent(e) {
+    // Prevent duplicate modal
+    if (ownerModal.style.display === "flex") return;
+    const card = e.currentTarget;
+    // Try to get accountNum from the allProductsCache
+    const ownerName = card.querySelector('.product-title').textContent.trim();
+    // Find the product in the global products cache by product name (or better: assign data-accountnum)
+    let accountNum = card.getAttribute('data-accountnum');
+    if (!accountNum && window.allProductsCache) {
+      let prod = window.allProductsCache.find(p => (p.productName || '') === ownerName);
+      if (prod && prod.accountNum) accountNum = prod.accountNum;
+    }
+    if (!accountNum) return;
+    // Fetch owner details from /users/{accountNum}
+    const userSnap = await firebase.database().ref("users/" + accountNum).once("value");
+    const ownerData = userSnap.val() || {};
+    showOwnerModal(ownerData);
+  }
+
+  // ----------- Auth UI Logic ----------- (same as your original)
   const signInBtn = document.getElementById('signInBtn');
   const navAvatar = document.getElementById('navAvatar');
   const userDropdown = document.getElementById('userDropdown');
@@ -165,7 +304,6 @@ window.onload = function() {
   const userNameSpan = document.getElementById('userNameSpan');
   const signOutBtn = document.getElementById('signOutBtn');
 
-  // Dropdown menu logic
   if(userDropdownBtn && dropdownMenu) {
     userDropdownBtn.onclick = function(e) {
       e.stopPropagation();
@@ -187,33 +325,30 @@ window.onload = function() {
     };
   }
   if(typeof firebase.auth === "function") {
-  firebase.auth().onAuthStateChanged(function(user) {
-    if(user) {
-      // User is signed in
-      signInBtn.style.display = "none";
-      navAvatar.style.display = "inline-block";
-      userDropdown.style.display = "inline-block";
-      userNameSpan.textContent = user.displayName || user.email || "Account";
-      // Try to get pfpurl from database
-      db.ref("users/" + user.uid + "/pfpurl").once("value").then(function(snapshot) {
-        const pfpurl = snapshot.val();
-        navAvatar.src = pfpurl || user.photoURL || "https://via.placeholder.com/34";
-      }).catch(function() {
-        navAvatar.src = user.photoURL || "https://via.placeholder.com/34";
-      });
-    } else {
-      // No user is signed in
-      signInBtn.style.display = "inline-block";
-      navAvatar.style.display = "none";
-      userDropdown.style.display = "none";
-      dropdownMenu.style.display = "none";
-    }
-  });
-}
-  // ----------- Products Logic ----------- //
-  let allProductsCache = [];
+    firebase.auth().onAuthStateChanged(function(user) {
+      if(user) {
+        signInBtn.style.display = "none";
+        navAvatar.style.display = "inline-block";
+        userDropdown.style.display = "inline-block";
+        userNameSpan.textContent = user.displayName || user.email || "Account";
+        db.ref("users/" + user.uid + "/pfpurl").once("value").then(function(snapshot) {
+          const pfpurl = snapshot.val();
+          navAvatar.src = pfpurl || user.photoURL || "https://via.placeholder.com/34";
+        }).catch(function() {
+          navAvatar.src = user.photoURL || "https://via.placeholder.com/34";
+        });
+      } else {
+        signInBtn.style.display = "inline-block";
+        navAvatar.style.display = "none";
+        userDropdown.style.display = "none";
+        dropdownMenu.style.display = "none";
+      }
+    });
+  }
 
-  // 1. Fetch all products from /products (all accounts)
+  // ----------- Products Logic ----------- //
+  window.allProductsCache = [];
+
   async function getAllProductsFromProductsNode() {
     const snap = await db.ref("products").once("value");
     const allProducts = [];
@@ -230,7 +365,6 @@ window.onload = function() {
     return allProducts;
   }
 
-  // 2. Group products by category
   function groupProductsByCategory(products) {
     const grouped = {};
     products.forEach(prod => {
@@ -241,7 +375,6 @@ window.onload = function() {
     return grouped;
   }
 
-  // 3. Render grouped products
   function renderGroupedProducts(products) {
     const container = document.getElementById('all-categories');
     container.innerHTML = '';
@@ -259,7 +392,7 @@ window.onload = function() {
         <div class="category-carousel">`;
       grouped[cat].forEach(prod => {
         html += `
-          <div class="product-card" style="max-width:240px;">
+          <div class="product-card" data-accountnum="${prod.accountNum}">
             <img src="${prod.imageUrl || 'https://via.placeholder.com/80'}" alt="${prod.productName || ''}">
             <div class="product-title">${prod.productName || ''}</div>
             <div class="product-desc">${prod.productDesc || ''}</div>
@@ -273,9 +406,10 @@ window.onload = function() {
       html += `</div></section>`;
       container.innerHTML += html;
     });
+
+    addProductCardModalListeners();
   }
 
-  // 4. Filter for search bar
   function filterProducts(products, searchTerm) {
     if (!searchTerm) return products;
     const term = searchTerm.trim().toLowerCase();
@@ -288,16 +422,14 @@ window.onload = function() {
     );
   }
 
-  // 5. Main load and search logic
   async function loadAndRenderProducts(searchTerm = "") {
-    if (!allProductsCache.length) {
-      allProductsCache = await getAllProductsFromProductsNode();
+    if (!window.allProductsCache.length) {
+      window.allProductsCache = await getAllProductsFromProductsNode();
     }
-    const filtered = filterProducts(allProductsCache, searchTerm);
+    const filtered = filterProducts(window.allProductsCache, searchTerm);
     renderGroupedProducts(filtered);
   }
 
-  // 6. Make search bar work
   document.getElementById('searchBtn').onclick = function(e) {
     e.preventDefault();
     const val = document.getElementById('searchInput').value;
@@ -310,8 +442,7 @@ window.onload = function() {
     }
   });
 
-  // 7. Initial load
-  allProductsCache = [];
+  window.allProductsCache = [];
   loadAndRenderProducts('');
 };
 </script>
