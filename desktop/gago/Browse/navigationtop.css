@@ -1,0 +1,102 @@
+/* navigationtop.css */
+/* Use this stylesheet for customizing your top navigation bar.
+   Link it in your HTML: <link rel="stylesheet" href="navigationtop.css"> */
+
+/* General nav container */
+.nav-top {
+  width: 100%;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(20,24,44,0.03);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  min-height: 60px;
+  transition: box-shadow 0.2s;
+}
+
+/* Logo or brand */
+.nav-logo {
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #23272f;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Navigation links */
+.nav-links {
+  display: flex;
+  gap: 26px;
+  align-items: center;
+}
+
+.nav-link {
+  font-size: 1.06rem;
+  font-weight: 600;
+  color: #23272f;
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 6px;
+  transition: background 0.13s, color 0.13s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background: #f0f1f7;
+  color: #3841a1;
+}
+
+/* User/account area (optional) */
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.nav-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid #e5e7eb;
+}
+
+.nav-btn {
+  padding: 6px 18px;
+  background: #3841a1;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.nav-btn:hover {
+  background: #23296b;
+}
+
+/* Responsive for mobile */
+@media (max-width: 700px) {
+  .nav-top {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0 8vw;
+    min-height: 44px;
+  }
+  .nav-links {
+    gap: 12px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  .nav-logo { font-size: 1.05rem; }
+}
