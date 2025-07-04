@@ -86,8 +86,20 @@
     <div class="panel">
       <h2>ID Verification</h2>
       <div class="section">
-        <!-- ...ID Verification content unchanged... -->
-        <!-- You can copy your ID panel code here -->
+        <label for="idImage">Upload ID Image</label>
+        <input type="file" id="idImage" accept="image/*">
+        <img id="idPreview" style="display:none;" alt="ID Preview" />
+        <div class="note">
+          After uploading, the extracted information will appear below.<br>
+          <b>Detected Card Type:</b> <span id="cardTypeDisplay">---</span>
+        </div>
+        <label for="extractedText">Extracted Info (Review & Edit)</label>
+        <textarea id="extractedText" rows="10" placeholder="Extracted info will appear here..."></textarea>
+        <details id="rawOCRDetails" style="display:none;">
+          <summary>Show Raw OCR Output</summary>
+          <pre id="rawOCR"></pre>
+        </details>
+        <button id="verifyBtn">Verify Account</button>
       </div>
     </div>
     <!-- Right Panel: Account/Products -->
@@ -124,17 +136,13 @@
         <label for="productCategoryInput">Category</label>
         <select id="productCategoryInput">
           <option value="">Select Category</option>
-          <option value="Fashion & Apparel">Fashion & Apparel</option>
-          <option value="Electronics">Electronics</option>
-          <option value="Home & Living">Home & Living</option>
-          <option value="Beauty & Personal Care">Beauty & Personal Care</option>
-          <option value="Food & Grocery">Food & Grocery</option>
-          <option value="Toys & Games">Toys & Games</option>
-          <option value="Pet Supplies">Pet Supplies</option>
-          <option value="Fitness & Sports">Fitness & Sports</option>
-          <option value="Books & Stationery">Books & Stationery</option>
-          <option value="Automotive">Automotive</option>
-          <option value="Services">Services</option>
+          <option value="Food">Food</option>
+          <option value="Clothing">Clothing</option>
+          <option value="Accessories">Accessories</option>
+          <option value="Gadgets">Gadgets</option>
+          <option value="Beauty">Beauty</option>
+          <option value="Home">Home</option>
+          <option value="Other">Other</option>
         </select>
         <label for="productSubcategoryInput">Subcategory</label>
         <select id="productSubcategoryInput">
@@ -164,48 +172,74 @@
     const database = firebase.database();
     const storage = firebase.storage();
 
-    // Category & subcategory mapping (same as your business panel)
+    // Minimal extractIdFields for brevity
+    function extractIdFields(text) {
+      return { summary: text, cardType: 'Unknown' };
+    }
+
+    document.getElementById('idImage').addEventListener('change', function(e) {
+      const img = document.getElementById('idPreview');
+      const file = e.target.files[0];
+      const cardTypeDisplay = document.getElementById('cardTypeDisplay');
+      const extractedTextArea = document.getElementById('extractedText');
+      const rawOCR = document.getElementById('rawOCR');
+      const rawOCRDetails = document.getElementById('rawOCRDetails');
+      cardTypeDisplay.textContent = 'Processing...';
+      extractedTextArea.value = 'Extracting... Please wait.';
+      rawOCRDetails.style.display = "none";
+      if (file) {
+        img.src = URL.createObjectURL(file);
+        img.style.display = 'block';
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          Tesseract.recognize(
+            ev.target.result,
+            'eng',
+            {
+              workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/worker.min.js',
+              langPath: 'https://tessdata.projectnaptha.com/4.0.0_best'
+            }
+          ).then(({ data: { text } }) => {
+            const { summary, cardType } = extractIdFields(text || '');
+            extractedTextArea.value = summary;
+            cardTypeDisplay.textContent = cardType;
+            rawOCR.textContent = text || '';
+            rawOCRDetails.style.display = "";
+          }).catch(err => {
+            extractedTextArea.value = 'OCR Error: ' + err.message;
+            cardTypeDisplay.textContent = 'Error';
+            rawOCRDetails.style.display = "none";
+          });
+        };
+        reader.readAsDataURL(file);
+      } else {
+        img.style.display = 'none';
+        extractedTextArea.value = "";
+        cardTypeDisplay.textContent = "---";
+        rawOCRDetails.style.display = "none";
+      }
+    });
+
+    document.getElementById('productImage').addEventListener('change', function(e) {
+      const img = document.getElementById('productPreview');
+      const file = e.target.files[0];
+      if (file) {
+        img.src = URL.createObjectURL(file);
+        img.style.display = 'block';
+      } else {
+        img.style.display = 'none';
+      }
+    });
+
+    // Category & subcategory mapping
     const subcategories = {
-      "Fashion & Apparel": [
-        "Men’s Clothing", "Women’s Clothing", "Kids & Baby", "Baby Clothes", "Shoes", "Accessories", "Bags", "Jewelry"
-      ],
-      "Electronics": [
-        "Mobile Phones", "Laptops & Computers", "Tablets", "Smartwatches", "Audio Devices", "Cables & Accessories"
-      ],
-      "Home & Living": [
-        "Furniture", "Kitchenware", "Home Decor", "Lighting", "Bedding", "Cleaning & Storage"
-      ],
-      "Beauty & Personal Care": [
-        "Skincare", "Makeup", "Hair Care", "Fragrances", "Hygiene Products"
-      ],
-      "Food & Grocery": [
-        "Snacks", "Beverages", "Organic & Health Foods", "Baking Essentials", "Canned & Packaged Goods"
-      ],
-      "Toys & Games": [
-        "Educational Toys", "Board Games", "Plush & Dolls", "Outdoor Toys", "Building Blocks"
-      ],
-      "Pet Supplies": [
-        "Food & Treats", "Toys & Beds", "Grooming Supplies", "Pet Accessories"
-      ],
-      "Fitness & Sports": [
-        "Exercise Equipment", "Activewear", "Yoga Mats & Gear", "Outdoor & Camping Gear"
-      ],
-      "Books & Stationery": [
-        "Fiction & Non-Fiction", "School & Office Supplies", "Art & Craft"
-      ],
-      "Automotive": [
-        "Car Accessories", "Motorbike Gear", "Tools", "Car Care Products"
-      ],
-      "Services": [
-        "Home Cleaning", "Car Wash & Detailing", "Appliance Repair", "Lawn & Garden Care",
-        "Haircut & Styling", "Makeup Services", "Massage Therapy", "Nail & Spa Treatments", "Skincare Treatments",
-        "Device Repair (Phones, Laptops)", "Website Development", "Software Installation", "Network Setup & Support",
-        "Photography", "Video Editing", "Graphic Design", "Content Writing",
-        "Academic Tutoring", "Language Lessons", "Music Classes", "Online Courses",
-        "Local Delivery", "Package Forwarding", "Courier Services",
-        "Event Planning", "DJ & Sound Services", "Party Rentals", "Catering Services",
-        "Printing & Scanning", "Virtual Assistant", "Accounting & Tax Filing", "Legal Consultation"
-      ]
+      Food: ["Snacks", "Drinks", "Desserts", "Meals", "Other"],
+      Clothing: ["Shirts", "Pants", "Dresses", "Shoes", "Bags", "Other"],
+      Accessories: ["Jewelry", "Watches", "Sunglasses", "Belts", "Other"],
+      Gadgets: ["Phones", "Tablets", "Laptops", "Wearables", "Other"],
+      Beauty: ["Makeup", "Skincare", "Haircare", "Other"],
+      Home: ["Decor", "Utensils", "Furniture", "Appliances", "Other"],
+      Other: ["Other"]
     };
 
     const categoryInput = document.getElementById('productCategoryInput');
@@ -215,10 +249,10 @@
       const cat = this.value;
       subcategoryInput.innerHTML = '<option value="">Select Subcategory</option>';
       if (subcategories[cat]) {
-        subcategories[cat].forEach(sc => {
+        subcategories[cat].forEach(sub => {
           const opt = document.createElement('option');
-          opt.value = sc;
-          opt.textContent = sc;
+          opt.value = sub;
+          opt.textContent = sub;
           subcategoryInput.appendChild(opt);
         });
       }
@@ -409,7 +443,62 @@
       });
     };
 
-    // The rest of ID verification JS can be copied as needed
+    document.getElementById('verifyBtn').onclick = function() {
+      var acct = document.getElementById('accountNumberTop').value.trim();
+      if (!acct) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Missing Account Number',
+          text: 'Please enter the account number in the Product Panel first!',
+          confirmButtonColor: '#e53935'
+        });
+        return;
+      }
+      Swal.fire({
+        title: 'Verifying...',
+        text: 'Please wait while we verify the account.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+      database.ref('users').orderByChild('accountNumber').equalTo(acct).once('value', function(snapshot) {
+        if (snapshot.exists()) {
+          const userId = Object.keys(snapshot.val())[0];
+          database.ref('users/' + userId).update({ verified: true })
+            .then(() => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Account Verified!',
+                text: 'The user account has been marked as verified.',
+                confirmButtonColor: '#2196f3'
+              });
+            })
+            .catch((error) => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Verification Failed',
+                text: error.message,
+                confirmButtonColor: '#e53935'
+              });
+            });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Account Not Found',
+            text: 'No user found for this account number.',
+            confirmButtonColor: '#e53935'
+          });
+        }
+      }, function(error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.message,
+          confirmButtonColor: '#e53935'
+        });
+      });
+    };
   </script>
 </body>
 </html>
